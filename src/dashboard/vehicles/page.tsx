@@ -1,16 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
-import { Plus, Search, MapPin, Clock , Battery, MoreHorizontal, ArrowUpRight, Pencil, Trash2} from "lucide-react"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
+import { useState } from "react";
+import { toast } from "sonner";
+import { useEffect } from "react";
+import { Plus, Search} from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -21,9 +15,91 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
   import { Label } from "@/components/ui/label"
-  import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+  import { VehicleCard } from "./VehicleCard";
 
 export default function VehiclesPage() {
+
+  const [vehicleData, setVehicleData] = useState({
+    name: "",
+    model: "",
+    plate: "",
+    imei: "",
+  });
+  const [loading, setLoading] = useState(false);
+  interface Vehicle {
+    _id: string;
+    name: string;
+    licensePlate: string;
+    currentStatus: string;
+    lastLocation?: {
+      speed: number;
+    };
+    battery?: number;
+  }
+
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setVehicleData((prev) => ({ ...prev, [id]: value }));
+  };
+  
+  const handleAddVehicle = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/vehicles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          name: vehicleData.name,
+          model: vehicleData.model,
+          licensePlate: vehicleData.plate,
+          imei: vehicleData.imei,
+        }),
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        toast.error(data.error || "Failed to add vehicle.");
+        return;
+      }
+  
+      toast.success("Vehicle added successfully 🚗");
+      setVehicleData({ name: "", model: "", plate: "", imei: "" });
+      await fetchVehicles(); 
+  
+      // Optionally: refresh vehicle list or close modal
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchVehicles();
+  }, []);
+
+  const fetchVehicles = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/vehicles", {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setVehicles(data.data.vehicles);
+      } else {
+        toast.error("Failed to fetch vehicles");
+      }
+    } catch (err) {
+      toast.error("Could not connect to server");
+    }
+  };
     return (
         <div className="flex flex-col gap-6 p-4 md:p-8">
      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -48,29 +124,40 @@ export default function VehiclesPage() {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="make">Marke</Label>
-                  <Input id="make" placeholder="Toyota" />
+                  <Label htmlFor="name">Marke</Label>
+                  <Input id="name" 
+                   value={vehicleData.name}
+                  onChange={handleInputChange}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="model">Model</Label>
-                  <Input id="model" placeholder="Corolla" />
+                  <Input id="model"  
+                  value={vehicleData.model}
+                  onChange={handleInputChange}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="plate">License Plate</Label>
-                <Input id="plate" placeholder="XYZ-123" />
+                <Input id="plate"  
+                onChange={handleInputChange}
+                value={vehicleData.plate}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="imei">IMEI Number</Label>
-                <Input id="imei" placeholder="123456789012345" />
+                <Input id="imei"  
+                onChange={handleInputChange}
+                value={vehicleData.imei}
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description (Optional)</Label>
-                <Input id="description" placeholder="Company car for sales team" />
-              </div>
+            
             </div>
             <DialogFooter>
-              <Button type="submit">Add Vehicle</Button>
+            <Button onClick={handleAddVehicle} disabled={loading}>
+              {loading ? "Adding..." : "Add Vehicle"}
+            </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -91,67 +178,21 @@ export default function VehiclesPage() {
         </Tabs>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-    
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Honda Civic</CardTitle>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <MapPin className="mr-2 h-4 w-4" />
-                    Track
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Clock className="mr-2 h-4 w-4" />
-                    History
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            <CardDescription>DEF-456 • Last updated 2h ago</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-3 text-sm">
-              <div className="flex items-center gap-1">
-                <div className="flex h-2 w-2 rounded-full bg-red-500" />
-                <span>Offline</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span>0 km/h</span>
-              </div>
-              <div className="flex items-center gap-1">
-                        <Battery className="h-4 w-4 text-muted-foreground" />
-                        <span>100%</span>
-                      </div>
-            </div>
-          </CardContent>
-          <CardFooter className="pt-0">
-            <Button variant="outline" size="sm" className="w-full gap-1">
-              <ArrowUpRight className="h-3 w-3" />
-              View Details
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
+      
+
+<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+  {vehicles.map((v) => (
+    <VehicleCard
+      key={v._id}
+      name={v.name}
+      licensePlate={v.licensePlate}
+      status={v.currentStatus}
+      speed={v.lastLocation?.speed || 0}
+      battery={v.battery || 100}
+    />
+  ))}
+</div>
+
 
         </div>
     )
