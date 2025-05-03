@@ -93,17 +93,18 @@ export default function VehiclesPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        const updatedVehicles = data.data.vehicles.map((v: any) => ({
-          _id: v._id,
-          name: v.name,
-          licensePlate: v.licensePlate,
-          currentStatus: v.currentStatus,
-          telemetry: {
-            vehicleBattery: v.latestData?.extendedData?.vehicleBattery || 0,
-            ignition: v.latestData?.ignition === 1,
-            speed: v.latestData?.speed || 0,
-          },
-        }));
+       const updatedVehicles = data.data.vehicles.map((v: any) => ({
+  _id: v._id,
+  name: v.name,
+  licensePlate: v.licensePlate,
+  currentStatus: v.currentStatus,
+  telemetry: {
+    vehicleBattery: v.telemetry?.vehicleBattery ?? 0,
+    ignition: v.telemetry?.ignition ?? false,
+    speed: v.telemetry?.speed ?? 0,
+  },
+}));
+
         setVehicles(updatedVehicles);
       } else {
         toast.error("Failed to fetch vehicles");
