@@ -31,11 +31,13 @@ export default function VehiclesPage() {
     name: string;
     licensePlate: string;
     currentStatus: string;
-    lastLocation?: {
+    telemetry: {
+      vehicleBattery: number;
+      ignition: boolean;
       speed: number;
     };
-    battery?: number;
   }
+  
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
@@ -91,7 +93,18 @@ export default function VehiclesPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setVehicles(data.data.vehicles);
+        const updatedVehicles = data.data.vehicles.map((v: any) => ({
+          _id: v._id,
+          name: v.name,
+          licensePlate: v.licensePlate,
+          currentStatus: v.currentStatus,
+          telemetry: {
+            vehicleBattery: v.latestData?.extendedData?.vehicleBattery || 0,
+            ignition: v.latestData?.ignition === 1,
+            speed: v.latestData?.speed || 0,
+          },
+        }));
+        setVehicles(updatedVehicles);
       } else {
         toast.error("Failed to fetch vehicles");
       }
@@ -99,6 +112,7 @@ export default function VehiclesPage() {
       toast.error("Could not connect to server");
     }
   };
+  
     return (
         <div className="flex flex-col gap-6 p-4 md:p-8">
      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -188,8 +202,8 @@ export default function VehiclesPage() {
       name={v.name}
       licensePlate={v.licensePlate}
       status={["moving", "stopped", "immobilized", "inactive"].includes(v.currentStatus) ? v.currentStatus as "moving" | "stopped" | "immobilized" | "inactive" : "inactive"}
-      speed={v.lastLocation?.speed || 0}
-      battery={v.battery || 100}
+      speed={v.telemetry.speed}
+      battery={v.telemetry.vehicleBattery}
     />
   ))}
 </div>
