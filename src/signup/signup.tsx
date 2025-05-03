@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Truck, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Signup({
   className,
@@ -19,7 +21,6 @@ export default function Signup({
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -28,25 +29,40 @@ export default function Signup({
     });
   };
 
+  const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-
+  
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/v1/auth/register",
-        formData
-      );
-      console.log("Registration successful:", response.data);
-      // You can add navigation here after successful registration
+      const response = await fetch("http://localhost:5000/api/v1/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        toast.success("Account created successfully 🎉");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      } else {
+        const errorMessage = data.message || "Registration failed.";
+        toast.error(errorMessage);
+      }
     } catch (err) {
-      console.error("Registration error:", err);
-      
+      toast.error("An unexpected error occurred.");
+      console.error("Fetch error:", err);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center  p-6 md:p-10">
@@ -114,7 +130,6 @@ export default function Signup({
                   >
                     {loading ? "Creating Account..." : "Create Account"}
                   </Button>
-                  {error && <p className="text-red-500 text-center">{error}</p>}
                   <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                     <span className="bg-background text-muted-foreground relative z-10 px-2">
                       Or continue with

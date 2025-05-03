@@ -13,6 +13,7 @@ import LoginPage from './login/login'
 import SignupPage from './signup/signup'
 import './App.css'
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"  
 
 function  App() {
   return (
@@ -32,6 +33,7 @@ function  App() {
         <Route path="/dashboard/statistics" element={<DashboardLayout><StatisticsPage /></DashboardLayout>} />
         <Route path="/dashboard/settings" element={<DashboardLayout><SettingsPage /></DashboardLayout>} />
       </Routes>
+      <Toaster />
     </BrowserRouter>
     </ThemeProvider>
   )
