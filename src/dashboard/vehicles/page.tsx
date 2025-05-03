@@ -27,6 +27,7 @@ export default function VehiclesPage() {
   const [loading, setLoading] = useState(false);
   const [loadingVehicles, setLoadingVehicles] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("all");
 
   interface Vehicle {
     _id: string;
@@ -74,11 +75,10 @@ export default function VehiclesPage() {
       toast.success("Vehicle added successfully 🚗");
       setVehicleData({ name: "", model: "", plate: "", imei: "" });
       await fetchVehicles();
-      
+
       setTimeout(() => {
         setDialogOpen(false);
       }, 1000);
-      
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong.");
@@ -134,6 +134,11 @@ export default function VehiclesPage() {
       setLoadingVehicles(false);
     }
   };
+
+  const filteredVehicles =
+    selectedTab === "all"
+      ? vehicles
+      : vehicles.filter((v) => v.currentStatus === selectedTab);
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
@@ -211,12 +216,13 @@ export default function VehiclesPage() {
             className="w-full pl-8"
           />
         </div>
-        <Tabs defaultValue="all" className="w-auto">
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-auto">
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="offline">Offline</TabsTrigger>
-            <TabsTrigger value="inactive">Immobilized</TabsTrigger>
+            <TabsTrigger value="moving">Moving</TabsTrigger>
+            <TabsTrigger value="stopped">Stopped</TabsTrigger>
+            <TabsTrigger value="inactive">Inactive</TabsTrigger>
+            <TabsTrigger value="immobilized">Immobilized</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -231,22 +237,12 @@ export default function VehiclesPage() {
                 <Skeleton className="h-10 w-full mt-3" />
               </div>
             ))
-          : vehicles.map((v) => (
+          : filteredVehicles.map((v) => (
               <VehicleCard
                 key={v._id}
                 name={v.name}
                 licensePlate={v.licensePlate}
-                status={
-                  ["moving", "stopped", "immobilized", "inactive"].includes(
-                    v.currentStatus
-                  )
-                    ? (v.currentStatus as
-                        | "moving"
-                        | "stopped"
-                        | "immobilized"
-                        | "inactive")
-                    : "inactive"
-                }
+                status={v.currentStatus}
                 speed={v.telemetry.speed}
                 battery={v.telemetry.vehicleBattery}
               />
