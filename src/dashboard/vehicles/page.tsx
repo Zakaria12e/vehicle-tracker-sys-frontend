@@ -24,6 +24,7 @@ export default function VehiclesPage() {
     plate: "",
     imei: "",
   });
+   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingVehicles, setLoadingVehicles] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -32,6 +33,7 @@ export default function VehiclesPage() {
   interface Vehicle {
     _id: string;
     name: string;
+    model: string;
     licensePlate: string;
     currentStatus: "moving" | "stopped" | "inactive" | "immobilized";
     telemetry: {
@@ -114,6 +116,7 @@ export default function VehiclesPage() {
           return {
             _id: v._id,
             name: v.name,
+            model: v.model,
             licensePlate: v.licensePlate,
             currentStatus: status,
             telemetry: {
@@ -135,10 +138,16 @@ export default function VehiclesPage() {
     }
   };
 
-  const filteredVehicles =
-    selectedTab === "all"
-      ? vehicles
-      : vehicles.filter((v) => v.currentStatus === selectedTab);
+  const filteredVehicles = vehicles
+    .filter((v) => {
+      if (selectedTab !== "all" && v.currentStatus !== selectedTab) {
+        return false;
+      }
+      
+      const search = searchQuery.toLowerCase();
+      return v.name.toLowerCase().includes(search) || 
+             v.model.toLowerCase().includes(search);
+    });
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
@@ -212,8 +221,10 @@ export default function VehiclesPage() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search vehicles..."
+            placeholder="Search by name or model..."
             className="w-full pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-auto">
