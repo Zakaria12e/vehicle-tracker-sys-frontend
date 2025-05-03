@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,6 +11,44 @@ import { TabsContent } from "@/components/ui/tabs"
 import { Save } from "lucide-react"
 
 export function ProfileSettings() {
+
+  const { user, setUser } = useAuth();
+
+  const [formData, setFormData] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    company: user?.company || "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.id]: e.target.value
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/auth/updatedetails", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Update failed");
+
+      setUser(data.data); // Update context
+      toast.success("Profile updated successfully");
+    } catch (err: any) {
+      toast.error(err.message || "Error updating profile");
+    }
+  };
+
   return (
     <TabsContent value="profile" className="space-y-4">
       <Card>
@@ -33,22 +74,22 @@ export function ProfileSettings() {
           <Separator />
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="first-name">First Name</Label>
-              <Input id="first-name" defaultValue="John" />
+              <Label htmlFor="name">Full Name</Label>
+              <Input id="name"value={formData.name} onChange={handleChange} />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email">Company</Label>
-              <Input id="" defaultValue="Tracke inc" />
+              <Label htmlFor="company">Company</Label>
+              <Input id="company" value={formData.company} onChange={handleChange} />
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="Email">Email</Label>
-              <Input id="email" defaultValue="john.doe@example.com" />
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" value={formData.email} onChange={handleChange} />
             </div>
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="gap-1">
+          <Button className="gap-1" onClick={handleSubmit}>
             <Save className="h-4 w-4" />
             Save Changes
           </Button>
