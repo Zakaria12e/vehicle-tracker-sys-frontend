@@ -36,21 +36,14 @@ export function ProfileSettings() {
               <Label htmlFor="first-name">First Name</Label>
               <Input id="first-name" defaultValue="John" />
             </div>
+            
             <div className="space-y-2">
-              <Label htmlFor="last-name">Last Name</Label>
-              <Input id="last-name" defaultValue="Doe" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" defaultValue="john.doe@example.com" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" defaultValue="+1 (555) 123-4567" />
+              <Label htmlFor="email">Company</Label>
+              <Input id="" defaultValue="Tracke inc" />
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="company">Company</Label>
-              <Input id="company" defaultValue="Acme Inc." />
+              <Label htmlFor="Email">Email</Label>
+              <Input id="email" defaultValue="john.doe@example.com" />
             </div>
           </div>
         </CardContent>

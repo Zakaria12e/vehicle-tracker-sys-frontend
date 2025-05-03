@@ -10,17 +10,19 @@ type AuthContextType = {
   user: User | null;
   setUser: (user: User | null) => void;
   logout: () => void;
+  loading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   setUser: () => {},
   logout: async () => {},
+  loading: true,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // ✅ Add loading state
 
   useEffect(() => {
     fetch("http://localhost:5000/api/v1/auth/me", {
@@ -32,6 +34,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         else setUser(null);
       })
       .catch(() => setUser(null))
+      .finally(() => setLoading(false));
   }, []);
 
   const logout = async () => {
@@ -48,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
