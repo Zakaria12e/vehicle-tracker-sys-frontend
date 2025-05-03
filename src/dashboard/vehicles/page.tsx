@@ -171,8 +171,10 @@ export default function VehiclesPage() {
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="idle">Idle</TabsTrigger>
             <TabsTrigger value="offline">Offline</TabsTrigger>
+            <TabsTrigger value="inactive">immobilized</TabsTrigger>
+            
+            
           </TabsList>
         </Tabs>
       </div>
