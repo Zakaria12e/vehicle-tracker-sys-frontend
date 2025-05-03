@@ -29,7 +29,7 @@ import {
   const statusColor: Record<string, string> = {
     moving: "bg-green-500",
     stopped: "bg-yellow-500",
-    immobilized: "bg-orange-500",
+    immobilized: "bg-blue-500",
     inactive: "bg-red-500",
   };
   
@@ -45,7 +45,6 @@ import {
     name,
     licensePlate,
     status,
-    speed,
     battery,
   }: VehicleCardProps) {
     return (
@@ -91,15 +90,14 @@ import {
           <div className="grid grid-cols-3 gap-3 text-sm">
             <div className="flex items-center gap-1">
               <div
-                className={`h-2 w-2 rounded-full ${
+                className={`h-2 w-2 pl-2 rounded-full ${
                   statusColor[status] || "bg-gray-400"
                 }`}
               />
               <span className="capitalize">{status}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span>{speed} km/h</span>
+             
             </div>
             <div className="flex items-center gap-1">
               <Battery className="h-4 w-4 text-muted-foreground" />

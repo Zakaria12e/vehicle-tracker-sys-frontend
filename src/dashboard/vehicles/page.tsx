@@ -73,7 +73,6 @@ export default function VehiclesPage() {
       setVehicleData({ name: "", model: "", plate: "", imei: "" });
       await fetchVehicles(); 
   
-      // Optionally: refresh vehicle list or close modal
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong.");
@@ -186,7 +185,7 @@ export default function VehiclesPage() {
       key={v._id}
       name={v.name}
       licensePlate={v.licensePlate}
-      status={v.currentStatus}
+      status={["moving", "stopped", "immobilized", "inactive"].includes(v.currentStatus) ? v.currentStatus as "moving" | "stopped" | "immobilized" | "inactive" : "inactive"}
       speed={v.lastLocation?.speed || 0}
       battery={v.battery || 100}
     />
