@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Truck, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+
 
 export default function LoginForm({
   className,
@@ -17,6 +19,8 @@ export default function LoginForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { setUser } = useAuth();
+
 
   const navigate = useNavigate();
 
@@ -39,9 +43,19 @@ export default function LoginForm({
       if (!res.ok) {
         throw new Error(data.message || "Login failed");
       }
+      const meRes = await fetch("http://localhost:5000/api/v1/auth/me", {
+        credentials: "include",
+      });
+  
+      const meData = await meRes.json();
+      if (meData.success) {
+        setUser(meData.data);
 
       toast.success("Logged in successfully 🎉");
       setTimeout(() => navigate("/dashboard"), 1500);
+    } else {
+      throw new Error("Failed to fetch user");
+    }
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
     } finally {
