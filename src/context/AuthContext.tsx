@@ -9,14 +9,12 @@ type User = {
 type AuthContextType = {
   user: User | null;
   setUser: (user: User | null) => void;
-  loading: boolean;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   setUser: () => {},
-  loading: true,
   logout: async () => {},
 });
 
@@ -34,7 +32,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         else setUser(null);
       })
       .catch(() => setUser(null))
-      .finally(() => setLoading(false));
   }, []);
 
   const logout = async () => {
@@ -51,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading ,logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

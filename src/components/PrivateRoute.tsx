@@ -3,9 +3,8 @@ import { useAuth } from "@/context/AuthContext";
 import { JSX } from "react";
 
 export default function PrivateRoute({ children }: { children: JSX.Element }) {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
-  if (loading) return <div className="text-center mt-10">Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
 
   return children;

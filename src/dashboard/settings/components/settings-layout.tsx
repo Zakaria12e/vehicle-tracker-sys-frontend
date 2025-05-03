@@ -2,12 +2,23 @@ import { Tabs,  TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { User, Lock, Bell, Globe, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from "@/context/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 interface SettingsLayoutProps {
   children: React.ReactNode
 }
 
 export function SettingsLayout({ children }: SettingsLayoutProps) {
+
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
+
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
       <div>
@@ -37,7 +48,7 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
               </TabsTrigger>
              
               <Separator className="my-4" />
-              <Button variant="ghost" className="justify-start cursor-pointer px-4 h-9 font-normal text-red-600">
+              <Button variant="ghost" className="justify-start cursor-pointer px-4 h-9 font-normal text-red-600" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Log out
               </Button>
