@@ -52,7 +52,7 @@ export default function Signup({
           navigate("/login");
         }, 1500);
       } else {
-        const errorMessage = data.message || "Registration failed.";
+        const errorMessage = data.error || "Registration failed.";
         toast.error(errorMessage);
       }
     } catch (err) {
