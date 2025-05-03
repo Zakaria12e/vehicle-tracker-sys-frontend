@@ -41,7 +41,7 @@ export default function LoginForm({
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error(data.error || "Login failed");
       }
       const meRes = await fetch("http://localhost:5000/api/v1/auth/me", {
         credentials: "include",
