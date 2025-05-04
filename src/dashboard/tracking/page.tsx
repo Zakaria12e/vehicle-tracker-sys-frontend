@@ -1,6 +1,12 @@
 import { useState, useEffect, Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -24,9 +30,10 @@ export default function TrackingPage() {
   const [showTraffic, setShowTraffic] = useState(false);
   const [showGeofences, setShowGeofences] = useState(true);
 
-  const selected = selectedVehicle === "all"
-    ? null
-    : vehicles.find((v) => v.imei === selectedVehicle);
+  const selected =
+    selectedVehicle === "all"
+      ? null
+      : vehicles.find((v) => v.imei === selectedVehicle);
 
   useEffect(() => {
     fetchVehicles();
@@ -40,6 +47,7 @@ export default function TrackingPage() {
         credentials: "include",
       });
       const data = await res.json();
+
       if (res.ok) {
         const processed = data.data.vehicles.map((v: any) => {
           const telemetry = v.telemetry || {};
@@ -55,11 +63,14 @@ export default function TrackingPage() {
             }
           }
 
+          const lat = telemetry.lat ?? 0;
+          const lon = telemetry.lon ?? 0;
+
           return {
             ...v,
             currentStatus: status,
-            lat: telemetry.lat ?? 0,
-            lon: telemetry.lon ?? 0,
+            lat,
+            lon,
             telemetry,
           };
         });
@@ -79,7 +90,9 @@ export default function TrackingPage() {
       <div className="flex items-center justify-between border-b p-4">
         <div>
           <h1 className="text-xl font-bold">Live Tracking</h1>
-          <p className="text-sm text-muted-foreground">Monitor your vehicles in real-time</p>
+          <p className="text-sm text-muted-foreground">
+            Monitor your vehicles in real-time
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
@@ -101,9 +114,8 @@ export default function TrackingPage() {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Map + Details */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] flex-1 overflow-hidden">
-        {/* Map */}
         <div className="relative h-[400px] md:h-full">
           <Suspense fallback={<MapLoading />}>
             <VehicleMap
@@ -113,7 +125,6 @@ export default function TrackingPage() {
           </Suspense>
         </div>
 
-        {/* Details Sidebar */}
         <div className="border-l overflow-auto p-4 bg-background">
           <h2 className="text-lg font-medium mb-4">Vehicle Details</h2>
 
@@ -121,7 +132,9 @@ export default function TrackingPage() {
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-semibold">{selected.name}</h3>
-                <p className="text-sm text-muted-foreground">{selected.licensePlate}</p>
+                <p className="text-sm text-muted-foreground">
+                  {selected.licensePlate}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -144,13 +157,13 @@ export default function TrackingPage() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">Speed</p>
-                  <p className="font-medium">{selected.telemetry.speed} km/h</p>
+                  <p className="font-medium">
+                    {selected.telemetry.speed} km/h
+                  </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Location</p>
-                  <p className="font-medium">
-                    {selected.lat}, {selected.lon}
-                  </p>
+                  <p className="text-xs text-muted-foreground">Battery</p>
+                  <p className="font-medium">{selected.telemetry.vehicleBattery} %</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">Ignition</p>
@@ -182,7 +195,9 @@ export default function TrackingPage() {
                   <div>
                     <div className="flex justify-between mb-1">
                       <Label htmlFor="refresh-interval">Refresh Interval</Label>
-                      <span className="text-xs text-muted-foreground">{refreshInterval}s</span>
+                      <span className="text-xs text-muted-foreground">
+                        {refreshInterval}s
+                      </span>
                     </div>
                     <Slider
                       id="refresh-interval"
@@ -209,31 +224,11 @@ export default function TrackingPage() {
                   </Button>
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Today's Activity</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Distance traveled</span>
-                    <span className="font-medium">78 km</span>
-                  </div>
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Average speed</span>
-                    <span className="font-medium">42 km/h</span>
-                  </div>
-                  <div className="flex justify-between border-b pb-2">
-                    <span>Max speed</span>
-                    <span className="font-medium">92 km/h</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Driving time</span>
-                    <span className="font-medium">1h 45m</span>
-                  </div>
-                </div>
-              </div>
             </div>
           ) : (
-            <p className="text-muted-foreground text-sm">Select a vehicle to view its details.</p>
+            <p className="text-muted-foreground text-sm">
+              Select a vehicle to view its details.
+            </p>
           )}
         </div>
       </div>
