@@ -10,7 +10,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Locate, Lock, AlertTriangle } from "lucide-react";
+import { Locate, Lock,Battery, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import VehicleMap from "@/components/VehicleMap";
 
@@ -161,9 +161,12 @@ export default function TrackingPage() {
                     {selected.telemetry.speed} km/h
                   </p>
                 </div>
-                <div className="space-y-1">
+                 <div className=" items-center gap-1">
                   <p className="text-xs text-muted-foreground">Battery</p>
-                  <p className="font-medium">{selected.telemetry.vehicleBattery} %</p>
+                  <div className="flex items-center gap-1">
+                  <Battery className="h-4 w-4 text-muted-foreground" />
+                  <p className="font-medium">{selected.telemetry.vehicleBattery}%</p>
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">Ignition</p>
@@ -196,7 +199,7 @@ export default function TrackingPage() {
                     <div className="flex justify-between mb-1">
                       <Label htmlFor="refresh-interval">Refresh Interval</Label>
                       <span className="text-xs text-muted-foreground">
-                        {refreshInterval}s
+                        {refreshInterval}
                       </span>
                     </div>
                     <Slider
