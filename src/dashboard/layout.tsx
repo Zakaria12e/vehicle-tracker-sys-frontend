@@ -1,14 +1,15 @@
-import React, { useState } from "react"
+import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { MapPin, Car, Clock, Bell, Settings, LogOut, Menu, Home, Shield, Map, BarChart, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useAuth } from "@/context/AuthContext"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+  const { user } = useAuth()
 
   const routes = [
     {
@@ -83,8 +84,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             
             <Link to="/dashboard/settings">
               <Avatar>
-              <AvatarImage src="/placeholder.svg" alt="User" />
-              <AvatarFallback>JD</AvatarFallback>
+                <AvatarImage
+                  src={`http://localhost:5000${user?.photo}`}
+                  alt={user?.name}
+                  crossOrigin="anonymous"
+                />
+                <AvatarFallback>{user?.name?.[0]?.toUpperCase() ?? "?"}</AvatarFallback>
               </Avatar>
             </Link>
             <Sheet>
@@ -108,8 +113,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       className={cn(
                         "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
                         route.active ? "bg-muted text-foreground" : "text-muted-foreground",
-                      )}
-                    >
+                      )}>
                       <route.icon className="h-4 w-4" />
                       {route.label}
                     </Link>
@@ -137,8 +141,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
                   route.active ? "bg-muted text-foreground" : "text-muted-foreground",
-                )}
-              >
+                )}>
                 <route.icon className="h-4 w-4" />
                 {route.label}
               </Link>
