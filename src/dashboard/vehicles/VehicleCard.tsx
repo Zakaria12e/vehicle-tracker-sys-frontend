@@ -29,8 +29,8 @@ import {
   const statusColor: Record<string, string> = {
     moving: "bg-green-500",
     stopped: "bg-yellow-500",
-    immobilized: "bg-blue-500",
-    inactive: "bg-red-500",
+    immobilized: "bg-red-500",
+    inactive: "bg-gray-500",
   };
   
   type VehicleCardProps = {

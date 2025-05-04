@@ -17,7 +17,7 @@ import GeofencingPage from "./dashboard/geofancing/page";
 import LoginPage from "./login/login";
 import SignupPage from "./signup/signup";
 import "./App.css";
-
+import "leaflet/dist/leaflet.css"
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

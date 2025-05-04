@@ -5,3 +5,28 @@
   padding: 0.7rem;
   font-family: 'Inter', sans-serif;
 }
+.leaflet-popup-tip {
+  background: white !important;
+}
+.leaflet-popup-content-wrapper {
+  background: white !important;
+  color: black;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  padding: 0;
+}
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+
+.dark .leaflet-popup-tip {
+  background: #000000 !important; /* Tailwind gray-800 */
+}
+
+.dark .leaflet-popup-content-wrapper {
+  background: #0000006c !important; /* Tailwind gray-800 */
+  color: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
