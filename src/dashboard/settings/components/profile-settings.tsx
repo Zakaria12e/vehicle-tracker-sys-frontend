@@ -67,7 +67,7 @@ export function ProfileSettings() {
           <Avatar className="h-16 w-16">
           <AvatarImage
   src={`http://localhost:5000${user?.photo}`}
-  alt="User"
+  alt="User" crossOrigin="anonymous"
 />
 
 
