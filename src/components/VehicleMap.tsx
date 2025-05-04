@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+
 import {
   MapContainer,
   TileLayer,
@@ -123,10 +124,12 @@ const VehicleMap: React.FC<Props> = ({ devices, selectedVehicle }) => {
       zoom={6}
       className="h-full w-full z-0 rounded-lg shadow-sm"
     >
-      <TileLayer
-        attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <TileLayer
+  attribution='&copy; <a href="https://www.esri.com/">Esri</a> & contributors'
+  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+/>
+
+
 
       <MapAutoZoom vehicle={focusedVehicle} isAllSelected={selectedVehicle === "all"} />
 
