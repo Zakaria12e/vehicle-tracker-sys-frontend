@@ -134,7 +134,7 @@ const VehicleMap: React.FC<Props & { triggerZoom: boolean }> = ({ devices, selec
       <MapAutoZoom
         vehicle={focusedVehicle}
         isAllSelected={selectedVehicle === "all"}
-        triggerZoom={triggerZoom} // Use triggerZoom to control zooming
+        triggerZoom={triggerZoom}
       />
 
       {visibleDevices.map((v) => (
