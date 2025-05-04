@@ -2,14 +2,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Car, AlertTriangle, Clock, Battery, MapPin, ArrowUpRight, ShieldAlert } from "lucide-react"
-
+import { useAuth } from "@/context/AuthContext"
+import { useState } from "react"
 export default function DashboardPage() {
+   const { user } = useAuth()
+
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, name</p>
+          <p className="text-muted-foreground">Welcome back, {user?.name?.split(" ")[0]}</p>
         </div>
        
       </div>
