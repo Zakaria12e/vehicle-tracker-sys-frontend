@@ -21,10 +21,11 @@ type Props = {
 
 const defaultCenter: [number, number] = [31.7917, -7.0926];
 
-const MapAutoZoom = ({ vehicle, isAllSelected }: { vehicle: any; isAllSelected: boolean }) => {
-    const map = useMap();
-  
-    useEffect(() => {
+const MapAutoZoom = ({ vehicle, isAllSelected, triggerZoom }: { vehicle: any; isAllSelected: boolean; triggerZoom: boolean }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (triggerZoom) {
       if (isAllSelected) {
         map.flyTo(defaultCenter, 6, {
           animate: true,
@@ -38,10 +39,11 @@ const MapAutoZoom = ({ vehicle, isAllSelected }: { vehicle: any; isAllSelected: 
           easeLinearity: 0.25,
         });
       }
-    }, [vehicle, isAllSelected, map]);
-  
-    return null;
-  };
+    }
+  }, [vehicle, isAllSelected, triggerZoom, map]);
+
+  return null;
+};
   
 
 const createCustomMarker = (status: string) => {
@@ -108,7 +110,7 @@ const getStatusBadge = (status: string) => {
   }
 };
 
-const VehicleMap: React.FC<Props> = ({ devices, selectedVehicle }) => {
+const VehicleMap: React.FC<Props & { triggerZoom: boolean }> = ({ devices, selectedVehicle, triggerZoom }) => {
   const visibleDevices = devices.filter(
     (v) => selectedVehicle === "all" || v.imei === selectedVehicle
   );
@@ -124,15 +126,16 @@ const VehicleMap: React.FC<Props> = ({ devices, selectedVehicle }) => {
       zoom={6}
       className="h-full w-full z-0 rounded-lg shadow-sm"
     >
-    <TileLayer
-  attribution='&copy; <a href="https://www.esri.com/">Esri</a> & contributors'
-  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
-/>
+      <TileLayer
+        attribution='&copy; <a href="https://www.esri.com/">Esri</a> & contributors'
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+      />
 
-
-
-      <MapAutoZoom vehicle={focusedVehicle} isAllSelected={selectedVehicle === "all"} />
-
+      <MapAutoZoom
+        vehicle={focusedVehicle}
+        isAllSelected={selectedVehicle === "all"}
+        triggerZoom={triggerZoom} // Use triggerZoom to control zooming
+      />
 
       {visibleDevices.map((v) => (
         <Marker

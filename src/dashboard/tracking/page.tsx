@@ -29,6 +29,12 @@ export default function TrackingPage() {
   const [refreshInterval, setRefreshInterval] = useState(5);
   const [showTraffic, setShowTraffic] = useState(false);
   const [showGeofences, setShowGeofences] = useState(true);
+  const [triggerZoom, setTriggerZoom] = useState(false);
+
+  const handleLocateClick = () => {
+    setTriggerZoom(true);
+    setTimeout(() => setTriggerZoom(false), 1000); // Reset after triggering zoom
+  };
 
   const selected =
     selectedVehicle === "all"
@@ -108,7 +114,7 @@ export default function TrackingPage() {
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" onClick={handleLocateClick}>
             <Locate className="h-4 w-4" />
           </Button>
         </div>
@@ -121,6 +127,7 @@ export default function TrackingPage() {
             <VehicleMap
               devices={vehicles.filter((v) => v.lat !== 0 && v.lon !== 0)}
               selectedVehicle={selectedVehicle}
+              triggerZoom={triggerZoom}
             />
           </Suspense>
         </div>
