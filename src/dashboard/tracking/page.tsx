@@ -36,7 +36,7 @@ export default function TrackingPage() {
 
   const handleLocateClick = () => {
     setTriggerZoom(true);
-    setTimeout(() => setTriggerZoom(false), 1000); // Reset after triggering zoom
+    setTimeout(() => setTriggerZoom(false), 1000);
   };
 
   const selected =

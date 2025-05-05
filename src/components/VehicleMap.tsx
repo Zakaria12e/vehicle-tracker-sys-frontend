@@ -127,9 +127,17 @@ const VehicleMap: React.FC<Props & { triggerZoom: boolean }> = ({ devices, selec
       className="h-full w-full z-0 rounded-lg shadow-sm"
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.esri.com/">Esri</a> & contributors'
-        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
-      />
+    className="block dark:hidden"
+    attribution='&copy; <a href="https://www.esri.com/">Esri</a> & contributors'
+    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+  />
+
+  {/* Dark theme tile layer */}
+  <TileLayer
+    className="hidden dark:block"
+    attribution='&copy; <a href="https://carto.com/">Carto</a>'
+    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+  />
 
       <MapAutoZoom
         vehicle={focusedVehicle}
