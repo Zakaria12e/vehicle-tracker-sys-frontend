@@ -86,12 +86,13 @@ import {
             </DropdownMenu>
           </div>
           <CardDescription>
-            {licensePlate} • Last updated {getRelativeTime(timestamp)}
+            {licensePlate} • Updated {getRelativeTime(timestamp)}
           </CardDescription>
         </CardHeader>
   
         <CardContent>
-          <div className="grid grid-cols-3 gap-3 text-sm">
+  <div className="grid grid-cols-3  sm:grid-cols-1 lg:grid-cols-3 gap-4 text-sm">
+
             <div className="flex items-center gap-1">
               <div
                 className={`h-2 w-2 pl-2 rounded-full ${

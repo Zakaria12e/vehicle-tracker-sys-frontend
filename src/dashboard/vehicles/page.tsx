@@ -28,7 +28,6 @@ interface Vehicle {
     vehicleBattery: number
     ignition: boolean
     speed: number
-    timestamp: string
   }
 }
 
@@ -70,9 +69,7 @@ export default function VehiclesPage() {
               vehicleBattery: v.telemetry?.vehicleBattery ?? 0,
               ignition: v.telemetry?.ignition ?? false,
               speed: v.telemetry?.speed ?? 0,
-              timestamp: v.telemetry?.timestamp ?? null,
             },
-            
           }
         })
         setVehicles(updated)
@@ -163,7 +160,8 @@ export default function VehiclesPage() {
       </div>
 
       {/* Search + Filters */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input type="search" placeholder="Search by name or model..." className="w-full pl-8" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
@@ -180,7 +178,8 @@ export default function VehiclesPage() {
       </div>
 
       {/* Vehicle Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+
         {loadingVehicles
           ? Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="space-y-2 p-4 border rounded-lg shadow">
@@ -198,7 +197,7 @@ export default function VehiclesPage() {
                   status={v.currentStatus}
                   speed={v.telemetry.speed}
                   battery={v.telemetry.vehicleBattery}
-                  timestamp={v.telemetry.timestamp}
+                  timestamp={new Date().toLocaleString()}
                 />
               </div>
             ))}
@@ -206,7 +205,8 @@ export default function VehiclesPage() {
 
       {/* Details Panel */}
       {selectedVehicle && (
-        <div className="mt-6 border rounded-lg p-6 bg-background shadow">
+        <div className="mt-6 border rounded-lg p-4 sm:p-6 bg-background shadow w-full">
+
           <h2 className="text-lg font-semibold">{selectedVehicle.name}</h2>
           <p className="text-sm text-muted-foreground">{selectedVehicle.licensePlate}</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 text-sm">
