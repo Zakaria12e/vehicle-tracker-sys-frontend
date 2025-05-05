@@ -13,6 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import { Locate, Lock,Battery, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import VehicleMap from "@/components/VehicleMap";
+import  getRelativeTime  from "@/components/relativeTime";
 
 const MapLoading = () => (
   <div className="h-full w-full flex items-center justify-center bg-muted/20">
@@ -139,9 +140,11 @@ export default function TrackingPage() {
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-semibold">{selected.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {selected.licensePlate}
-                </p>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span>{selected.licensePlate}</span>
+                  <span>• {getRelativeTime(selected.telemetry.timestamp)}</span>
+                </div>
+                
               </div>
 
               <div className="grid grid-cols-2 gap-4">
