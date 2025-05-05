@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -16,28 +18,18 @@ export default function ForgotPassword() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/forgotpassword", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+      const res = await axios.post("http://localhost:5000/api/v1/auth/forgotpassword", {
+        email,
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to send reset email");
-      }
-
-      if (res.ok) {
-        toast.success("Password reset email sent successfully 🎉");
-        setEmailSent(true);
-      }
+  
+      toast.success("Password reset email sent successfully 🎉");
+      setEmailSent(true);
     } catch (err: any) {
-      toast.error(err.message || "Something went wrong");
+      const message =
+        err.response?.data?.error || err.message || "Something went wrong";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
