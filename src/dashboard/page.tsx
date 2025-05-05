@@ -6,7 +6,14 @@ import VehicleMap from "@/components/VehicleMap";
 
 export default function DashboardPage() {
    const { user } = useAuth()
-
+   const [vehicleStats, setVehicleStats] = useState({
+    total: 0,
+    lastMonthCount: 0,
+    currentMonthCount: 0,
+    difference: "+0",
+  });
+  
+  
    const [vehicles, setVehicles] = useState<any[]>([]);
 
 useEffect(() => {
@@ -55,6 +62,26 @@ useEffect(() => {
     }
   };
 
+
+  const fetchStats = async () => {
+    const API_URL = import.meta.env.VITE_API_URL;
+    try {
+      const res = await fetch(`${API_URL}/vehicles/stats`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok && data?.data) {
+        setVehicleStats(data.data);
+      } else {
+        console.error("Failed to fetch vehicle stats");
+      }
+    } catch (error) {
+      console.error("Error fetching vehicle stats:", error);
+    }
+  };
+  
+  
+  fetchStats();
   fetchVehicles();
 }, []);
 
@@ -71,18 +98,22 @@ useEffect(() => {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium">
-              Total Vehicles
-            </CardTitle>
-            <Car className="h-4 w-4 text-blue-600 dark:text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">+0 from last month</p>
-          </CardContent>
-        </Card>
+      <Card>
+  <CardHeader className="flex flex-row items-center justify-between">
+    <CardTitle className="text-sm font-medium">
+      Total Vehicles
+    </CardTitle>
+    <Car className="h-4 w-4 text-blue-600 dark:text-blue-500" />
+  </CardHeader>
+  <CardContent>
+    <div className="text-2xl font-bold">{vehicleStats.total}</div>
+    <p className="text-xs text-muted-foreground">
+      {vehicleStats.difference} from last month
+    </p>
+  </CardContent>
+</Card>
+
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
