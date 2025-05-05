@@ -194,12 +194,17 @@ export default function VehiclesPage() {
           : filtered.map((v) => (
               <div key={v._id} onClick={() => setSelectedVehicle(v)} className="cursor-pointer">
                 <VehicleCard
+                  id={v._id}
                   name={v.name}
                   licensePlate={v.licensePlate}
                   status={v.currentStatus}
                   speed={v.telemetry.speed}
                   battery={v.telemetry.vehicleBattery}
                   timestamp={v.telemetry.timestamp}
+                  onDelete={(id) => {
+                    setVehicles((prev) => prev.filter((veh) => veh._id !== id));
+                    if (selectedVehicle?._id === id) setSelectedVehicle(null);
+                  }}
                 />
               </div>
             ))}

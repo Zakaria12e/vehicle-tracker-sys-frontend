@@ -16,6 +16,15 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu";
   import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogDescription,
+  } from "@/components/ui/dialog";
+  import {
     MoreHorizontal,
     Pencil,
     MapPin,
@@ -24,6 +33,7 @@ import {
     ArrowUpRight,
     Battery,
   } from "lucide-react";
+  import { useState } from "react";
   import  getRelativeTime  from "@/components/relativeTime";
   // Status color mapping
   const statusColor: Record<string, string> = {
@@ -34,90 +44,145 @@ import {
   };
   
   type VehicleCardProps = {
+    id: string;
     name: string;
     licensePlate: string;
     status: "moving" | "stopped" | "immobilized" | "inactive";
     speed: number;
     battery: number;
     timestamp: string;
+    onDelete?: (id: string) => void;
   };
   
 
   
   export function VehicleCard({
+    id,
     name,
     licensePlate,
     status,
     battery,
     timestamp,
+    onDelete,
   }: VehicleCardProps) {
-    return (
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">{name}</CardTitle>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <MapPin className="mr-2 h-4 w-4" />
-                  Track
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Clock className="mr-2 h-4 w-4" />
-                  History
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <CardDescription>
-            {licensePlate} • Updated {getRelativeTime(timestamp)}
-          </CardDescription>
-        </CardHeader>
+    const [openDialog, setOpenDialog] = useState(false);
+    const [deleting, setDeleting] = useState(false);
   
-        <CardContent>
-  <div className="grid grid-cols-3  sm:grid-cols-1 lg:grid-cols-3 gap-4 text-sm">
+    const handleDelete = async () => {
+      setDeleting(true);
+      try {
+        const res = await fetch(`http://localhost:5000/api/v1/vehicles/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.message || "Failed to delete vehicle.");
+        }
+        onDelete?.(id);
+        setOpenDialog(false);
+      } catch (err) {
+        console.error(err);
+        alert("Failed to delete vehicle.");
+      } finally {
+        setDeleting(false);
+      }
+    };
 
-            <div className="flex items-center gap-1">
-              <div
-                className={`h-2 w-2 pl-2 rounded-full ${
-                  statusColor[status] || "bg-gray-400"
-                }`}
-              />
-              <span className="capitalize">{status}</span>
+    return (
+      <>
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">{name}</CardTitle>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <MapPin className="mr-2 h-4 w-4" />
+                    Track
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Clock className="mr-2 h-4 w-4" />
+                    History
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="text-red-600"
+                    onClick={() => setOpenDialog(true)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            <div className="flex items-center gap-1">
-             
+            <CardDescription>
+              {licensePlate} • Updated {getRelativeTime(timestamp)}
+            </CardDescription>
+          </CardHeader>
+    
+          <CardContent>
+            <div className="grid grid-cols-3 sm:grid-cols-1 lg:grid-cols-3 gap-4 text-sm">
+              <div className="flex items-center gap-1">
+                <div
+                  className={`h-2 w-2 pl-2 rounded-full ${
+                    statusColor[status] || "bg-gray-400"
+                  }`}
+                />
+                <span className="capitalize">{status}</span>
+              </div>
+              <div className="flex items-center gap-1" />
+              <div className="flex items-center gap-1">
+                <Battery className="h-4 w-4 text-muted-foreground" />
+                <span>{battery}%</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <Battery className="h-4 w-4 text-muted-foreground" />
-              <span>{battery}%</span>
-            </div>
-          </div>
-        </CardContent>
-  
-        <CardFooter className="pt-0">
-          <Button variant="outline" size="sm" className="w-full gap-1">
-            <ArrowUpRight className="h-3 w-3" />
-            View Details
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardContent>
+    
+          <CardFooter className="pt-0">
+            <Button variant="outline" size="sm" className="w-full gap-1">
+              <ArrowUpRight className="h-3 w-3" />
+              View Details
+            </Button>
+          </CardFooter>
+        </Card>
+    
+        {/* DELETE DIALOG - Moved inside the return block */}
+        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Vehicle</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete <strong>{name}</strong>? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setOpenDialog(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                {deleting ? "Deleting..." : "Delete"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </>
     );
+    
   }
   
