@@ -16,6 +16,8 @@ import SettingsPage from "./dashboard/settings/page";
 import GeofencingPage from "./dashboard/geofancing/page";
 import LoginPage from "./login/login";
 import SignupPage from "./signup/signup";
+import ForgotPassword from "./login/forgotPassword";
+import ResetPassword from "./login/resetPassword";
 import "./App.css";
 import "leaflet/dist/leaflet.css"
 function App() {
@@ -27,7 +29,9 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+              
             <Route
               path="/dashboard"
               element={

@@ -1,36 +1,43 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function ForgotPassword() {
-  const [email, setEmail] = useState("");
+export default function ResetPassword() {
+  const { token } = useParams();
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/forgotpassword", {
-        method: "POST",
+      const res = await fetch(`http://localhost:5000/api/v1/auth/resetpassword/${token}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to send reset email");
+        throw new Error(data.error || "Failed to reset password");
       }
 
-      if (res.ok) {
-        toast.success("Password reset email sent successfully 🎉. Please check your email.");
-      }
+      toast.success("Password reset successfully 🎉");
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
     } finally {
@@ -45,23 +52,33 @@ export default function ForgotPassword() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="text-center">
-                <h1 className="text-2xl font-bold">Forgot Password</h1>
+                <h1 className="text-2xl font-bold">Reset Password</h1>
                 <p className="text-muted-foreground text-sm">
-                  Enter your email to reset your password
+                  Enter your new password below
                 </p>
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="password">New Password</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="grid gap-3">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Sending..." : "Send Reset Email"}
+                {loading ? "Resetting..." : "Reset Password"}
               </Button>
             </form>
           </CardContent>
