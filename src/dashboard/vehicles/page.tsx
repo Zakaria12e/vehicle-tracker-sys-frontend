@@ -150,11 +150,11 @@ export default function VehiclesPage() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
-                <div><Label htmlFor="name">Make</Label><Input id="name" value={vehicleData.name} onChange={handleInputChange} /></div>
-                <div><Label htmlFor="model">Model</Label><Input id="model" value={vehicleData.model} onChange={handleInputChange} /></div>
+                <div className="flex flex-col space-y-2"><Label htmlFor="name">Make</Label><Input id="name" value={vehicleData.name} onChange={handleInputChange} /></div>
+                <div className="flex flex-col space-y-2"><Label htmlFor="model">Model</Label><Input id="model" value={vehicleData.model} onChange={handleInputChange} /></div>
               </div>
-              <div><Label htmlFor="plate">License Plate</Label><Input id="plate" value={vehicleData.plate} onChange={handleInputChange} /></div>
-              <div><Label htmlFor="imei">IMEI Number</Label><Input id="imei" value={vehicleData.imei} onChange={handleInputChange} /></div>
+              <div className="flex flex-col space-y-2"><Label htmlFor="plate">License Plate</Label><Input id="plate" value={vehicleData.plate} onChange={handleInputChange} /></div>
+              <div className="flex flex-col space-y-2"><Label htmlFor="imei">IMEI Number</Label><Input id="imei" value={vehicleData.imei} onChange={handleInputChange} /></div>
             </div>
             <DialogFooter><Button onClick={handleAddVehicle} disabled={loading}>{loading ? "Adding..." : "Add Vehicle"}</Button></DialogFooter>
           </DialogContent>
