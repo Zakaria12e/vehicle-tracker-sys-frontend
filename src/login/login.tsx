@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , Link} from "react-router-dom";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Truck, MapPin } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
 
@@ -90,12 +89,12 @@ export default function LoginForm({
                   <div className="grid gap-3">
                     <div className="flex items-center">
                       <Label htmlFor="password">Password</Label>
-                      <a
-                        href="/forgot-password"
+                      <Link
+                        to="/forgot-password"
                         className="ml-auto text-sm underline-offset-2 hover:underline"
                       >
                         Forgot your password?
-                      </a>
+                      </Link>
                     </div>
                     <Input
                       id="password"
