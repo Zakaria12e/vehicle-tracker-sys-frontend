@@ -1,13 +1,14 @@
 @import url('https://rsms.me/inter/inter.css');
 
-
 #root {
   padding: 1rem;
   font-family: 'Inter', sans-serif;
 }
+
 .leaflet-popup-tip {
   background: white !important;
 }
+
 .leaflet-popup-content-wrapper {
   background: white !important;
   color: black;
@@ -15,11 +16,16 @@
   border-radius: 15px;
   padding: 0;
 }
+
 .leaflet-popup-content {
   margin: 0 !important;
   padding: 0 !important;
 }
 
+/* Ensure dialogs appear above the map */
+[role="dialog"] {
+  z-index: 1000 !important;
+}
 
 .dark .leaflet-popup-tip {
   background: #000000 !important; /* Tailwind gray-800 */
