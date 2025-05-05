@@ -143,7 +143,7 @@ export default function VehiclesPage() {
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-1"><Plus className="h-4 w-4" /> Add Vehicle</Button>
+            <Button className="gap-1 cursor-pointer"><Plus className="h-4 w-4" /> Add Vehicle</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -158,7 +158,7 @@ export default function VehiclesPage() {
               <div className="flex flex-col space-y-2"><Label htmlFor="plate">License Plate</Label><Input id="plate" value={vehicleData.plate} onChange={handleInputChange} /></div>
               <div className="flex flex-col space-y-2"><Label htmlFor="imei">IMEI Number</Label><Input id="imei" value={vehicleData.imei} onChange={handleInputChange} /></div>
             </div>
-            <DialogFooter><Button onClick={handleAddVehicle} disabled={loading}>{loading ? "Adding..." : "Add Vehicle"}</Button></DialogFooter>
+            <DialogFooter><Button className="cursor-pointer" onClick={handleAddVehicle} disabled={loading}>{loading ? "Adding..." : "Add Vehicle"}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
