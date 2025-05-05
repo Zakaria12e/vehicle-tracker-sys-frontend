@@ -1,12 +1,11 @@
 import React from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation , useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { MapPin, Car, Clock, Bell, Settings, LogOut, Menu, Home, Shield, Map, BarChart, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useAuth } from "@/context/AuthContext"
-
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const { user } = useAuth()
@@ -68,6 +67,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     },
   ]
 
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -119,7 +125,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </Link>
                   ))}
                   <Link
-                    to="/logout"
+                    to="#"
+                    onClick={handleLogout}
                     className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
                   >
                     <LogOut className="h-4 w-4" />
