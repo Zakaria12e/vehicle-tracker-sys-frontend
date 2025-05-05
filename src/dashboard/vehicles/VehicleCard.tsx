@@ -34,6 +34,7 @@ import {
     Battery,
   } from "lucide-react";
   import { useState } from "react";
+  import { useNavigate } from "react-router-dom";
   import  getRelativeTime  from "@/components/relativeTime";
   // Status color mapping
   const statusColor: Record<string, string> = {
@@ -45,6 +46,7 @@ import {
   
   type VehicleCardProps = {
     id: string;
+    imei: string;
     name: string;
     licensePlate: string;
     status: "moving" | "stopped" | "immobilized" | "inactive";
@@ -58,6 +60,7 @@ import {
   
   export function VehicleCard({
     id,
+    imei,
     name,
     licensePlate,
     status,
@@ -67,7 +70,8 @@ import {
   }: VehicleCardProps) {
     const [openDialog, setOpenDialog] = useState(false);
     const [deleting, setDeleting] = useState(false);
-  
+    const navigate = useNavigate();
+
     const handleDelete = async () => {
       setDeleting(true);
       try {
@@ -89,6 +93,10 @@ import {
       }
     };
 
+    const handleTrack = () => {
+      navigate(`/track/${imei}`); // Pass the IMEI to the track page
+    };
+
     return (
       <>
         <Card>
@@ -108,7 +116,7 @@ import {
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleTrack}>
                     <MapPin className="mr-2 h-4 w-4" />
                     Track
                   </DropdownMenuItem>
@@ -185,4 +193,3 @@ import {
     );
     
   }
-  

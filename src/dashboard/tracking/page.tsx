@@ -14,6 +14,7 @@ import { Locate, Lock,Battery, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import VehicleMap from "@/components/VehicleMap";
 import  getRelativeTime  from "@/components/relativeTime";
+import { useParams } from "react-router-dom";
 
 const MapLoading = () => (
   <div className="h-full w-full flex items-center justify-center bg-muted/20">
@@ -25,8 +26,9 @@ const MapLoading = () => (
 );
 
 export default function TrackingPage() {
+  const { imei } = useParams();
   const [vehicles, setVehicles] = useState<any[]>([]);
-  const [selectedVehicle, setSelectedVehicle] = useState("all");
+  const [selectedVehicle, setSelectedVehicle] = useState(imei || "all"); // Default to the IMEI if provided
   const [refreshInterval, setRefreshInterval] = useState(5);
   const [showTraffic, setShowTraffic] = useState(false);
   const [showGeofences, setShowGeofences] = useState(true);

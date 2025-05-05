@@ -79,7 +79,7 @@ function App() {
                   <DashboardLayout>
                     <GeofencingPage />
                   </DashboardLayout>
-                </PrivateRoute>
+                </PrivateRoute> 
               }
             />
             <Route
@@ -118,6 +118,16 @@ function App() {
                 <PrivateRoute>
                   <DashboardLayout>
                     <SettingsPage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/track/:imei"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <TrackingPage />
                   </DashboardLayout>
                 </PrivateRoute>
               }

@@ -22,6 +22,7 @@ interface Vehicle {
   _id: string
   name: string
   model: string
+  imei: string
   licensePlate: string
   currentStatus: "moving" | "stopped" | "inactive" | "immobilized"
   telemetry: {
@@ -64,6 +65,7 @@ export default function VehiclesPage() {
             _id: v._id,
             name: v.name,
             model: v.model,
+            imei: v.imei,
             licensePlate: v.licensePlate,
             currentStatus: status,
             telemetry: {
@@ -196,6 +198,7 @@ export default function VehiclesPage() {
                 <VehicleCard
                   id={v._id}
                   name={v.name}
+                  imei={v.imei}
                   licensePlate={v.licensePlate}
                   status={v.currentStatus}
                   speed={v.telemetry.speed}
