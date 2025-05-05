@@ -17,6 +17,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { VehicleCard } from "./VehicleCard"
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface Vehicle {
   _id: string
@@ -46,7 +47,7 @@ export default function VehiclesPage() {
   const fetchVehicles = async () => {
     setLoadingVehicles(true)
     try {
-      const res = await fetch("http://localhost:5000/api/v1/vehicles", { credentials: "include" })
+      const res = await fetch(`${API_URL}/vehicles`, { credentials: "include" })
       const data = await res.json()
       if (res.ok) {
         const updated = data.data.vehicles.map((v: any) => {
@@ -95,7 +96,7 @@ export default function VehiclesPage() {
   const handleAddVehicle = async () => {
     setLoading(true)
     try {
-      const res = await fetch("http://localhost:5000/api/v1/vehicles", {
+      const res = await fetch(`${API_URL}/vehicles`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
