@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
-import { Plus, Search, Power, AlertTriangle } from "lucide-react"
+import { Plus, Search} from "lucide-react"
 import {
   Dialog,
   DialogContent,
