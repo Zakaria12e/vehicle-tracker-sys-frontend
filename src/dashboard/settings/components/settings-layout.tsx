@@ -20,8 +20,8 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 p-4 md:p-8">
-      <div className="text-center">
+    <div className="flex flex-col gap-6 p-4 md:p-8">
+      <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground">Manage your account settings and preferences</p>
       </div>
@@ -30,15 +30,15 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-1/4">
             <TabsList className="grid grid-cols-2 md:flex md:flex-col h-auto p-0 bg-transparent gap-2 md:gap-0 md:space-y-2">
-              <TabsTrigger value="profile" className="justify-center cursor-pointer px-4 py-2 h-9 w-full md:w-[150px] data-[state=active]:bg-muted hover:bg-muted transition-colors">
+              <TabsTrigger value="profile" className="justify-start cursor-pointer px-4 py-2 h-9 w-full md:w-[150px] data-[state=active]:bg-muted hover:bg-muted transition-colors">
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </TabsTrigger>
-              <TabsTrigger value="security" className="justify-center cursor-pointer px-4 py-2 h-9 w-full md:w-[150px] data-[state=active]:bg-muted hover:bg-muted transition-colors">
+              <TabsTrigger value="security" className="justify-start cursor-pointer px-4 py-2 h-9 w-full md:w-[150px] data-[state=active]:bg-muted hover:bg-muted transition-colors">
                 <Lock className="h-4 w-4 mr-2" />
                 Security
               </TabsTrigger>
-              <TabsTrigger value="notifications" className="justify-center px-4 cursor-pointer py-2 h-9 w-full md:w-[150px] data-[state=active]:bg-muted hover:bg-muted transition-colors">
+              <TabsTrigger value="notifications" className="justify-start px-4 cursor-pointer py-2 h-9 w-full md:w-[150px] data-[state=active]:bg-muted hover:bg-muted transition-colors">
                 <Bell className="h-4 w-4 mr-2" />
                 Notifications
               </TabsTrigger>
