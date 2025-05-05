@@ -94,7 +94,8 @@ export default function TrackingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between border-b p-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b p-4">
+
         <div>
           <h1 className="text-xl font-bold">Live Tracking</h1>
           <p className="text-sm text-muted-foreground">
@@ -122,7 +123,8 @@ export default function TrackingPage() {
       </div>
 
       {/* Map + Details */}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] flex-1 overflow-hidden">
+      <div className="flex flex-col md:grid md:grid-cols-[1fr_320px] flex-1 overflow-hidden">
+
         <div className="relative h-[400px] md:h-full">
           <Suspense fallback={<MapLoading />}>
             <VehicleMap
@@ -133,7 +135,8 @@ export default function TrackingPage() {
           </Suspense>
         </div>
 
-        <div className="border-l overflow-auto p-4 bg-background">
+        <div className="border-t md:border-t-0 md:border-l overflow-auto p-4 bg-background">
+
           <h2 className="text-lg font-medium mb-4">Vehicle Details</h2>
 
           {selected ? (
