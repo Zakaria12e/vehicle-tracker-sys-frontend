@@ -181,37 +181,47 @@ export default function VehiclesPage() {
         </Tabs>
       </div>
 
-      {/* Vehicle Cards */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-
-        {loadingVehicles
-          ? Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="space-y-2 p-4 border rounded-lg shadow">
-                <Skeleton className="h-6 w-1/2" />
-                <Skeleton className="h-4 w-1/3" />
-                <Skeleton className="h-4 w-1/4" />
-                <Skeleton className="h-10 w-full mt-3" />
-              </div>
-            ))
-          : filtered.map((v) => (
-              <div key={v._id} onClick={() => setSelectedVehicle(v)} className="cursor-pointer">
-                <VehicleCard
-                  id={v._id}
-                  name={v.name}
-                  imei={v.imei}
-                  licensePlate={v.licensePlate}
-                  status={v.currentStatus}
-                  speed={v.telemetry.speed}
-                  battery={v.telemetry.vehicleBattery}
-                  timestamp={v.telemetry.timestamp}
-                  onDelete={(id) => {
-                    setVehicles((prev) => prev.filter((veh) => veh._id !== id));
-                    if (selectedVehicle?._id === id) setSelectedVehicle(null);
-                  }}
-                />
-              </div>
-            ))}
+   {/* Vehicle Cards */}
+<div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+  {loadingVehicles ? (
+    Array.from({ length: 3 }).map((_, i) => (
+      <div key={i} className="space-y-2 p-4 border rounded-lg shadow">
+        <Skeleton className="h-6 w-1/2" />
+        <Skeleton className="h-4 w-1/3" />
+        <Skeleton className="h-4 w-1/4" />
+        <Skeleton className="h-10 w-full mt-3" />
       </div>
+    ))
+  ) : vehicles.length === 0 ? (
+    <p className="text-muted-foreground col-span-full text-center py-10">
+      No vehicles available. Click "Add Vehicle" to get started.
+    </p>
+  ) : filtered.length === 0 ? (
+    <p className="text-muted-foreground col-span-full text-center py-10">
+      No vehicles found for <strong>{selectedTab}</strong> status or search filter.
+    </p>
+  ) : (
+    filtered.map((v) => (
+      <div key={v._id} onClick={() => setSelectedVehicle(v)} className="cursor-pointer">
+        <VehicleCard
+          id={v._id}
+          name={v.name}
+          imei={v.imei}
+          licensePlate={v.licensePlate}
+          status={v.currentStatus}
+          speed={v.telemetry.speed}
+          battery={v.telemetry.vehicleBattery}
+          timestamp={v.telemetry.timestamp}
+          onDelete={(id) => {
+            setVehicles((prev) => prev.filter((veh) => veh._id !== id))
+            if (selectedVehicle?._id === id) setSelectedVehicle(null)
+          }}
+        />
+      </div>
+    ))
+  )}
+</div>
+
 
       {/* Details Panel */}
       {selectedVehicle && (
