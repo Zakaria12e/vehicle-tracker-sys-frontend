@@ -4,10 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const navigate = useNavigate();
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,7 +33,8 @@ export default function ForgotPassword() {
       }
 
       if (res.ok) {
-        toast.success("Password reset email sent successfully 🎉. Please check your email.");
+        toast.success("Password reset email sent successfully 🎉");
+        setEmailSent(true);
       }
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
@@ -64,6 +69,19 @@ export default function ForgotPassword() {
                 {loading ? "Sending..." : "Send Reset Email"}
               </Button>
             </form>
+            {emailSent && (
+              <div className="mt-4 text-sm text-center text-muted-foreground bg-card rounded-md p-2">
+                Didn’t see the email? Check your <strong>spam</strong> folder.
+              </div>
+            )}
+            <div className="text-center mt-4">
+              <button
+                onClick={() => navigate("/login")}
+                className="text-sm text-blue-500 hover:underline cursor-pointer"
+              >
+                ← Back to Login
+              </button>
+            </div>
           </CardContent>
         </Card>
       </div>
