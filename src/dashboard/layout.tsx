@@ -73,8 +73,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center justify-between">
           <div className="flex items-center gap-2 font-bold">
-            <MapPin className="h-5 w-5 text-primary" />
-            <span>VehicleTracker</span>
+            <img className="h-5 w-5" src="/architecture-and-city.png" alt="Vehicle Tracker Logo" />
+            <span>TrackFleet</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="relative">
