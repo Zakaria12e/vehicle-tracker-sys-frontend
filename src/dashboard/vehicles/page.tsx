@@ -223,25 +223,6 @@ export default function VehiclesPage() {
   )}
 </div>
 
-
-      {/* Details Panel */}
-      {selectedVehicle && (
-        <div className="mt-6 border rounded-lg p-4 sm:p-6 bg-background shadow w-full">
-
-          <h2 className="text-lg font-semibold">{selectedVehicle.name}</h2>
-          <p className="text-sm text-muted-foreground">{selectedVehicle.licensePlate}</p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 text-sm">
-            <div><p className="text-xs text-muted-foreground">Status</p><p>{selectedVehicle.currentStatus}</p></div>
-            <div><p className="text-xs text-muted-foreground">Speed</p><p>{selectedVehicle.telemetry.speed} km/h</p></div>
-            <div><p className="text-xs text-muted-foreground">Battery</p><p>{selectedVehicle.telemetry.vehicleBattery}%</p></div>
-            <div><p className="text-xs text-muted-foreground">Ignition</p><p>{selectedVehicle.telemetry.ignition ? "On" : "Off"}</p></div>
-          </div>
-          <div className="flex gap-2 mt-4">
-            <Button variant="outline"><Power className="h-4 w-4" /> Immobilize</Button>
-            <Button variant="outline"><AlertTriangle className="h-4 w-4" /> Alert Driver</Button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
