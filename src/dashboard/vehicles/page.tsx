@@ -28,6 +28,7 @@ interface Vehicle {
     vehicleBattery: number
     ignition: boolean
     speed: number
+    timestamp: string
   }
 }
 
@@ -69,7 +70,9 @@ export default function VehiclesPage() {
               vehicleBattery: v.telemetry?.vehicleBattery ?? 0,
               ignition: v.telemetry?.ignition ?? false,
               speed: v.telemetry?.speed ?? 0,
+              timestamp: v.telemetry?.timestamp ?? null,
             },
+            
           }
         })
         setVehicles(updated)
@@ -195,6 +198,7 @@ export default function VehiclesPage() {
                   status={v.currentStatus}
                   speed={v.telemetry.speed}
                   battery={v.telemetry.vehicleBattery}
+                  timestamp={v.telemetry.timestamp}
                 />
               </div>
             ))}
