@@ -9,6 +9,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Signup({
   className,
@@ -35,7 +36,7 @@ export default function Signup({
     setLoading(true);
   
     try {
-      const response = await fetch("http://localhost:5000/api/v1/auth/register", {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

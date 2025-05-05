@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function ResetPassword() {
   const { token } = useParams();
   const [password, setPassword] = useState("");
@@ -24,7 +26,7 @@ export default function ResetPassword() {
     setLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/auth/resetpassword/${token}`, {
+      const res = await fetch(`${API_URL}/auth/resetpassword/${token}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

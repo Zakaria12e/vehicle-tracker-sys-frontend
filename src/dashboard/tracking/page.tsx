@@ -51,8 +51,10 @@ export default function TrackingPage() {
   }, [refreshInterval]);
 
   const fetchVehicles = async () => {
+    const API_URL = import.meta.env.VITE_API_URL;
+
     try {
-      const res = await fetch("http://localhost:5000/api/v1/vehicles", {
+      const res = await fetch(`${API_URL}/vehicles`, {
         credentials: "include",
       });
       const data = await res.json();

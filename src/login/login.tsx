@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Truck, MapPin } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function LoginForm({
   className,
@@ -28,7 +29,7 @@ export default function LoginForm({
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/login", {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,7 +43,7 @@ export default function LoginForm({
       if (!res.ok) {
         throw new Error(data.error || "Login failed");
       }
-      const meRes = await fetch("http://localhost:5000/api/v1/auth/me", {
+      const meRes = await fetch(`${API_URL}/auth/me`, {
         credentials: "include",
       });
   
