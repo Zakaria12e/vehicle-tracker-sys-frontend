@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, useMap, useMapEvents, Circle } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, useMapEvents, Circle , Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 const defaultCenter: [number, number] = [31.7917, -7.0926];
 
 interface Zone {
   center: { lat: number; lon: number };
+  name: string
   radius: number;
   _id?: string;
 }
 
 interface MapgeofencesProps {
-  onZoneSelect?: (zone: { center: [number, number]; radius: number }) => void;
+  onZoneSelect?: (zone: { center: [number, number]; radius: number; name?: string }) => void;
   zones?: Zone[];
   center?: [number, number] | null;
   flyTo?: [number, number] | null;
@@ -45,17 +46,28 @@ const Mapgeofences: React.FC<MapgeofencesProps> = ({ onZoneSelect, zones = [], f
     }
   }, [flyTo, map]);
   
+  const zoneColors = ["red", "green", "blue", "purple", "orange", "teal"];
+
+const getColor = (index: number): string => {
+  return zoneColors[index % zoneColors.length];
+};
+
 
   return (
     <>
-      {zones.map((zone) => (
-        <Circle
-          key={zone._id || JSON.stringify(zone.center)}
-          center={[zone.center.lat, zone.center.lon]}
-          radius={zone.radius}
-          pathOptions={{ color: "red", fillOpacity: 0.3 }}
-        />
-      ))}
+      {zones.map((zone, index) => (
+  <Circle
+    key={zone._id || JSON.stringify(zone.center)}
+    center={[zone.center.lat, zone.center.lon]}
+    radius={zone.radius}
+    pathOptions={{ color: getColor(index), fillOpacity: 0.3 }}
+  >
+    <Tooltip direction="bottom" offset={[0, 10]} permanent>
+      <span className="text-sm font-semibold bg-white/80 p-1 rounded">{zone.name}</span>
+    </Tooltip>
+  </Circle>
+))}
+
 
       {onZoneSelect && <ZoneSelector onZoneSelect={onZoneSelect} />}
     </>

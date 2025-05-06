@@ -35,6 +35,7 @@ export default function GeofencingPage() {
 
 
 
+
   const API_URL = import.meta.env.VITE_API_URL
 
   useEffect(() => {
