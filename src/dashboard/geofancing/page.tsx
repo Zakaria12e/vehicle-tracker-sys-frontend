@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Pencil, Trash2, Car, MoreHorizontal, CircleDot } from "lucide-react"
 import {
   DropdownMenu,
@@ -31,39 +30,7 @@ import { Switch } from "@/components/ui/switch"
 
 export default function GeofencingPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedZone, setSelectedZone] = useState(null)
-  const [isEditMode, setIsEditMode] = useState(false)
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    radius: "500",
-    latitude: "",
-    longitude: "",
-    vehicles: [],
-  })
 
-  const handleChange = (e: { target: { name: any; value: any } }) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-
-  const handleSubmit = () => {
-    // Handle form submission
-    setIsDialogOpen(false)
-    // Reset form
-    setFormData({
-      name: "",
-      description: "",
-      radius: "500",
-      latitude: "",
-      longitude: "",
-      vehicles: [],
-    })
-  }
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
@@ -73,14 +40,7 @@ export default function GeofencingPage() {
           <p className="text-muted-foreground">Create and manage geographic zones for your vehicles</p>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant={isEditMode ? "secondary" : "outline"}
-            className="gap-1"
-            onClick={() => setIsEditMode(!isEditMode)}
-          >
-            <Pencil className="h-4 w-4" />
-            {isEditMode ? "Exit Edit Mode" : "Edit Mode"}
-          </Button>
+          
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="gap-1">
@@ -99,8 +59,7 @@ export default function GeofencingPage() {
                   <Input
                     id="name"
                     name="name"
-                    value={formData.name}
-                    onChange={handleChange}
+                    
                     placeholder="Office Area"
                   />
                 </div>
@@ -109,8 +68,7 @@ export default function GeofencingPage() {
                   <Input
                     id="description"
                     name="description"
-                    value={formData.description}
-                    onChange={handleChange}
+                    
                     placeholder="Main office and surrounding area"
                   />
                 </div>
@@ -119,42 +77,18 @@ export default function GeofencingPage() {
                   <Input
                     id="radius"
                     name="radius"
-                    value={formData.radius}
-                    onChange={handleChange}
+     
                     type="number"
                     placeholder="500"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="center">Center Point</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input placeholder="Latitude" name="latitude" value={formData.latitude} onChange={handleChange} />
-                    <Input
-                      placeholder="Longitude"
-                      name="longitude"
-                      value={formData.longitude}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">Or click on the map to set the center point</p>
-                </div>
-                <div className="space-y-2">
-                  <Label>Assign Vehicles</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select vehicles" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Vehicles</SelectItem>
-                      <SelectItem value="toyota">Toyota Corolla</SelectItem>
-                      <SelectItem value="ford">Ford Transit</SelectItem>
-                      <SelectItem value="honda">Honda Civic</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  
+                  i need map here click on the map to set the center point
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" onClick={handleSubmit}>
+                <Button type="button">
                   Create Zone
                 </Button>
               </DialogFooter>
@@ -334,38 +268,7 @@ export default function GeofencingPage() {
                     </Button>
                   </td>
                 </tr>
-                <tr className="border-b">
-                  <td className="whitespace-nowrap px-4 py-3">Ford Transit</td>
-                  <td className="whitespace-nowrap px-4 py-3">ABC-789</td>
-                  <td className="whitespace-nowrap px-4 py-3">Warehouse Zone, City Center</td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    <div className="flex items-center gap-1">
-                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                      <span>Inside zone</span>
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    <Button variant="ghost" size="sm">
-                      Edit Zones
-                    </Button>
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="whitespace-nowrap px-4 py-3">Honda Civic</td>
-                  <td className="whitespace-nowrap px-4 py-3">DEF-456</td>
-                  <td className="whitespace-nowrap px-4 py-3">Office Area</td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    <div className="flex items-center gap-1">
-                      <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                      <span>Outside zone</span>
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    <Button variant="ghost" size="sm">
-                      Edit Zones
-                    </Button>
-                  </td>
-                </tr>
+
               </tbody>
             </table>
           </div>
