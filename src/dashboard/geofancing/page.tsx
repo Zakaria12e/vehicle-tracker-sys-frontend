@@ -31,6 +31,9 @@ export default function GeofencingPage() {
   const [selectedZone, setSelectedZone] = useState<{ center: [number, number]; radius: number } | null>(null)
   const [zones, setZones] = useState<any[]>([])
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
+  const [flyTo, setFlyTo] = useState<[number, number] | null>(null)
+
+
 
   const API_URL = import.meta.env.VITE_API_URL
 
@@ -109,8 +112,11 @@ export default function GeofencingPage() {
   }
 
   const centerOnMap = (zone: any) => {
-    setMapCenter([zone.center.lat, zone.center.lon])
+    const centerCoords: [number, number] = [zone.center.lat, zone.center.lon];
+    setFlyTo(centerCoords); // triggers the motion
+    setMapCenter(centerCoords); // sets marker focus if needed
   }
+  
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
@@ -164,7 +170,7 @@ export default function GeofencingPage() {
             <CardDescription>View and edit geographic zones</CardDescription>
           </CardHeader>
           <CardContent className="h-[400px]">
-            <Mapgeofences zones={zones} center={mapCenter} />
+            <Mapgeofences zones={zones} center={mapCenter} flyTo={flyTo} />
           </CardContent>
         </Card>
 

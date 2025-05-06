@@ -14,7 +14,7 @@ interface MapgeofencesProps {
   onZoneSelect?: (zone: { center: [number, number]; radius: number }) => void;
   zones?: Zone[];
   center?: [number, number] | null;
-
+  flyTo?: [number, number] | null;
 }
 
 const ZoneSelector = ({ onZoneSelect }: { onZoneSelect: (zone: { center: [number, number]; radius: number }) => void }) => {
@@ -32,14 +32,19 @@ const ZoneSelector = ({ onZoneSelect }: { onZoneSelect: (zone: { center: [number
   return circle ? <Circle center={circle.center} radius={circle.radius} pathOptions={{ color: "blue" }} /> : null;
 };
 
-const Mapgeofences: React.FC<MapgeofencesProps> = ({ onZoneSelect, zones = [], center }) => {
+const Mapgeofences: React.FC<MapgeofencesProps> = ({ onZoneSelect, zones = [], flyTo }) => {
+
   const map = useMap();
 
   useEffect(() => {
-    if (center) {
-      map.setView(center, 14);
+    if (flyTo) {
+      map.flyTo(flyTo, 14, {
+        animate: true,
+        duration: 1.5,
+      });
     }
-  }, [center, map]);
+  }, [flyTo, map]);
+  
 
   return (
     <>
