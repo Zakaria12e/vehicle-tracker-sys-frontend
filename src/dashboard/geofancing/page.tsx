@@ -37,6 +37,11 @@ export default function GeofencingPage() {
   
   const paginatedZones = zones.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(zones.length / itemsPerPage);
+  const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
+const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+const [vehicleList, setVehicleList] = useState<any[]>([]);
+const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
+
 
 
 
@@ -44,7 +49,30 @@ export default function GeofencingPage() {
 
   useEffect(() => {
     fetchZones()
+    fetchVehicles()
+    
   }, [])
+
+  const fetchVehicles = async () => {
+    try {
+      const res = await fetch(`${API_URL}/vehicles`, { credentials: "include" });
+      const data = await res.json();
+  
+      // ✅ Properly handle nested data
+      if (res.ok && Array.isArray(data.vehicles)) {
+        setVehicleList(data.vehicles);
+      } else if (res.ok && Array.isArray(data.data?.vehicles)) {
+        setVehicleList(data.data.vehicles);
+      } else {
+        toast.error("Unexpected response format while loading vehicles");
+        setVehicleList([]); // prevent undefined usage
+      }
+    } catch {
+      toast.error("Connection error");
+      setVehicleList([]); // prevent undefined usage
+    }
+  };
+  
 
   const fetchZones = async () => {
     try {
@@ -214,10 +242,15 @@ export default function GeofencingPage() {
                         <CircleDot className="mr-2 h-4 w-4" />
                         Center on map
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Car className="mr-2 h-4 w-4" />
-                        Assign vehicles
-                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+  setSelectedZoneId(zone._id);
+  fetchVehicles();
+  setAssignDialogOpen(true);
+}}>
+  <Car className="mr-2 h-4 w-4" />
+  Assign vehicles
+</DropdownMenuItem>
+
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteZone(zone._id)}>
                         <Trash2 className="mr-2 h-4 w-4" />
@@ -304,6 +337,67 @@ export default function GeofencingPage() {
           </div>
         </CardContent>
       </Card>
+      <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Assign Vehicles to Zone</DialogTitle>
+      <DialogDescription>Select vehicles to assign to this geofence</DialogDescription>
+    </DialogHeader>
+
+    <div className="space-y-3 max-h-64 overflow-y-auto">
+      {vehicleList.map(vehicle => (
+        <div key={vehicle._id} className="flex items-center space-x-3">
+          <input
+            type="checkbox"
+            id={`veh-${vehicle._id}`}
+            checked={selectedVehicles.includes(vehicle._id)}
+            onChange={() => {
+              setSelectedVehicles(prev =>
+                prev.includes(vehicle._id)
+                  ? prev.filter(id => id !== vehicle._id)
+                  : [...prev, vehicle._id]
+              );
+            }}
+          />
+          <label htmlFor={`veh-${vehicle._id}`} className="text-sm">
+            {vehicle.name} – {vehicle.licensePlate}
+          </label>
+        </div>
+      ))}
+    </div>
+
+    <DialogFooter>
+      <Button
+        onClick={async () => {
+          if (!selectedZoneId) return;
+
+          try {
+            const res = await fetch(`${API_URL}/geofences/${selectedZoneId}/vehicles`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ vehicles: selectedVehicles }),
+            });
+
+            if (res.ok) {
+              toast.success("Vehicles assigned");
+              setAssignDialogOpen(false);
+              fetchZones(); // refresh zones
+            } else {
+              const data = await res.json();
+              toast.error(data.message || "Assignment failed");
+            }
+          } catch {
+            toast.error("Connection error");
+          }
+        }}
+      >
+        Save Assignments
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
     </div>
   )
 }
