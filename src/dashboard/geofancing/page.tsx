@@ -32,7 +32,11 @@ export default function GeofencingPage() {
   const [zones, setZones] = useState<any[]>([])
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
   const [flyTo, setFlyTo] = useState<[number, number] | null>(null)
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+  
+  const paginatedZones = zones.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(zones.length / itemsPerPage);
 
 
 
@@ -114,8 +118,8 @@ export default function GeofencingPage() {
 
   const centerOnMap = (zone: any) => {
     const centerCoords: [number, number] = [zone.center.lat, zone.center.lon];
-    setFlyTo(centerCoords); // triggers the motion
-    setMapCenter(centerCoords); // sets marker focus if needed
+    setFlyTo(centerCoords);
+    setMapCenter(centerCoords); 
   }
   
 
@@ -189,7 +193,7 @@ export default function GeofencingPage() {
             <CardDescription>Manage your defined zones</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {zones.map((zone) => (
+          {paginatedZones.map((zone) => (
               <div key={zone._id} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between">
                   <div className="font-medium">{zone.name}</div>
@@ -232,6 +236,30 @@ export default function GeofencingPage() {
               </div>
             ))}
           </CardContent>
+          {totalPages > 1 && (
+  <div className="mt-4 flex justify-center gap-2">
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={currentPage === 1}
+      onClick={() => setCurrentPage((prev) => prev - 1)}
+    >
+      Previous
+    </Button>
+    <span className="text-sm text-muted-foreground px-2">
+      Page {currentPage} of {totalPages}
+    </span>
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={currentPage === totalPages}
+      onClick={() => setCurrentPage((prev) => prev + 1)}
+    >
+      Next
+    </Button>
+  </div>
+)}
+
         </Card>
       </div>
 
