@@ -62,9 +62,12 @@ const getColor = (index: number): string => {
     radius={zone.radius}
     pathOptions={{ color: getColor(index), fillOpacity: 0.3 }}
   >
-    <Tooltip direction="bottom" offset={[0, 10]} permanent>
-      <span className="text-sm font-semibold bg-white/80 p-1 rounded">{zone.name}</span>
-    </Tooltip>
+<Tooltip direction="bottom" offset={[0, 10]} permanent>
+  <div className="text-xs font-medium px-2 py-1 rounded shadow-md bg-white text-black dark:bg-black dark:text-white border border-gray-200 dark:border-zinc-700">
+    {zone.name}
+  </div>
+</Tooltip>
+
   </Circle>
 ))}
 

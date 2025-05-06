@@ -127,7 +127,15 @@ export default function GeofencingPage() {
           <p className="text-muted-foreground">Create and manage geographic zones for your vehicles</p>
         </div>
         <div className="flex gap-2">
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} 
+          onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) {
+              setSelectedZone(null); 
+              setRadius(500);
+            }
+          }}
+          >
             <DialogTrigger asChild>
               <Button className="gap-1">
                 <Plus className="h-4 w-4" />
