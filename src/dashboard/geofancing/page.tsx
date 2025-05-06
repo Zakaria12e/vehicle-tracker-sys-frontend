@@ -141,7 +141,7 @@ export default function GeofencingPage() {
           }}
           >
             <DialogTrigger asChild>
-              <Button className="gap-1">
+              <Button className="gap-1 cursor-pointer">
                 <Plus className="h-4 w-4" />
                 Add Zone
               </Button>
@@ -169,7 +169,7 @@ export default function GeofencingPage() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" onClick={handleCreateZone}>Create Zone</Button>
+                <Button type="button" className="cursor-pointer" onClick={handleCreateZone}>Create Zone</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -199,7 +199,7 @@ export default function GeofencingPage() {
                   <div className="font-medium">{zone.name}</div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button className="cursor-pointer" variant="ghost" size="icon">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -240,6 +240,7 @@ export default function GeofencingPage() {
   <div className="mt-4 flex justify-center gap-2">
     <Button
       variant="outline"
+      className="cursor-pointer"
       size="sm"
       disabled={currentPage === 1}
       onClick={() => setCurrentPage((prev) => prev - 1)}
@@ -251,6 +252,7 @@ export default function GeofencingPage() {
     </span>
     <Button
       variant="outline"
+      className="cursor-pointer"
       size="sm"
       disabled={currentPage === totalPages}
       onClick={() => setCurrentPage((prev) => prev + 1)}
