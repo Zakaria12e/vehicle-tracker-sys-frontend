@@ -156,17 +156,20 @@ const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Geofencing</h1>
-          <p className="text-muted-foreground">Create and manage geographic zones for your vehicles</p>
+          <p className="text-muted-foreground">
+            Create and manage geographic zones for your vehicles
+          </p>
         </div>
         <div className="flex gap-2">
-          <Dialog open={isDialogOpen} 
-          onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) {
-              setSelectedZone(null); 
-              setRadius(500);
-            }
-          }}
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) {
+                setSelectedZone(null);
+                setRadius(500);
+              }
+            }}
           >
             <DialogTrigger asChild>
               <Button className="gap-1 cursor-pointer">
@@ -177,7 +180,9 @@ const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Create New Zone</DialogTitle>
-                <DialogDescription>Define a geographic area and assign vehicles to it.</DialogDescription>
+                <DialogDescription>
+                  Define a geographic area and assign vehicles to it.
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="space-y-2">
@@ -186,18 +191,34 @@ const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="description">Description (Optional)</Label>
-                  <Input id="description" name="description" placeholder="Main office and surrounding area" />
+                  <Input
+                    id="description"
+                    name="description"
+                    placeholder="Main office and surrounding area"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="radius">Radius (meters)</Label>
-                  <Input id="radius" name="radius" type="number" placeholder="500" onChange={(e) => setRadius(Number(e.target.value))} />
+                  <Input
+                    id="radius"
+                    name="radius"
+                    type="number"
+                    placeholder="500"
+                    onChange={(e) => setRadius(Number(e.target.value))}
+                  />
                 </div>
                 <div className="space-y-2 h-[210px]">
                   <Mapgeofences onZoneSelect={setSelectedZone} />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" className="cursor-pointer" onClick={handleCreateZone}>Create Zone</Button>
+                <Button
+                  type="button"
+                  className="cursor-pointer"
+                  onClick={handleCreateZone}
+                >
+                  Create Zone
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -221,13 +242,17 @@ const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
             <CardDescription>Manage your defined zones</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-          {paginatedZones.map((zone) => (
+            {paginatedZones.map((zone) => (
               <div key={zone._id} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between">
                   <div className="font-medium">{zone.name}</div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button className="cursor-pointer" variant="ghost" size="icon">
+                      <Button
+                        className="cursor-pointer"
+                        variant="ghost"
+                        size="icon"
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -242,17 +267,29 @@ const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
                         <CircleDot className="mr-2 h-4 w-4" />
                         Center on map
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-  setSelectedZoneId(zone._id);
-  fetchVehicles();
-  setAssignDialogOpen(true);
-}}>
+                      <DropdownMenuItem
+  onClick={() => {
+    setSelectedZoneId(zone._id);
+
+    // Normalize the vehicle list
+    const assigned = (zone.vehicles || []).map((v: any) =>
+      typeof v === "string" ? v : v._id
+    );
+
+    setSelectedVehicles(assigned);
+    fetchVehicles(); // ensure latest vehicle list
+    setAssignDialogOpen(true);
+  }}
+>
   <Car className="mr-2 h-4 w-4" />
   Assign vehicles
 </DropdownMenuItem>
 
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteZone(zone._id)}>
+                      <DropdownMenuItem
+                        className="text-red-600"
+                        onClick={() => handleDeleteZone(zone._id)}
+                      >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </DropdownMenuItem>
@@ -260,7 +297,8 @@ const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
                   </DropdownMenu>
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">
-                  {zone.radius}m radius • {zone.vehicles?.length || 0} vehicles assigned
+                  {zone.radius}m radius • {zone.vehicles?.length || 0} vehicles
+                  assigned
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <div className="text-sm">Alert when vehicles exit</div>
@@ -270,56 +308,71 @@ const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
             ))}
           </CardContent>
           {totalPages > 1 && (
-  <div className="mt-4 flex justify-center gap-2">
-    <Button
-      variant="outline"
-      className="cursor-pointer"
-      size="sm"
-      disabled={currentPage === 1}
-      onClick={() => setCurrentPage((prev) => prev - 1)}
-    >
-      Previous
-    </Button>
-    <span className="text-sm text-muted-foreground px-2">
-      Page {currentPage} of {totalPages}
-    </span>
-    <Button
-      variant="outline"
-      className="cursor-pointer"
-      size="sm"
-      disabled={currentPage === totalPages}
-      onClick={() => setCurrentPage((prev) => prev + 1)}
-    >
-      Next
-    </Button>
-  </div>
-)}
-
+            <div className="mt-4 flex justify-center gap-2">
+              <Button
+                variant="outline"
+                className="cursor-pointer"
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground px-2">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                className="cursor-pointer"
+                size="sm"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </Card>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Vehicle Assignments</CardTitle>
-          <CardDescription>Manage which vehicles are assigned to each zone</CardDescription>
+          <CardDescription>
+            Manage which vehicles are assigned to each zone
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="relative overflow-x-auto rounded-md border">
             <table className="w-full text-sm">
               <thead className="bg-muted text-muted-foreground">
                 <tr>
-                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Vehicle</th>
-                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">License Plate</th>
-                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Assigned Zones</th>
-                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Status</th>
-                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Actions</th>
+                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">
+                    Vehicle
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">
+                    License Plate
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">
+                    Assigned Zones
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">
+                    Status
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b">
-                  <td className="whitespace-nowrap px-4 py-3">Toyota Corolla</td>
+                  <td className="whitespace-nowrap px-4 py-3">
+                    Toyota Corolla
+                  </td>
                   <td className="whitespace-nowrap px-4 py-3">XYZ-123</td>
-                  <td className="whitespace-nowrap px-4 py-3">Office Area, City Center</td>
+                  <td className="whitespace-nowrap px-4 py-3">
+                    Office Area, City Center
+                  </td>
                   <td className="whitespace-nowrap px-4 py-3">
                     <div className="flex items-center gap-1">
                       <div className="h-2 w-2 rounded-full bg-green-500"></div>
@@ -338,66 +391,72 @@ const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
         </CardContent>
       </Card>
       <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Assign Vehicles to Zone</DialogTitle>
-      <DialogDescription>Select vehicles to assign to this geofence</DialogDescription>
-    </DialogHeader>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Vehicles to Zone</DialogTitle>
+            <DialogDescription>
+              Select vehicles to assign to this geofence
+            </DialogDescription>
+          </DialogHeader>
 
-    <div className="space-y-3 max-h-64 overflow-y-auto">
-      {vehicleList.map(vehicle => (
-        <div key={vehicle._id} className="flex items-center space-x-3">
-          <input
-            type="checkbox"
-            id={`veh-${vehicle._id}`}
-            checked={selectedVehicles.includes(vehicle._id)}
-            onChange={() => {
-              setSelectedVehicles(prev =>
-                prev.includes(vehicle._id)
-                  ? prev.filter(id => id !== vehicle._id)
-                  : [...prev, vehicle._id]
-              );
-            }}
-          />
-          <label htmlFor={`veh-${vehicle._id}`} className="text-sm">
-            {vehicle.name} – {vehicle.licensePlate}
-          </label>
-        </div>
-      ))}
+          <div className="space-y-3 max-h-64 overflow-y-auto">
+            {vehicleList.map((vehicle) => (
+              <div key={vehicle._id} className="flex items-center space-x-3">
+              <input
+  type="checkbox"
+  id={`veh-${vehicle._id}`}
+  checked={selectedVehicles.includes(vehicle._id)}
+  onChange={(e) => {
+    const checked = e.target.checked;
+    setSelectedVehicles((prev) =>
+      checked
+        ? [...prev, vehicle._id]
+        : prev.filter((id) => id !== vehicle._id)
+    );
+  }}
+/>
+
+                <label htmlFor={`veh-${vehicle._id}`} className="text-sm">
+                  {vehicle.name} – {vehicle.licensePlate}
+                </label>
+              </div>
+            ))}
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={async () => {
+                if (!selectedZoneId) return;
+
+                try {
+                  const res = await fetch(
+                    `${API_URL}/geofences/${selectedZoneId}/vehicles`,
+                    {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      credentials: "include",
+                      body: JSON.stringify({ vehicles: selectedVehicles }),
+                    }
+                  );
+
+                  if (res.ok) {
+                    toast.success("Vehicles assigned");
+                    setAssignDialogOpen(false);
+                    fetchZones(); // refresh zones
+                  } else {
+                    const data = await res.json();
+                    toast.error(data.message || "Assignment failed");
+                  }
+                } catch {
+                  toast.error("Connection error");
+                }
+              }}
+            >
+              Save Assignments
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
-
-    <DialogFooter>
-      <Button
-        onClick={async () => {
-          if (!selectedZoneId) return;
-
-          try {
-            const res = await fetch(`${API_URL}/geofences/${selectedZoneId}/vehicles`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-              body: JSON.stringify({ vehicles: selectedVehicles }),
-            });
-
-            if (res.ok) {
-              toast.success("Vehicles assigned");
-              setAssignDialogOpen(false);
-              fetchZones(); // refresh zones
-            } else {
-              const data = await res.json();
-              toast.error(data.message || "Assignment failed");
-            }
-          } catch {
-            toast.error("Connection error");
-          }
-        }}
-      >
-        Save Assignments
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
-
-    </div>
-  )
+  );
 }
