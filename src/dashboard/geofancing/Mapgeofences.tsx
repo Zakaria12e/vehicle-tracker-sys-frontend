@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents, Circle , Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import clsx from "clsx"
 
 const defaultCenter: [number, number] = [31.7917, -7.0926];
 
@@ -46,30 +47,57 @@ const Mapgeofences: React.FC<MapgeofencesProps> = ({ onZoneSelect, zones = [], f
     }
   }, [flyTo, map]);
   
-  const zoneColors = ["red", "green", "blue", "purple", "orange", "teal"];
+  const zoneColors = [
+    "#3b82f6", // blue-500
+    "#10b981", // emerald-500
+    "#8b5cf6", // violet-500
+    "#f59e0b", // amber-500
+    "#ec4899", // pink-500
+    "#14b8a6", // teal-500
+    "#f43f5e", // rose-500
+    "#6366f1", // indigo-500
+  ];
+  
 
-const getColor = (index: number): string => {
-  return zoneColors[index % zoneColors.length];
-};
+  const getColor = (index: number): string => {
+    return zoneColors[index % zoneColors.length];
+  };
+  
 
 
   return (
     <>
-      {zones.map((zone, index) => (
-  <Circle
-    key={zone._id || JSON.stringify(zone.center)}
-    center={[zone.center.lat, zone.center.lon]}
-    radius={zone.radius}
-    pathOptions={{ color: getColor(index), fillOpacity: 0.3 }}
-  >
-<Tooltip direction="bottom" offset={[0, 10]} permanent>
-  <div className="text-xs font-medium px-2 py-1 rounded shadow-md bg-white text-black dark:bg-black dark:text-white border border-gray-200 dark:border-zinc-700">
-    {zone.name}
-  </div>
-</Tooltip>
+{zones.map((zone, index) => {
+  const color = getColor(index);
 
-  </Circle>
-))}
+  return (
+    <Circle
+      key={zone._id || JSON.stringify(zone.center)}
+      center={[zone.center.lat, zone.center.lon]}
+      radius={zone.radius}
+      pathOptions={{
+        color,
+        fillColor: color,
+        fillOpacity: 0.25,
+      }}
+    >
+      <Tooltip
+        permanent
+        direction="top"
+        offset={[0, -10]}
+        className="leaflet-tooltip leaflet-tooltip-no-background !p-0 !bg-transparent !border-none !shadow-none"
+      >
+       <div
+  className={`bg-[#0f0f0f] text-[13px] font-semibold px-[10px] py-[6px] rounded-[6px] border border-[#212121]`}
+  style={{ color }}
+>
+          {zone.name}
+        </div>
+      </Tooltip>
+    </Circle>
+  );
+})}
+
 
 
       {onZoneSelect && <ZoneSelector onZoneSelect={onZoneSelect} />}

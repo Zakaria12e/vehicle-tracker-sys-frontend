@@ -8,6 +8,9 @@
 .leaflet-popup-tip {
   background: white !important;
 }
+.leaflet-tooltip::before {
+  border-top-color: #222221 !important; /* Tailwind's purple-500 */
+}
 
 .leaflet-popup-content-wrapper {
   background: white !important;
