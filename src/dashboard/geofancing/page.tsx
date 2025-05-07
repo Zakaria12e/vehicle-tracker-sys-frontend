@@ -284,7 +284,7 @@ export default function GeofencingPage() {
         {/* Zone List Card - Shown by default on desktop, conditionally on mobile */}
         {(activeTab === 'list' || window.innerWidth >= 768) && (
           <Card className="md:col-span-3">
-            <CardHeader className="py-2 md:py-4">
+            <CardHeader>
               <CardTitle>Zone List</CardTitle>
               <CardDescription>Manage your defined zones</CardDescription>
             </CardHeader>
