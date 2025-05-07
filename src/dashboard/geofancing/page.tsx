@@ -218,23 +218,17 @@ export default function GeofencingPage() {
       )
     );
   
-    if (assignedZones.length === 0) {
+    assignedZones.forEach((zone) => {
       flattenedAssignments.push({
         vehicle,
-        zoneName: "Unassigned",
+        zoneName: zone.name,
         status: vehicleStatuses[vehicle._id] || "unknown",
       });
-    } else {
-      assignedZones.forEach((zone) => {
-        flattenedAssignments.push({
-          vehicle,
-          zoneName: zone.name,
-          status: vehicleStatuses[vehicle._id] || "unknown",
-        });
-      });
-    }
+    });
   });
   
+  
+
   const totalVehiclePages = Math.ceil(flattenedAssignments.length / itemsPerVehiclePage);
   const paginatedAssignments = flattenedAssignments.slice(
     (vehiclePage - 1) * itemsPerVehiclePage,
@@ -505,7 +499,7 @@ export default function GeofencingPage() {
                     <th className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-left font-medium hidden sm:table-cell">
                       License
                     </th>
-                    <th className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-left font-medium hidden md:table-cell">
+                    <th className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-left font-medium">
                       Zones
                     </th>
                     <th className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-left font-medium">
@@ -525,7 +519,7 @@ export default function GeofencingPage() {
       <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden sm:table-cell">
         {vehicle.licensePlate}
       </td>
-      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden md:table-cell">
+      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm ">
         {zoneName}
       </td>
       <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
