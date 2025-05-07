@@ -75,13 +75,12 @@ export default function GeofencingPage() {
     fetchVehicles()
   }, [])
 
-  useEffect(() => {
-    if (vehicleList.length > 0) {
-      vehicleList.forEach((vehicle) => {
-        checkVehicleZones(vehicle._id);
-      });
-    }
-  }, [vehicleList]);
+useEffect(() => {
+  if (vehicleList.length > 0) {
+    checkAllVehicleZones();
+  }
+}, [vehicleList]);
+
   
 
   const fetchVehicles = async () => {
@@ -119,24 +118,27 @@ export default function GeofencingPage() {
     }
   }
 
-  const checkVehicleZones = async (vehicleId: string) => {
+  const checkAllVehicleZones = async () => {
     try {
-      const res = await fetch(`${API_URL}/geofences/check/${vehicleId}`, { credentials: "include" });
-      const data = await res.json();
+      const res = await fetch(`${API_URL}/geofences/check-all`, { credentials: "include" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Request failed");
   
-      if (res.ok) {
-        setVehicleStatuses((prev) => ({
-          ...prev,
-          [vehicleId]: data.count > 0 ? 'inside' : 'outside',
-        }));
-      }
-    } catch {
-      setVehicleStatuses((prev) => ({
-        ...prev,
-        [vehicleId]: 'unknown',
-      }));
+      // json.data is already an array of { vehicleId, vehicleName, inside: […] }
+      const newStatuses: Record<string, "inside" | "outside"> = {};
+      (json.data as Array<{ vehicleId: string; inside: any[] }>).forEach(entry => {
+        newStatuses[entry.vehicleId] = entry.inside.length > 0
+          ? "inside"
+          : "outside";
+      });
+  
+      setVehicleStatuses(newStatuses);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to check vehicle zones");
     }
   };
+  
   
 
   const handleCreateZone = async () => {
