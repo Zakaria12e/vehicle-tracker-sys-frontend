@@ -22,6 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Switch } from "@/components/ui/switch"
+import { Skeleton } from "@/components/ui/skeleton"
 import Mapgeofences from "./Mapgeofences"
 import { toast } from "sonner"
 
@@ -38,6 +39,7 @@ export default function GeofencingPage() {
   const [vehicleList, setVehicleList] = useState<any[]>([])
   const [selectedVehicles, setSelectedVehicles] = useState<string[]>([])
   const [activeTab, setActiveTab] = useState<'map' | 'list' | 'vehicles'>('map')
+  const [loadingZones, setLoadingZones] = useState(true)
   
   // Responsive items per page
   const getItemsPerPage = () => {
@@ -99,6 +101,8 @@ export default function GeofencingPage() {
       }
     } catch {
       toast.error("Connection error")
+    } finally {
+      setLoadingZones(false)
     }
   }
 
@@ -172,7 +176,9 @@ export default function GeofencingPage() {
     <div className="flex flex-col gap-6 p-3 md:p-8">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Geofencing</h1>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">
+            Geofencing
+          </h1>
           <p className="text-sm md:text-base text-muted-foreground">
             Create and manage geographic zones for your vehicles
           </p>
@@ -246,21 +252,33 @@ export default function GeofencingPage() {
       {/* Mobile tab navigation */}
       <div className="flex md:hidden">
         <div className="grid grid-cols-3 w-full border rounded-lg overflow-hidden">
-          <button 
-            className={`py-2 text-center text-sm ${activeTab === 'map' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
-            onClick={() => setActiveTab('map')}
+          <button
+            className={`py-2 text-center text-sm ${
+              activeTab === "map"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted"
+            }`}
+            onClick={() => setActiveTab("map")}
           >
             Map
           </button>
-          <button 
-            className={`py-2 text-center text-sm ${activeTab === 'list' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
-            onClick={() => setActiveTab('list')}
+          <button
+            className={`py-2 text-center text-sm ${
+              activeTab === "list"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted"
+            }`}
+            onClick={() => setActiveTab("list")}
           >
             Zones
           </button>
-          <button 
-            className={`py-2 text-center text-sm ${activeTab === 'vehicles' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
-            onClick={() => setActiveTab('vehicles')}
+          <button
+            className={`py-2 text-center text-sm ${
+              activeTab === "vehicles"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted"
+            }`}
+            onClick={() => setActiveTab("vehicles")}
           >
             Vehicles
           </button>
@@ -269,10 +287,10 @@ export default function GeofencingPage() {
 
       <div className="grid gap-6 md:grid-cols-7">
         {/* Map Card - Shown by default on desktop, conditionally on mobile */}
-        {(activeTab === 'map' || window.innerWidth >= 768) && (
+        {(activeTab === "map" || window.innerWidth >= 768) && (
           <Card className="md:col-span-4">
             <CardHeader>
-              <CardTitle>Zone Map</CardTitle> 
+              <CardTitle>Zone Map</CardTitle>
               <CardDescription>View and edit geographic zones</CardDescription>
             </CardHeader>
             <CardContent className="h-[350px] md:h-[400px] p-2 md:p-6">
@@ -282,14 +300,22 @@ export default function GeofencingPage() {
         )}
 
         {/* Zone List Card - Shown by default on desktop, conditionally on mobile */}
-        {(activeTab === 'list' || window.innerWidth >= 768) && (
+        {(activeTab === "list" || window.innerWidth >= 768) && (
           <Card className="md:col-span-3">
             <CardHeader>
               <CardTitle>Zone List</CardTitle>
               <CardDescription>Manage your defined zones</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 p-3 md:p-6">
-              {zones.length === 0 ? (
+              {loadingZones ? (
+                Array.from({ length: itemsPerPage }).map((_, i) => (
+                  <div key={i} className="rounded-lg border p-3 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                ))
+              ) : zones.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground">
                   No zones created yet. Add a zone to get started.
                 </div>
@@ -297,7 +323,9 @@ export default function GeofencingPage() {
                 paginatedZones.map((zone) => (
                   <div key={zone._id} className="rounded-lg border p-3">
                     <div className="flex items-center justify-between">
-                      <div className="font-medium truncate max-w-[70%]">{zone.name}</div>
+                      <div className="font-medium truncate max-w-[70%]">
+                        {zone.name}
+                      </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -322,8 +350,8 @@ export default function GeofencingPage() {
                           <DropdownMenuItem
                             onClick={() => {
                               setSelectedZoneId(zone._id);
-                              const assigned = (zone.vehicles || []).map((v: any) =>
-                                typeof v === "string" ? v : v._id
+                              const assigned = (zone.vehicles || []).map(
+                                (v: any) => (typeof v === "string" ? v : v._id)
                               );
                               setSelectedVehicles(assigned);
                               fetchVehicles();
@@ -345,11 +373,13 @@ export default function GeofencingPage() {
                       </DropdownMenu>
                     </div>
                     <div className="mt-1 text-xs md:text-sm text-muted-foreground">
-                      {zone.radius}m radius • {zone.vehicles?.length || 0} vehicles
-                      assigned
+                      {zone.radius}m radius • {zone.vehicles?.length || 0}{" "}
+                      vehicles assigned
                     </div>
                     <div className="mt-2 flex items-center justify-between">
-                      <div className="text-xs md:text-sm">Alert when vehicles exit</div>
+                      <div className="text-xs md:text-sm">
+                        Alert when vehicles exit
+                      </div>
                       <Switch defaultChecked={zone.notifyOnExit} />
                     </div>
                   </div>
@@ -386,7 +416,7 @@ export default function GeofencingPage() {
       </div>
 
       {/* Vehicles Card - Shown by default on desktop, conditionally on mobile */}
-      {(activeTab === 'vehicles' || window.innerWidth >= 768) && (
+      {(activeTab === "vehicles" || window.innerWidth >= 768) && (
         <Card>
           <CardHeader className="py-4 md:py-6">
             <CardTitle>Vehicle Assignments</CardTitle>
@@ -435,7 +465,11 @@ export default function GeofencingPage() {
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3">
-                      <Button variant="ghost" size="sm" className="h-7 text-xs md:text-sm md:h-8">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs md:text-sm md:h-8"
+                      >
                         Edit
                       </Button>
                     </td>
@@ -477,7 +511,10 @@ export default function GeofencingPage() {
                       );
                     }}
                   />
-                  <label htmlFor={`veh-${vehicle._id}`} className="text-sm truncate">
+                  <label
+                    htmlFor={`veh-${vehicle._id}`}
+                    className="text-sm truncate"
+                  >
                     {vehicle.name} – {vehicle.licensePlate}
                   </label>
                 </div>
