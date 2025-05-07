@@ -8,11 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { TabsContent } from "@/components/ui/tabs"
-import { Save } from "lucide-react"
+import { Save, Loader2 } from "lucide-react"
 
 export function ProfileSettings() {
-
   const { user, setUser } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -30,6 +30,7 @@ export function ProfileSettings() {
   };
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     const form = new FormData();
     form.append("name", formData.name);
     form.append("email", formData.email);
@@ -51,82 +52,125 @@ export function ProfileSettings() {
       toast.success("Profile updated successfully");
     } catch (err: any) {
       toast.error(err.message || "Error updating profile");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-
   return (
     <TabsContent value="profile" className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>Manage your personal information</CardDescription>
+      <Card className="border shadow-sm">
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-lg md:text-xl">Profile</CardTitle>
+          <CardDescription className="text-sm">
+            Manage your personal information
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-          <Avatar className="h-16 w-16">
-          <AvatarImage
-  src={`http://localhost:5000${user?.photo}`}
-  alt="User" crossOrigin="anonymous"
-/>
-
-
-              <AvatarFallback>{user?.name?.[0] ?? "?"}</AvatarFallback>
+        
+        <CardContent className="space-y-5 p-4 sm:p-6 pt-0 sm:pt-0">
+          {/* Profile Photo Section */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start">
+            <Avatar className="h-16 w-16 border">
+              <AvatarImage
+                src={`http://localhost:5000${user?.photo}`}
+                alt={user?.name || "User"}
+                crossOrigin="anonymous"
+              />
+              <AvatarFallback className="text-lg">
+                {user?.name?.[0] ?? "?"}
+              </AvatarFallback>
             </Avatar>
-            <div className="space-y-1.5">
-              <h3 className="font-semibold">Profile Picture</h3>
-              <p className="text-sm text-muted-foreground">JPG, PNG. Max 3MB</p>
-              <div className="flex gap-2">
-      
-              <label className="relative inline-block">
-  <Button variant="outline" size="sm" className="cursor-pointer">
-    Upload
-  </Button>
-  <input
-    type="file"
-    accept="image/*"
-    onChange={(e) => setFile(e.target.files?.[0] || null)}
-    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-  />
-</label>
-
+            
+            <div className="space-y-2 w-full">
+              <h3 className="font-medium text-sm">Profile Picture</h3>
+              <p className="text-xs text-muted-foreground">JPG, PNG. Max 3MB</p>
+              <div className="flex flex-wrap gap-2">
+                <label className="relative inline-block">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="cursor-pointer h-8 text-xs"
+                  >
+                    Upload
+                  </Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                  />
+                </label>
 
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-red-600"
+                  className="text-red-600 h-8 text-xs"
                   onClick={() => setFile(null)}
+                  disabled={!file}
                 >
                   Remove
                 </Button>
               </div>
-              {file && <p className="text-sm text-green-600">Selected: {file.name}</p>}
+              {file && (
+                <p className="text-xs text-green-600 truncate max-w-full">
+                  Selected: {file.name}
+                </p>
+              )}
             </div>
           </div>
+          
           <Separator />
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name"value={formData.name} onChange={handleChange} />
+          
+          {/* Form Fields */}
+          <div className="grid gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="name" className="text-sm">Full Name</Label>
+              <Input 
+                id="name"
+                value={formData.name} 
+                onChange={handleChange} 
+                className="h-9" 
+              />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="company">Company</Label>
-              <Input id="company" value={formData.company} onChange={handleChange} />
+            <div className="space-y-1.5">
+              <Label htmlFor="company" className="text-sm">Company</Label>
+              <Input 
+                id="company" 
+                value={formData.company} 
+                onChange={handleChange} 
+                className="h-9" 
+              />
             </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" value={formData.email} onChange={handleChange} />
+            
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm">Email</Label>
+              <Input 
+                id="email" 
+                value={formData.email} 
+                onChange={handleChange} 
+                className="h-9" 
+                type="email" 
+              />
             </div>
           </div>
         </CardContent>
-        <CardFooter>
-          <Button className="gap-1" onClick={handleSubmit}>
-            <Save className="h-4 w-4" />
+        
+        <CardFooter className="flex justify-end p-4 sm:p-6 pt-0 sm:pt-0">
+          <Button 
+            className="gap-2 h-9" 
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
             Save Changes
           </Button>
         </CardFooter>
       </Card>
     </TabsContent>
-  )
+  );
 }
