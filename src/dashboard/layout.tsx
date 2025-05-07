@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useAuth } from "@/context/AuthContext"
+import FloatingNav from "@/components/FloatingNav";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const { user } = useAuth()
@@ -157,6 +158,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
         </aside>
         <main className="flex-1">{children}</main>
+        <FloatingNav />
       </div>
     </div>
   )
