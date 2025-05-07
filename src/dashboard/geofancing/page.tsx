@@ -1,9 +1,22 @@
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Plus, Pencil, Trash2, Car, MoreHorizontal, CircleDot } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Car,
+  MoreHorizontal,
+  CircleDot,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +24,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -20,74 +33,83 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Switch } from "@/components/ui/switch"
-import { Skeleton } from "@/components/ui/skeleton"
-import Mapgeofences from "./Mapgeofences"
-import { toast } from "sonner"
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
+import Mapgeofences from "./Mapgeofences";
+import { toast } from "sonner";
 
 export default function GeofencingPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [radius, setRadius] = useState(500)
-  const [selectedZone, setSelectedZone] = useState<{ center: [number, number]; radius: number } | null>(null)
-  const [zones, setZones] = useState<any[]>([])
-  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
-  const [flyTo, setFlyTo] = useState<[number, number] | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null)
-  const [assignDialogOpen, setAssignDialogOpen] = useState(false)
-  const [vehicleList, setVehicleList] = useState<any[]>([])
-  const [selectedVehicles, setSelectedVehicles] = useState<string[]>([])
-  const [activeTab, setActiveTab] = useState<'map' | 'list' | 'vehicles'>('map')
-  const [loadingZones, setLoadingZones] = useState(true)
-  const [vehicleStatuses, setVehicleStatuses] = useState<{ [vehicleId: string]: string }>({});
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [radius, setRadius] = useState(500);
+  const [selectedZone, setSelectedZone] = useState<{
+    center: [number, number];
+    radius: number;
+  } | null>(null);
+  const [zones, setZones] = useState<any[]>([]);
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
+  const [flyTo, setFlyTo] = useState<[number, number] | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [vehicleList, setVehicleList] = useState<any[]>([]);
+  const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<"map" | "list" | "vehicles">(
+    "map"
+  );
+  const [loadingZones, setLoadingZones] = useState(true);
+  const [vehicleStatuses, setVehicleStatuses] = useState<{
+    [vehicleId: string]: { id: string; name?: string }[];
+  }>({});
+
   const [vehiclePage, setVehiclePage] = useState(1);
   const itemsPerVehiclePage = 3;
 
-
   const getItemsPerPage = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       return window.innerWidth < 768 ? 2 : 3;
     }
     return 3;
-  }
-  
-  const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage())
-  
+  };
+
+  const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
+
   // Update items per page on resize
   useEffect(() => {
     const handleResize = () => {
       setItemsPerPage(getItemsPerPage());
     };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const paginatedZones = zones.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const paginatedZones = zones.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
   const totalPages = Math.ceil(zones.length / itemsPerPage);
- 
 
-  const API_URL = import.meta.env.VITE_API_URL
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetchZones()
-    fetchVehicles()
-  }, [])
+    fetchZones();
+    fetchVehicles();
+  }, []);
 
-useEffect(() => {
-  if (vehicleList.length > 0) {
-    checkAllVehicleZones();
-  }
-}, [vehicleList]);
-
-  
+  useEffect(() => {
+    if (vehicleList.length > 0) {
+      checkAllVehicleZones();
+    }
+  }, [vehicleList]);
 
   const fetchVehicles = async () => {
     try {
-      const res = await fetch(`${API_URL}/vehicles`, { credentials: "include" });
+      const res = await fetch(`${API_URL}/vehicles`, {
+        credentials: "include",
+      });
       const data = await res.json();
-  
+
       if (res.ok && Array.isArray(data.vehicles)) {
         setVehicleList(data.vehicles);
       } else if (res.ok && Array.isArray(data.data?.vehicles)) {
@@ -101,53 +123,57 @@ useEffect(() => {
       setVehicleList([]);
     }
   };
-  
+
   const fetchZones = async () => {
     try {
-      const res = await fetch(`${API_URL}/geofences`, { credentials: "include" })
-      const data = await res.json()
+      const res = await fetch(`${API_URL}/geofences`, {
+        credentials: "include",
+      });
+      const data = await res.json();
       if (res.ok) {
-        setZones(data.data)
+        setZones(data.data);
       } else {
-        toast.error("Failed to load geofences")
+        toast.error("Failed to load geofences");
       }
     } catch {
-      toast.error("Connection error")
+      toast.error("Connection error");
     } finally {
-      setLoadingZones(false)
+      setLoadingZones(false);
     }
-  }
+  };
 
   const checkAllVehicleZones = async () => {
     try {
-      const res = await fetch(`${API_URL}/geofences/check-all`, { credentials: "include" });
+      const res = await fetch(`${API_URL}/geofences/check-all`, {
+        credentials: "include",
+      });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Request failed");
-  
+
       // json.data is already an array of { vehicleId, vehicleName, inside: […] }
       const newStatuses: Record<string, "inside" | "outside"> = {};
-      (json.data as Array<{ vehicleId: string; inside: any[] }>).forEach(entry => {
-        newStatuses[entry.vehicleId] = entry.inside.length > 0
-          ? "inside"
-          : "outside";
-      });
-  
+      (json.data as Array<{ vehicleId: string; inside: any[] }>).forEach(
+        (entry) => {
+          newStatuses[entry.vehicleId] = entry.inside;
+        }
+      );
+
       setVehicleStatuses(newStatuses);
     } catch (err) {
       console.error(err);
       toast.error("Failed to check vehicle zones");
     }
   };
-  
-  
 
   const handleCreateZone = async () => {
-    const name = (document.getElementById("name") as HTMLInputElement).value
-    const description = (document.getElementById("description") as HTMLInputElement).value
+    const name = (document.getElementById("name") as HTMLInputElement).value;
+    const description = (
+      document.getElementById("description") as HTMLInputElement
+    ).value;
 
     if (!selectedZone) {
-      toast.error("Please select a location on the map")
-      return
+      toast.error("Please select a location on the map");
+      return;
     }
 
     try {
@@ -165,79 +191,88 @@ useEffect(() => {
             lon: selectedZone.center[1],
           },
         }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (res.ok) {
-        setZones((prev) => [...prev, data.data])
-        setIsDialogOpen(false)
-        toast.success("Zone created")
+        setZones((prev) => [...prev, data.data]);
+        setIsDialogOpen(false);
+        toast.success("Zone created");
       } else {
-        toast.error(data.message || "Error creating zone")
+        toast.error(data.message || "Error creating zone");
       }
     } catch {
-      toast.error("Failed to create zone")
+      toast.error("Failed to create zone");
     }
-  }
+  };
 
   const handleDeleteZone = async (id: string) => {
-
     try {
       const res = await fetch(`${API_URL}/geofences/${id}`, {
         method: "DELETE",
         credentials: "include",
-      })
+      });
       if (res.ok) {
-        setZones((prev) => prev.filter((z) => z._id !== id))
-        toast.success("Zone deleted")
+        setZones((prev) => prev.filter((z) => z._id !== id));
+        toast.success("Zone deleted");
       } else {
-        toast.error("Failed to delete zone")
+        toast.error("Failed to delete zone");
       }
     } catch {
-      toast.error("Connection error")
+      toast.error("Connection error");
     }
-  }
+  };
 
   const centerOnMap = (zone: any) => {
     const centerCoords: [number, number] = [zone.center.lat, zone.center.lon];
     setFlyTo(centerCoords);
-    setMapCenter(centerCoords); 
+    setMapCenter(centerCoords);
     // On mobile, switch to map tab when centering
     if (window.innerWidth < 768) {
-      setActiveTab('map');
+      setActiveTab("map");
     }
-  }
+  };
 
   const flattenedAssignments: {
     vehicle: any;
     zoneName: string;
-    status: string;
+    status: "inside" | "outside" | "unknown";
   }[] = [];
-  
+
   vehicleList.forEach((vehicle) => {
     const assignedZones = zones.filter((zone) =>
       (zone.vehicles || []).some(
-        (v: any) => v === vehicle._id || (v?._id === vehicle._id)
+        (v: any) => v === vehicle._id || v?._id === vehicle._id
       )
     );
-  
+
+    const insideZones =
+      Array.isArray(vehicleStatuses[vehicle._id]) &&
+      vehicleStatuses[vehicle._id].every(
+        (z): z is { id: string } =>
+          typeof z === "object" && typeof z.id === "string"
+      )
+        ? vehicleStatuses[vehicle._id].map((z) => z.id)
+        : [];
+
     assignedZones.forEach((zone) => {
+      const status = insideZones.includes(zone._id) ? "inside" : "outside";
+
       flattenedAssignments.push({
         vehicle,
         zoneName: zone.name,
-        status: vehicleStatuses[vehicle._id] || "unknown",
+        status,
       });
     });
   });
-  
-  
 
-  const totalVehiclePages = Math.ceil(flattenedAssignments.length / itemsPerVehiclePage);
+  const totalVehiclePages = Math.ceil(
+    flattenedAssignments.length / itemsPerVehiclePage
+  );
   const paginatedAssignments = flattenedAssignments.slice(
     (vehiclePage - 1) * itemsPerVehiclePage,
     vehiclePage * itemsPerVehiclePage
   );
-  
-  
+
   return (
     <div className="flex flex-col gap-6 p-3 md:p-8">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -513,79 +548,85 @@ useEffect(() => {
                   </tr>
                 </thead>
                 <tbody>
-  {paginatedAssignments.map(({ vehicle, zoneName, status }, index) => (
-    <tr key={`${vehicle._id}-${zoneName}-${index}`} className="border-b">
-      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
-        {vehicle.name}
-      </td>
-      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden sm:table-cell">
-        {vehicle.licensePlate}
-      </td>
-      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm ">
-        {zoneName}
-      </td>
-      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
-        <div className="flex items-center gap-1">
-          <div
-            className={`h-2 w-2 rounded-full ${
-              status === "inside"
-                ? "bg-green-500"
-                : status === "outside"
-                ? "bg-red-500"
-                : "bg-gray-400"
-            }`}
-          ></div>
-          <span className="hidden sm:inline">
-            {status === "inside"
-              ? "Inside zone"
-              : status === "outside"
-              ? "Outside zone"
-              : "Unknown"}
-          </span>
-          <span className="sm:hidden">
-            {status === "inside"
-              ? "In"
-              : status === "outside"
-              ? "Out"
-              : "?"}
-          </span>
-        </div>
-      </td>
-      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3">
-        <Button variant="ghost" size="sm" className="h-7 text-xs md:text-sm md:h-8">
-          Edit
-        </Button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-
+                  {paginatedAssignments.map(
+                    ({ vehicle, zoneName, status }, index) => (
+                      <tr
+                        key={`${vehicle._id}-${zoneName}-${index}`}
+                        className="border-b"
+                      >
+                        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
+                          {vehicle.name}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden sm:table-cell">
+                          {vehicle.licensePlate}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm ">
+                          {zoneName}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
+                          <div className="flex items-center gap-1">
+                            <div
+                              className={`h-2 w-2 rounded-full ${
+                                status === "inside"
+                                  ? "bg-green-500"
+                                  : status === "outside"
+                                  ? "bg-red-500"
+                                  : "bg-gray-400"
+                              }`}
+                            ></div>
+                            <span className="hidden sm:inline">
+                              {status === "inside"
+                                ? "Inside zone"
+                                : status === "outside"
+                                ? "Outside zone"
+                                : "Unknown"}
+                            </span>
+                            <span className="sm:hidden">
+                              {status === "inside"
+                                ? "In"
+                                : status === "outside"
+                                ? "Out"
+                                : "?"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-xs md:text-sm md:h-8"
+                          >
+                            Edit
+                          </Button>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
               </table>
               {totalVehiclePages > 1 && (
-  <div className="flex justify-center items-center gap-2 my-4">
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setVehiclePage((prev) => prev - 1)}
-      disabled={vehiclePage === 1}
-    >
-      Previous
-    </Button>
-    <span className="text-sm text-muted-foreground">
-      Page {vehiclePage} of {totalVehiclePages}
-    </span>
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setVehiclePage((prev) => prev + 1)}
-      disabled={vehiclePage === totalVehiclePages}
-    >
-      Next
-    </Button>
-  </div>
-)}
-
+                <div className="flex justify-center items-center gap-2 my-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setVehiclePage((prev) => prev - 1)}
+                    disabled={vehiclePage === 1}
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Page {vehiclePage} of {totalVehiclePages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setVehiclePage((prev) => prev + 1)}
+                    disabled={vehiclePage === totalVehiclePages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -601,7 +642,7 @@ useEffect(() => {
           </DialogHeader>
 
           <div className="space-y-3 max-h-60 overflow-y-auto mt-2">
-            {vehicleList.length === 0 ? ( 
+            {vehicleList.length === 0 ? (
               <div className="text-center py-4 text-muted-foreground">
                 No vehicles available for assignment
               </div>
