@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents, Circle , Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import clsx from "clsx"
 
 const defaultCenter: [number, number] = [31.7917, -7.0926];
 
