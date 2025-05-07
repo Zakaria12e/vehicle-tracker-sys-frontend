@@ -41,6 +41,9 @@ export default function GeofencingPage() {
   const [activeTab, setActiveTab] = useState<'map' | 'list' | 'vehicles'>('map')
   const [loadingZones, setLoadingZones] = useState(true)
   const [vehicleStatuses, setVehicleStatuses] = useState<{ [vehicleId: string]: string }>({});
+  const [vehiclePage, setVehiclePage] = useState(1);
+  const itemsPerVehiclePage = 3;
+
 
   const getItemsPerPage = () => {
     if (typeof window !== 'undefined') {
@@ -63,6 +66,14 @@ export default function GeofencingPage() {
 
   const paginatedZones = zones.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(zones.length / itemsPerPage);
+
+  const paginatedVehicles = vehicleList.slice(
+    (vehiclePage - 1) * itemsPerVehiclePage,
+    vehiclePage * itemsPerVehiclePage
+  );
+  
+  const totalVehicles = vehicleList.length;
+  const totalVehiclesAssigned = zones.reduce((acc, zone) => acc + (zone.vehicles?.length || 0), 0);  
 
   const API_URL = import.meta.env.VITE_API_URL
 
@@ -200,6 +211,43 @@ export default function GeofencingPage() {
       setActiveTab('map');
     }
   }
+
+  const flattenedAssignments: {
+    vehicle: any;
+    zoneName: string;
+    status: string;
+  }[] = [];
+  
+  vehicleList.forEach((vehicle) => {
+    const assignedZones = zones.filter((zone) =>
+      (zone.vehicles || []).some(
+        (v: any) => v === vehicle._id || (v?._id === vehicle._id)
+      )
+    );
+  
+    if (assignedZones.length === 0) {
+      flattenedAssignments.push({
+        vehicle,
+        zoneName: "Unassigned",
+        status: vehicleStatuses[vehicle._id] || "unknown",
+      });
+    } else {
+      assignedZones.forEach((zone) => {
+        flattenedAssignments.push({
+          vehicle,
+          zoneName: zone.name,
+          status: vehicleStatuses[vehicle._id] || "unknown",
+        });
+      });
+    }
+  });
+  
+  const totalVehiclePages = Math.ceil(flattenedAssignments.length / itemsPerVehiclePage);
+  const paginatedAssignments = flattenedAssignments.slice(
+    (vehiclePage - 1) * itemsPerVehiclePage,
+    vehiclePage * itemsPerVehiclePage
+  );
+  
   
   return (
     <div className="flex flex-col gap-6 p-3 md:p-8">
@@ -476,62 +524,79 @@ export default function GeofencingPage() {
                   </tr>
                 </thead>
                 <tbody>
-  {vehicleList.map((vehicle) => {
-    const status = vehicleStatuses[vehicle._id];
-    const zoneNames = zones
-      .filter((z) => (z.vehicles || []).some((v: any) => v === vehicle._id || v._id === vehicle._id))
-      .map((z) => z.name)
-      .join(', ');
-
-    return (
-      <tr key={vehicle._id} className="border-b">
-        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
-          {vehicle.name}
-        </td>
-        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden sm:table-cell">
-          {vehicle.licensePlate}
-        </td>
-        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden md:table-cell">
-          {zoneNames || "Unassigned"}
-        </td>
-        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
-          <div className="flex items-center gap-1">
-            <div
-              className={`h-2 w-2 rounded-full ${
-                status === 'inside'
-                  ? 'bg-green-500'
-                  : status === 'outside'
-                  ? 'bg-red-500'
-                  : 'bg-gray-400'
-              }`}
-            ></div>
-            <span className="hidden sm:inline">
-              {status === 'inside'
-                ? 'Inside zone'
-                : status === 'outside'
-                ? 'Outside zone'
-                : 'Unknown'}
-            </span>
-            <span className="sm:hidden">
-              {status === 'inside'
-                ? 'In zone'
-                : status === 'outside'
-                ? 'Out'
-                : '...'}
-            </span>
-          </div>
-        </td>
-        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3">
-          <Button variant="ghost" size="sm" className="h-7 text-xs md:text-sm md:h-8">
-            Edit
-          </Button>
-        </td>
-      </tr>
-    );
-  })}
+  {paginatedAssignments.map(({ vehicle, zoneName, status }, index) => (
+    <tr key={`${vehicle._id}-${zoneName}-${index}`} className="border-b">
+      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
+        {vehicle.name}
+      </td>
+      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden sm:table-cell">
+        {vehicle.licensePlate}
+      </td>
+      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden md:table-cell">
+        {zoneName}
+      </td>
+      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
+        <div className="flex items-center gap-1">
+          <div
+            className={`h-2 w-2 rounded-full ${
+              status === "inside"
+                ? "bg-green-500"
+                : status === "outside"
+                ? "bg-red-500"
+                : "bg-gray-400"
+            }`}
+          ></div>
+          <span className="hidden sm:inline">
+            {status === "inside"
+              ? "Inside zone"
+              : status === "outside"
+              ? "Outside zone"
+              : "Unknown"}
+          </span>
+          <span className="sm:hidden">
+            {status === "inside"
+              ? "In"
+              : status === "outside"
+              ? "Out"
+              : "?"}
+          </span>
+        </div>
+      </td>
+      <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3">
+        <Button variant="ghost" size="sm" className="h-7 text-xs md:text-sm md:h-8">
+          Edit
+        </Button>
+      </td>
+    </tr>
+  ))}
 </tbody>
 
+
               </table>
+              {totalVehiclePages > 1 && (
+  <div className="flex justify-center items-center gap-2 my-4">
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setVehiclePage((prev) => prev - 1)}
+      disabled={vehiclePage === 1}
+    >
+      Previous
+    </Button>
+    <span className="text-sm text-muted-foreground">
+      Page {vehiclePage} of {totalVehiclePages}
+    </span>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setVehiclePage((prev) => prev + 1)}
+      disabled={vehiclePage === totalVehiclePages}
+    >
+      Next
+    </Button>
+  </div>
+)}
+
             </div>
           </CardContent>
         </Card>
