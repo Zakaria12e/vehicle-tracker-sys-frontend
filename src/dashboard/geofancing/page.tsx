@@ -66,14 +66,7 @@ export default function GeofencingPage() {
 
   const paginatedZones = zones.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(zones.length / itemsPerPage);
-
-  const paginatedVehicles = vehicleList.slice(
-    (vehiclePage - 1) * itemsPerVehiclePage,
-    vehiclePage * itemsPerVehiclePage
-  );
-  
-  const totalVehicles = vehicleList.length;
-  const totalVehiclesAssigned = zones.reduce((acc, zone) => acc + (zone.vehicles?.length || 0), 0);  
+ 
 
   const API_URL = import.meta.env.VITE_API_URL
 
