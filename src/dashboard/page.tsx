@@ -86,143 +86,150 @@ useEffect(() => {
 }, []);
 
 
-  return (
-    <div className="flex flex-col gap-6 p-4 md:p-8">
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back, {user?.name?.split(" ")[0]}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-  <CardHeader className="flex flex-row items-center justify-between">
-    <CardTitle className="text-sm font-medium">
-      Total Vehicles
-    </CardTitle>
-    <Car className="h-4 w-4 text-blue-600 dark:text-blue-500" />
-  </CardHeader>
-  <CardContent>
-    <div className="text-2xl font-bold">{vehicleStats.total}</div>
-    <p className="text-xs text-muted-foreground">
-      {vehicleStats.difference} from last month
-    </p>
-  </CardContent>
-</Card>
-
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">
-              0 speed alerts, 0 geofence
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium">
-              Total Distance
-            </CardTitle>
-            <Clock className="h-4 w-4 text-purple-600 dark:text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0 km</div>
-            <p className="text-xs text-muted-foreground">This month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium">
-              Active Vehicles
-            </CardTitle>
-            <MapPin className="h-4 w-4 text-green-600 dark:text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">0 idle, 0 in motion</p>
-          </CardContent>
-        </Card>
-      </div>
-      <div className="grid gap-4 md:grid-cols-7">
-        <Card className="md:col-span-4">
-          <CardHeader>
-            <CardTitle className="text-xl">Vehicle Locations</CardTitle>
-            <CardDescription>
-              Current position of all your vehicles
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px] md:h-[360px] overflow-hidden rounded-md">
-            <VehicleMap
-              devices={vehicles.filter((v) => v.lat !== 0 && v.lon !== 0)}
-              selectedVehicle="all"
-              triggerZoom={false}
-            />
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-3">
-          <CardHeader>
-            <CardTitle className="text-xl">Recent Alerts</CardTitle>
-            <CardDescription>
-              Latest notifications from your vehicles
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start gap-4">
-                <div className="rounded-full p-2 bg-red-100 dark:bg-red-900/50">
-                  <ShieldAlert className="h-4 w-4 text-red-600 dark:text-red-400" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Geofence Exit Alert</p>
-                  <p className="text-xs text-muted-foreground">
-                    Vehicle XYZ-123 left designated zone
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Today, 10:42 AM
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="rounded-full p-2 bg-amber-100 dark:bg-amber-900/50">
-                  <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Speed Alert</p>
-                  <p className="text-xs text-muted-foreground">
-                    Vehicle ABC-789 exceeded speed limit (92 km/h)
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Today, 9:15 AM
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="rounded-full p-2 bg-blue-100 dark:bg-blue-900/50">
-                  <Battery className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Low Battery</p>
-                  <p className="text-xs text-muted-foreground">
-                    Vehicle DEF-456 tracker battery at 15%
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Yesterday, 6:30 PM
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+return (
+  <div className="flex flex-col gap-4 p-3 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+    {/* Header */}
+    <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 className="text-xl font-bold tracking-tight md:text-2xl">Dashboard</h1>
+        <p className="text-sm text-muted-foreground">
+          Welcome back, {user?.name?.split(" ")[0]}
+        </p>
       </div>
     </div>
-  );
+
+    {/* Stat Cards */}
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <Card className="shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
+          <CardTitle className="text-xs font-medium md:text-sm">
+            Total Vehicles
+          </CardTitle>
+          <Car className="h-4 w-4 text-blue-600 dark:text-blue-500" />
+        </CardHeader>
+        <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
+          <div className="text-lg font-bold md:text-2xl">{vehicleStats.total}</div>
+          <p className="text-xs text-muted-foreground">
+            {vehicleStats.difference} from last month
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
+          <CardTitle className="text-xs font-medium md:text-sm">Active Alerts</CardTitle>
+          <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+        </CardHeader>
+        <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
+          <div className="text-lg font-bold md:text-2xl">0</div>
+          <p className="text-xs text-muted-foreground">
+            0 speed, 0 geofence
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
+          <CardTitle className="text-xs font-medium md:text-sm">
+            Total Distance
+          </CardTitle>
+          <Clock className="h-4 w-4 text-purple-600 dark:text-purple-500" />
+        </CardHeader>
+        <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
+          <div className="text-lg font-bold md:text-2xl">0 km</div>
+          <p className="text-xs text-muted-foreground">This month</p>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
+          <CardTitle className="text-xs font-medium md:text-sm">
+            Active Vehicles
+          </CardTitle>
+          <MapPin className="h-4 w-4 text-green-600 dark:text-green-500" />
+        </CardHeader>
+        <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
+          <div className="text-lg font-bold md:text-2xl">0</div>
+          <p className="text-xs text-muted-foreground">0 idle, 0 moving</p>
+        </CardContent>
+      </Card>
+    </div>
+
+    {/* Map and Alerts Section */}
+    <div className="grid gap-3 md:grid-cols-7">
+      <Card className="shadow-sm md:col-span-7 lg:col-span-4">
+        <CardHeader className="p-3 md:p-4">
+          <CardTitle className="text-lg md:text-xl">Vehicle Locations</CardTitle>
+          <CardDescription className="text-xs md:text-sm">
+            Current position of all your vehicles
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="h-[250px] p-0 overflow-hidden rounded-md sm:h-[300px] md:h-[320px] lg:h-[360px]">
+          <VehicleMap
+            devices={vehicles.filter((v) => v.lat !== 0 && v.lon !== 0)}
+            selectedVehicle="all"
+            triggerZoom={false}
+          />
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-sm md:col-span-7 lg:col-span-3">
+        <CardHeader className="p-3 md:p-4">
+          <CardTitle className="text-lg md:text-xl">Recent Alerts</CardTitle>
+          <CardDescription className="text-xs md:text-sm">
+            Latest notifications from your vehicles
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-3 md:p-4">
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="rounded-full p-1.5 bg-red-100 dark:bg-red-900/50 flex-shrink-0">
+                <ShieldAlert className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-xs font-medium sm:text-sm">Geofence Exit Alert</p>
+                <p className="text-xs text-muted-foreground">
+                  Vehicle XYZ-123 left designated zone
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Today, 10:42 AM
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="rounded-full p-1.5 bg-amber-100 dark:bg-amber-900/50 flex-shrink-0">
+                <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-xs font-medium sm:text-sm">Speed Alert</p>
+                <p className="text-xs text-muted-foreground">
+                  Vehicle ABC-789 exceeded speed limit (92 km/h)
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Today, 9:15 AM
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="rounded-full p-1.5 bg-blue-100 dark:bg-blue-900/50 flex-shrink-0">
+                <Battery className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-xs font-medium sm:text-sm">Low Battery</p>
+                <p className="text-xs text-muted-foreground">
+                  Vehicle DEF-456 tracker battery at 15%
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Yesterday, 6:30 PM
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </div>
+);
 }
