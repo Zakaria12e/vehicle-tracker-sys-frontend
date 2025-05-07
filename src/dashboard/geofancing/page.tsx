@@ -40,13 +40,13 @@ export default function GeofencingPage() {
   const [selectedVehicles, setSelectedVehicles] = useState<string[]>([])
   const [activeTab, setActiveTab] = useState<'map' | 'list' | 'vehicles'>('map')
   const [loadingZones, setLoadingZones] = useState(true)
-  
-  // Responsive items per page
+  const [vehicleStatuses, setVehicleStatuses] = useState<{ [vehicleId: string]: string }>({});
+
   const getItemsPerPage = () => {
     if (typeof window !== 'undefined') {
       return window.innerWidth < 768 ? 2 : 3;
     }
-    return 3; // Default for SSR
+    return 3;
   }
   
   const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage())
@@ -70,6 +70,15 @@ export default function GeofencingPage() {
     fetchZones()
     fetchVehicles()
   }, [])
+
+  useEffect(() => {
+    if (vehicleList.length > 0) {
+      vehicleList.forEach((vehicle) => {
+        checkVehicleZones(vehicle._id);
+      });
+    }
+  }, [vehicleList]);
+  
 
   const fetchVehicles = async () => {
     try {
@@ -105,6 +114,26 @@ export default function GeofencingPage() {
       setLoadingZones(false)
     }
   }
+
+  const checkVehicleZones = async (vehicleId: string) => {
+    try {
+      const res = await fetch(`${API_URL}/geofences/check/${vehicleId}`, { credentials: "include" });
+      const data = await res.json();
+  
+      if (res.ok) {
+        setVehicleStatuses((prev) => ({
+          ...prev,
+          [vehicleId]: data.count > 0 ? 'inside' : 'outside',
+        }));
+      }
+    } catch {
+      setVehicleStatuses((prev) => ({
+        ...prev,
+        [vehicleId]: 'unknown',
+      }));
+    }
+  };
+  
 
   const handleCreateZone = async () => {
     const name = (document.getElementById("name") as HTMLInputElement).value
@@ -418,7 +447,7 @@ export default function GeofencingPage() {
       {/* Vehicles Card - Shown by default on desktop, conditionally on mobile */}
       {(activeTab === "vehicles" || window.innerWidth >= 768) && (
         <Card>
-          <CardHeader className="py-4 md:py-6">
+          <CardHeader className="py-2 md:py-4">
             <CardTitle>Vehicle Assignments</CardTitle>
             <CardDescription>
               Manage which vehicles are assigned to each zone
@@ -447,34 +476,61 @@ export default function GeofencingPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b">
-                    <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
-                      Toyota Corolla
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden sm:table-cell">
-                      XYZ-123
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden md:table-cell">
-                      Office Area, City Center
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
-                      <div className="flex items-center gap-1">
-                        <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                        <span className="hidden sm:inline">Inside zone</span>
-                        <span className="sm:hidden">In zone</span>
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs md:text-sm md:h-8"
-                      >
-                        Edit
-                      </Button>
-                    </td>
-                  </tr>
-                </tbody>
+  {vehicleList.map((vehicle) => {
+    const status = vehicleStatuses[vehicle._id];
+    const zoneNames = zones
+      .filter((z) => (z.vehicles || []).some((v: any) => v === vehicle._id || v._id === vehicle._id))
+      .map((z) => z.name)
+      .join(', ');
+
+    return (
+      <tr key={vehicle._id} className="border-b">
+        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
+          {vehicle.name}
+        </td>
+        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden sm:table-cell">
+          {vehicle.licensePlate}
+        </td>
+        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm hidden md:table-cell">
+          {zoneNames || "Unassigned"}
+        </td>
+        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
+          <div className="flex items-center gap-1">
+            <div
+              className={`h-2 w-2 rounded-full ${
+                status === 'inside'
+                  ? 'bg-green-500'
+                  : status === 'outside'
+                  ? 'bg-red-500'
+                  : 'bg-gray-400'
+              }`}
+            ></div>
+            <span className="hidden sm:inline">
+              {status === 'inside'
+                ? 'Inside zone'
+                : status === 'outside'
+                ? 'Outside zone'
+                : 'Unknown'}
+            </span>
+            <span className="sm:hidden">
+              {status === 'inside'
+                ? 'In zone'
+                : status === 'outside'
+                ? 'Out'
+                : '...'}
+            </span>
+          </div>
+        </td>
+        <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3">
+          <Button variant="ghost" size="sm" className="h-7 text-xs md:text-sm md:h-8">
+            Edit
+          </Button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
               </table>
             </div>
           </CardContent>
@@ -491,7 +547,7 @@ export default function GeofencingPage() {
           </DialogHeader>
 
           <div className="space-y-3 max-h-60 overflow-y-auto mt-2">
-            {vehicleList.length === 0 ? (
+            {vehicleList.length === 0 ? ( 
               <div className="text-center py-4 text-muted-foreground">
                 No vehicles available for assignment
               </div>
