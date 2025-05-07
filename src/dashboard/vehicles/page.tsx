@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
-import { Plus, Search} from "lucide-react"
+import { Plus, Search, Loader2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -135,94 +135,130 @@ export default function VehiclesPage() {
   })
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-8">
+    <div className="flex flex-col gap-4 p-3 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
       {/* Header */}
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Vehicles</h1>
-          <p className="text-muted-foreground">Manage your vehicle fleet</p>
+          <h1 className="text-xl font-bold tracking-tight md:text-2xl">Vehicles</h1>
+          <p className="text-sm text-muted-foreground">Manage your vehicle fleet</p>
         </div>
+
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-1 cursor-pointer"><Plus className="h-4 w-4" /> Add Vehicle</Button>
+            <Button className="gap-1 cursor-pointer mt-2 md:mt-0 h-9">
+              <Plus className="h-4 w-4" /> 
+              <span>Add Vehicle</span>
+            </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Add New Vehicle</DialogTitle>
-              <DialogDescription>Enter the vehicle details and IMEI number.</DialogDescription>
+              <DialogDescription className="text-sm">
+                Enter the vehicle details and IMEI number.
+              </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col space-y-2"><Label htmlFor="name">Make</Label><Input id="name" value={vehicleData.name} onChange={handleInputChange} /></div>
-                <div className="flex flex-col space-y-2"><Label htmlFor="model">Model</Label><Input id="model" value={vehicleData.model} onChange={handleInputChange} /></div>
+            <div className="grid gap-3 py-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="name" className="text-sm">Make</Label>
+                  <Input id="name" value={vehicleData.name} onChange={handleInputChange} className="h-9" />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="model" className="text-sm">Model</Label>
+                  <Input id="model" value={vehicleData.model} onChange={handleInputChange} className="h-9" />
+                </div>
               </div>
-              <div className="flex flex-col space-y-2"><Label htmlFor="plate">License Plate</Label><Input id="plate" value={vehicleData.plate} onChange={handleInputChange} /></div>
-              <div className="flex flex-col space-y-2"><Label htmlFor="imei">IMEI Number</Label><Input id="imei" value={vehicleData.imei} onChange={handleInputChange} /></div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="plate" className="text-sm">License Plate</Label>
+                <Input id="plate" value={vehicleData.plate} onChange={handleInputChange} className="h-9" />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="imei" className="text-sm">IMEI Number</Label>
+                <Input id="imei" value={vehicleData.imei} onChange={handleInputChange} className="h-9" />
+              </div>
             </div>
-            <DialogFooter><Button className="cursor-pointer" onClick={handleAddVehicle} disabled={loading}>{loading ? "Adding..." : "Add Vehicle"}</Button></DialogFooter>
+            <DialogFooter>
+              <Button 
+                className="cursor-pointer w-full sm:w-auto h-9" 
+                onClick={handleAddVehicle} 
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Adding...
+                  </>
+                ) : "Add Vehicle"}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
       {/* Search + Filters */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-
+      <div className="flex flex-col gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Search by name or model..." className="w-full pl-8" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          <Input 
+            type="search" 
+            placeholder="Search by name or model..." 
+            className="w-full pl-8 h-9"
+            value={searchQuery} 
+            onChange={(e) => setSearchQuery(e.target.value)} 
+          />
         </div>
-        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList>
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="moving">Moving</TabsTrigger>
-            <TabsTrigger value="stopped">Stopped</TabsTrigger>
-            <TabsTrigger value="inactive">Inactive</TabsTrigger>
-            <TabsTrigger value="immobilized">Immobilized</TabsTrigger>
+        
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+          <TabsList className="w-full h-auto grid grid-cols-5 overflow-x-auto">
+            <TabsTrigger value="all" className="text-xs sm:text-sm py-1.5">All</TabsTrigger>
+            <TabsTrigger value="moving" className="text-xs sm:text-sm py-1.5">Moving</TabsTrigger>
+            <TabsTrigger value="stopped" className="text-xs sm:text-sm py-1.5">Stopped</TabsTrigger>
+            <TabsTrigger value="inactive" className="text-xs sm:text-sm py-1.5">Inactive</TabsTrigger>
+            <TabsTrigger value="immobilized" className="text-xs sm:text-sm py-1.5">Immobilized</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
-   {/* Vehicle Cards */}
-<div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-  {loadingVehicles ? (
-    Array.from({ length: 3 }).map((_, i) => (
-      <div key={i} className="space-y-2 p-4 border rounded-lg shadow">
-        <Skeleton className="h-6 w-1/2" />
-        <Skeleton className="h-4 w-1/3" />
-        <Skeleton className="h-4 w-1/4" />
-        <Skeleton className="h-10 w-full mt-3" />
+      {/* Vehicle Cards */}
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {loadingVehicles ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="space-y-2 p-3 border rounded-lg shadow-sm">
+              <Skeleton className="h-5 w-1/2" />
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-4 w-1/4" />
+              <Skeleton className="h-9 w-full mt-2" />
+            </div>
+          ))
+        ) : vehicles.length === 0 ? (
+          <p className="text-muted-foreground col-span-full text-center py-8 text-sm">
+            No vehicles available. Click "Add Vehicle" to get started.
+          </p>
+        ) : filtered.length === 0 ? (
+          <p className="text-muted-foreground col-span-full text-center py-8 text-sm">
+            No vehicles found for <strong>{selectedTab}</strong> status or search filter.
+          </p>
+        ) : (
+          filtered.map((v) => (
+            <div key={v._id} onClick={() => setSelectedVehicle(v)} className="cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]">
+              <VehicleCard
+                id={v._id}
+                name={v.name}
+                imei={v.imei}
+                licensePlate={v.licensePlate}
+                status={v.currentStatus}
+                speed={v.telemetry.speed}
+                battery={v.telemetry.vehicleBattery}
+                timestamp={v.telemetry.timestamp}
+                onDelete={(id) => {
+                  setVehicles((prev) => prev.filter((veh) => veh._id !== id))
+                  if (selectedVehicle?._id === id) setSelectedVehicle(null)
+                }}
+              />
+            </div>
+          ))
+        )}
       </div>
-    ))
-  ) : vehicles.length === 0 ? (
-    <p className="text-muted-foreground col-span-full text-center py-10">
-      No vehicles available. Click "Add Vehicle" to get started.
-    </p>
-  ) : filtered.length === 0 ? (
-    <p className="text-muted-foreground col-span-full text-center py-10">
-      No vehicles found for <strong>{selectedTab}</strong> status or search filter.
-    </p>
-  ) : (
-    filtered.map((v) => (
-      <div key={v._id} onClick={() => setSelectedVehicle(v)} className="cursor-pointer">
-        <VehicleCard
-          id={v._id}
-          name={v.name}
-          imei={v.imei}
-          licensePlate={v.licensePlate}
-          status={v.currentStatus}
-          speed={v.telemetry.speed}
-          battery={v.telemetry.vehicleBattery}
-          timestamp={v.telemetry.timestamp}
-          onDelete={(id) => {
-            setVehicles((prev) => prev.filter((veh) => veh._id !== id))
-            if (selectedVehicle?._id === id) setSelectedVehicle(null)
-          }}
-        />
-      </div>
-    ))
-  )}
-</div>
-
     </div>
   )
 }
