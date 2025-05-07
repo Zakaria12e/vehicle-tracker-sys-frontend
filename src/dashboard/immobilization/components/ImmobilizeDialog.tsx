@@ -28,12 +28,12 @@ export const ImmobilizeDialog = ({ disabled }: ImmobilizeDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-1" disabled={disabled}>
+        <Button className="gap-1 w-full sm:w-auto" disabled={disabled}>
           <Lock className="h-4 w-4" />
-          Immobilize
+          <span className="whitespace-nowrap">Immobilize</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Confirm Vehicle Immobilization</DialogTitle>
           <DialogDescription>
@@ -41,7 +41,6 @@ export const ImmobilizeDialog = ({ disabled }: ImmobilizeDialogProps) => {
             remove the immobilization.
           </DialogDescription>
         </DialogHeader>
-        {/* Rest of dialog content */}
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="reason">Reason for immobilization</Label>
@@ -51,11 +50,12 @@ export const ImmobilizeDialog = ({ disabled }: ImmobilizeDialogProps) => {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               required
+              className="min-h-24"
             />
           </div>
           <div className="rounded-md bg-amber-50 p-4 border border-amber-200 dark:bg-amber-900/20 dark:border-amber-900/30">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5" />
+              <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5 shrink-0" />
               <div>
                 <h4 className="font-medium text-amber-800 dark:text-amber-500">Important Safety Notice</h4>
                 <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
@@ -66,11 +66,19 @@ export const ImmobilizeDialog = ({ disabled }: ImmobilizeDialogProps) => {
             </div>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
+        <DialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setIsOpen(false)}
+            className="w-full sm:w-auto"
+          >
             Cancel
           </Button>
-          <Button onClick={handleImmobilize} disabled={isImmobilizing || !reason} className="gap-1">
+          <Button 
+            onClick={handleImmobilize} 
+            disabled={isImmobilizing || !reason} 
+            className="gap-1 w-full sm:w-auto"
+          >
             {isImmobilizing ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />

@@ -9,10 +9,10 @@ export const ImmobilizationGuide = () => {
         <CardDescription>Important information about vehicle immobilization</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-lg border p-4">
             <div className="flex items-start gap-3">
-              <div className="rounded-full p-2 bg-primary/10">
+              <div className="rounded-full p-2 bg-primary/10 shrink-0">
                 <Lock className="h-4 w-4 text-primary" />
               </div>
               <div>
@@ -26,7 +26,7 @@ export const ImmobilizationGuide = () => {
 
           <div className="rounded-lg border p-4">
             <div className="flex items-start gap-3">
-              <div className="rounded-full p-2 bg-amber-100 dark:bg-amber-900/50">
+              <div className="rounded-full p-2 bg-amber-100 dark:bg-amber-900/50 shrink-0">
                 <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
               </div>
               <div>
@@ -40,7 +40,7 @@ export const ImmobilizationGuide = () => {
 
           <div className="rounded-lg border p-4">
             <div className="flex items-start gap-3">
-              <div className="rounded-full p-2 bg-green-100 dark:bg-green-900/50">
+              <div className="rounded-full p-2 bg-green-100 dark:bg-green-900/50 shrink-0">
                 <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-500" />
               </div>
               <div>
