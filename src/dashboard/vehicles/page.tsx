@@ -43,6 +43,9 @@ export default function VehiclesPage() {
   const [loading, setLoading] = useState(false)
   const [loadingVehicles, setLoadingVehicles] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(6)
+
 
   const fetchVehicles = async () => {
     setLoadingVehicles(true)
@@ -126,6 +129,14 @@ export default function VehiclesPage() {
 
   useEffect(() => {
     fetchVehicles()
+    const updateItemsPerPage = () => {
+      const isMobile = window.innerWidth < 640 // Tailwind's `sm`
+      setItemsPerPage(isMobile ? 3 : 6)
+    }
+  
+    updateItemsPerPage() // Set on load
+    window.addEventListener("resize", updateItemsPerPage)
+    return () => window.removeEventListener("resize", updateItemsPerPage)
   }, [])
 
   const filtered = vehicles.filter((v) => {
@@ -133,6 +144,12 @@ export default function VehiclesPage() {
     const search = searchQuery.toLowerCase()
     return v.name.toLowerCase().includes(search) || v.model.toLowerCase().includes(search)
   })
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage)
+const paginatedVehicles = filtered.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+)
 
   return (
     <div className="flex flex-col gap-4 p-3 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
@@ -239,8 +256,12 @@ export default function VehiclesPage() {
             No vehicles found for <strong>{selectedTab}</strong> status or search filter.
           </p>
         ) : (
-          filtered.map((v) => (
-            <div key={v._id} onClick={() => setSelectedVehicle(v)} className="cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]">
+          paginatedVehicles.map((v) => (
+            <div
+              key={v._id}
+              onClick={() => setSelectedVehicle(v)}
+              className="cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]"
+            >
               <VehicleCard
                 id={v._id}
                 name={v.name}
@@ -257,8 +278,34 @@ export default function VehiclesPage() {
               />
             </div>
           ))
+          
         )}
+       
+
       </div>
+      {totalPages > 1 && (
+  <div className="flex justify-center gap-2 mt-4">
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+      disabled={currentPage === 1}
+    >
+      Previous
+    </Button>
+    <span className="text-sm self-center">
+      Page {currentPage} of {totalPages}
+    </span>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+      disabled={currentPage === totalPages}
+    >
+      Next
+    </Button>
+  </div>
+)}
     </div>
   )
 }
