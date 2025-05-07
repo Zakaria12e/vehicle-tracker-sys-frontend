@@ -145,7 +145,7 @@ export default function GeofencingPage() {
   }
 
   const handleDeleteZone = async (id: string) => {
-    if (!confirm("Delete this zone?")) return
+
     try {
       const res = await fetch(`${API_URL}/geofences/${id}`, {
         method: "DELETE",
