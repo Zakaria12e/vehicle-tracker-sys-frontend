@@ -179,40 +179,6 @@ export default function LoginForm({
   );
 }
 
-const GoogleLogo = () => (
-  <svg
-    width="1.2em"
-    height="1.2em"
-    viewBox="0 0 16 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="inline-block shrink-0 align-sub"
-  >
-    <g clipPath="url(#clip0)">
-      <path
-        d="M15.68 8.18a8 8 0 00-.14-1.62H8v3.06h4.68A4.01 4.01 0 018 12a4.58 4.58 0 01-4.3-3.07H0v1.92A8 8 0 008 16c2.3 0 4.23-.76 5.65-2.06L13.3 12a7.94 7.94 0 002.38-3.82h-.01z"
-        fill="#4285F4"
-      />
-      <path
-        d="M8 3.17a4.3 4.3 0 013.03 1.18l2.26-2.26A7.97 7.97 0 008 0a8 8 0 00-7.14 4.5L3.5 6.5A4.58 4.58 0 018 3.17z"
-        fill="#EA4335"
-      />
-      <path
-        d="M.86 4.5A7.97 7.97 0 000 8c0 1.22.29 2.37.86 3.5l2.64-2.04A4.6 4.6 0 013.5 6.5L.86 4.5z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M8 16a8 8 0 005.66-2.06l-2.65-2.05A4.58 4.58 0 018 12a4.58 4.58 0 01-4.3-3.07L.86 11.5A8 8 0 008 16z"
-        fill="#34A853"
-      />
-    </g>
-    <defs>
-      <clipPath id="clip0">
-        <rect width="16" height="16" fill="white" />
-      </clipPath>
-    </defs>
-  </svg>
-);
 
 function TruckTrackingSVG() {
   return (
