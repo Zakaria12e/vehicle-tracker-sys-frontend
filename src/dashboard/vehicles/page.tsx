@@ -17,6 +17,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { VehicleCard } from "./VehicleCard"
+import { motion } from "framer-motion"
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface Vehicle {
@@ -32,6 +33,15 @@ interface Vehicle {
     speed: number
     timestamp: string
   }
+}
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 1 },
+  }),
 }
 
 export default function VehiclesPage() {
@@ -152,14 +162,19 @@ const paginatedVehicles = filtered.slice(
 )
 
   return (
-    <div className="flex flex-col gap-4 p-3 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+    <motion.div  className="flex flex-col gap-4 p-3 md:p-6 lg:p-8 max-w-7xl mx-auto w-full"
+    initial="hidden"
+    animate="visible"
+    variants={fadeInUp}
+    custom={0}>
       {/* Header */}
-      <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+      <motion.div 
+      custom={0} variants={fadeInUp} initial="hidden" animate="visible"
+      className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-xl font-bold tracking-tight md:text-2xl">Vehicles</h1>
           <p className="text-sm text-muted-foreground">Manage your vehicle fleet</p>
         </div>
-
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button className="gap-1 cursor-pointer mt-2 md:mt-0 h-9">
@@ -210,7 +225,7 @@ const paginatedVehicles = filtered.slice(
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+      </motion.div>
 
       {/* Search + Filters */}
       <div className="flex flex-col gap-3">
@@ -256,8 +271,12 @@ const paginatedVehicles = filtered.slice(
             No vehicles found for <strong>{selectedTab}</strong> status or search filter.
           </p>
         ) : (
-          paginatedVehicles.map((v) => (
-            <div
+          paginatedVehicles.map((v,i) => (
+            <motion.div
+            custom={i}
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
               key={v._id}
               onClick={() => setSelectedVehicle(v)}
               className="cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]"
@@ -276,7 +295,7 @@ const paginatedVehicles = filtered.slice(
                   if (selectedVehicle?._id === id) setSelectedVehicle(null)
                 }}
               />
-            </div>
+            </motion.div>
           ))
           
         )}
@@ -306,6 +325,6 @@ const paginatedVehicles = filtered.slice(
     </Button>
   </div>
 )}
-    </div>
+    </motion.div>
   )
 }

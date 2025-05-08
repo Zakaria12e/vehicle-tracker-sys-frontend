@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Car, Battery, Gauge, Power, MapPin } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { motion } from "framer-motion";
 
 type Props = {
   devices: any[];
@@ -152,6 +153,11 @@ const VehicleMap: React.FC<Props & { triggerZoom: boolean }> = ({ devices, selec
           icon={createCustomMarker(v.currentStatus)}
         >
           <Popup>
+          <motion.div
+    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+    animate={{ opacity: 1, scale: 1, y: 0 }}
+    transition={{ duration: 0.4, ease: "easeOut" }}
+  >
             <Card className="border-0 shadow-none w-[250px] dark:bg-black">
               <CardContent className="p-3">
                 <div className="flex items-center justify-between mb-3">
@@ -191,6 +197,7 @@ const VehicleMap: React.FC<Props & { triggerZoom: boolean }> = ({ devices, selec
                 </div>
               </CardContent>
             </Card>
+          </motion.div>
           </Popup>
         </Marker>
       ))}
