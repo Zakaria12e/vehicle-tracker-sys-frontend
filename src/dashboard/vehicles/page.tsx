@@ -17,7 +17,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { VehicleCard } from "./VehicleCard"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface Vehicle {
@@ -35,13 +35,37 @@ interface Vehicle {
   }
 }
 
+// Animation variants with shorter, more consistent timing
 const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
+  hidden: { opacity: 0, y: 10 },
+  visible: {
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 1 },
-  }),
+    transition: { 
+      duration: 0.3,
+      ease: "easeOut"
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: 10,
+    transition: {
+      duration: 0.2,
+      ease: "easeIn"
+    }
+  }
+}
+
+// Container stagger animation
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.05
+    }
+  }
 }
 
 export default function VehiclesPage() {
@@ -149,6 +173,11 @@ export default function VehiclesPage() {
     return () => window.removeEventListener("resize", updateItemsPerPage)
   }, [])
 
+  useEffect(() => {
+    // Reset to page 1 when filters change
+    setCurrentPage(1)
+  }, [searchQuery, selectedTab])
+
   const filtered = vehicles.filter((v) => {
     if (selectedTab !== "all" && v.currentStatus !== selectedTab) return false
     const search = searchQuery.toLowerCase()
@@ -156,21 +185,25 @@ export default function VehiclesPage() {
   })
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage)
-const paginatedVehicles = filtered.slice(
-  (currentPage - 1) * itemsPerPage,
-  currentPage * itemsPerPage
-)
+  const paginatedVehicles = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
   return (
-    <motion.div  className="flex flex-col gap-4 p-3 md:p-6 lg:p-8 max-w-7xl mx-auto w-full"
-    initial="hidden"
-    animate="visible"
-    variants={fadeInUp}
-    custom={0}>
+    <motion.div 
+      className="flex flex-col gap-4 p-3 md:p-6 lg:p-8 max-w-7xl mx-auto w-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Header */}
       <motion.div 
-      custom={0} variants={fadeInUp} initial="hidden" animate="visible"
-      className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between"
+      >
         <div>
           <h1 className="text-xl font-bold tracking-tight md:text-2xl">Vehicles</h1>
           <p className="text-sm text-muted-foreground">Manage your vehicle fleet</p>
@@ -252,79 +285,83 @@ const paginatedVehicles = filtered.slice(
       </div>
 
       {/* Vehicle Cards */}
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {loadingVehicles ? (
-          Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="space-y-2 p-3 border rounded-lg shadow-sm">
-              <Skeleton className="h-5 w-1/2" />
-              <Skeleton className="h-4 w-1/3" />
-              <Skeleton className="h-4 w-1/4" />
-              <Skeleton className="h-9 w-full mt-2" />
-            </div>
-          ))
-        ) : vehicles.length === 0 ? (
-          <p className="text-muted-foreground col-span-full text-center py-8 text-sm">
-            No vehicles available. Click "Add Vehicle" to get started.
-          </p>
-        ) : filtered.length === 0 ? (
-          <p className="text-muted-foreground col-span-full text-center py-8 text-sm">
-            No vehicles found for <strong>{selectedTab}</strong> status or search filter.
-          </p>
-        ) : (
-          paginatedVehicles.map((v,i) => (
-            <motion.div
-            custom={i}
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-              key={v._id}
-              onClick={() => setSelectedVehicle(v)}
-              className="cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]"
-            >
-              <VehicleCard
-                id={v._id}
-                name={v.name}
-                imei={v.imei}
-                licensePlate={v.licensePlate}
-                status={v.currentStatus}
-                speed={v.telemetry.speed}
-                battery={v.telemetry.vehicleBattery}
-                timestamp={v.telemetry.timestamp}
-                onDelete={(id) => {
-                  setVehicles((prev) => prev.filter((veh) => veh._id !== id))
-                  if (selectedVehicle?._id === id) setSelectedVehicle(null)
-                }}
-              />
-            </motion.div>
-          ))
-          
-        )}
-       
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key={`${selectedTab}-${searchQuery}-${currentPage}`}
+          className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          {loadingVehicles ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="space-y-2 p-3 border rounded-lg shadow-sm">
+                <Skeleton className="h-5 w-1/2" />
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-4 w-1/4" />
+                <Skeleton className="h-9 w-full mt-2" />
+              </div>
+            ))
+          ) : vehicles.length === 0 ? (
+            <p className="text-muted-foreground col-span-full text-center py-8 text-sm">
+              No vehicles available. Click "Add Vehicle" to get started.
+            </p>
+          ) : filtered.length === 0 ? (
+            <p className="text-muted-foreground col-span-full text-center py-8 text-sm">
+              No vehicles found for <strong>{selectedTab}</strong> status or search filter.
+            </p>
+          ) : (
+            paginatedVehicles.map((v) => (
+              <motion.div
+                key={v._id}
+                onClick={() => setSelectedVehicle(v)}
+                className="cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                variants={fadeInUp}
+                layout
+              >
+                <VehicleCard
+                  id={v._id}
+                  name={v.name}
+                  imei={v.imei}
+                  licensePlate={v.licensePlate}
+                  status={v.currentStatus}
+                  speed={v.telemetry.speed}
+                  battery={v.telemetry.vehicleBattery}
+                  timestamp={v.telemetry.timestamp}
+                  onDelete={(id) => {
+                    setVehicles((prev) => prev.filter((veh) => veh._id !== id))
+                    if (selectedVehicle?._id === id) setSelectedVehicle(null)
+                  }}
+                />
+              </motion.div>
+            ))
+          )}
+        </motion.div>
+      </AnimatePresence>
 
-      </div>
       {totalPages > 1 && (
-  <div className="flex justify-center gap-2 mt-4">
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-      disabled={currentPage === 1}
-    >
-      Previous
-    </Button>
-    <span className="text-sm self-center">
-      Page {currentPage} of {totalPages}
-    </span>
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-      disabled={currentPage === totalPages}
-    >
-      Next
-    </Button>
-  </div>
-)}
+        <div className="flex justify-center gap-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <span className="text-sm self-center">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </motion.div>
   )
 }
