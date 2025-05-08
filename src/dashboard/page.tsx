@@ -100,7 +100,7 @@ return (
 
     {/* Stat Cards */}
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      <Card className="shadow-sm">
+      <Card className="shadow-sm lg:py-1 lg:h-[150px]">
         <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
           <CardTitle className="text-xs font-medium md:text-sm">
             Total Vehicles
@@ -115,7 +115,7 @@ return (
         </CardContent>
       </Card>
 
-      <Card className="shadow-sm">
+      <Card className="shadow-sm lg:py-1 lg:h-[150px]">
         <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
           <CardTitle className="text-xs font-medium md:text-sm">Active Alerts</CardTitle>
           <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
@@ -128,7 +128,7 @@ return (
         </CardContent>
       </Card>
 
-      <Card className="shadow-sm">
+      <Card className="shadow-sm lg:py-1 lg:h-[150px]">
         <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
           <CardTitle className="text-xs font-medium md:text-sm">
             Total Distance
@@ -141,7 +141,7 @@ return (
         </CardContent>
       </Card>
 
-      <Card className="shadow-sm">
+      <Card className="shadow-sm lg:py-1 lg:h-[150px]">
         <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
           <CardTitle className="text-xs font-medium md:text-sm">
             Active Vehicles
