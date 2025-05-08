@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useAuth } from "@/context/AuthContext"
 import FloatingNav from "@/components/FloatingNav";
+import { motion, AnimatePresence } from "framer-motion";
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const { user } = useAuth()
@@ -75,20 +77,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     navigate("/login");
   };
 
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 8 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* Header */}
+      <motion.header
+        initial={{ y: -10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      >
         <div className="container flex h-14 items-center justify-between">
           <div className="flex items-center gap-2 font-bold">
-            <img className="h-5 w-5" src="/architecture-and-city.png" alt="Vehicle Tracker Logo" />
+            <img className="h-5 w-5" src="/architecture-and-city.png" alt="Logo" />
             <span>TrackFleet</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
-              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary"></span>
+              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary" />
             </Button>
-            
             <Link to="/dashboard/settings">
               <Avatar>
                 <AvatarImage
@@ -99,6 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <AvatarFallback>{user?.name?.[0]?.toUpperCase() ?? "?"}</AvatarFallback>
               </Avatar>
             </Link>
+            {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">
@@ -112,54 +125,101 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <span>VehicleTracker</span>
                   </div>
                 </div>
-                <nav className="grid gap-1 p-2">
-                  {routes.map((route) => (
-                    <Link
-                      key={route.to}
-                      to={route.to}
-                      className={cn(
-                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
-                        route.active ? "bg-muted text-foreground" : "text-muted-foreground",
-                      )}>
-                      <route.icon className="h-4 w-4" />
-                      {route.label}
-                    </Link>
-                  ))}
-                  <Link
-                    to="#"
-                    onClick={handleLogout}
-                    className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
-                  >   
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                  </Link>
-                </nav>
+                <motion.nav
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    visible: { transition: { staggerChildren: 0.05 } },
+                    hidden: {},
+                  }}
+                  className="grid gap-1 p-2"
+                >
+                  {routes.map((route, i) => {
+                    const Icon = route.icon;
+                    const active = location.pathname === route.to;
+                    return (
+                      <motion.div key={route.to} variants={fadeInUp}>
+                        <Link
+                          to={route.to}
+                          className={cn(
+                            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
+                            active ? "bg-muted text-foreground" : "text-muted-foreground"
+                          )}
+                        >
+                          <Icon className="h-4 w-4" />
+                          {route.label}
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                  <motion.div variants={fadeInUp}>
+                    <button
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </button>
+                  </motion.div>
+                </motion.nav>
               </SheetContent>
             </Sheet>
           </div>
         </div>
-      </header>
+      </motion.header>
+
+      {/* Body */}
       <div className="flex flex-1">
+        {/* Sidebar */}
         <aside className="hidden w-64 border-r bg-muted/10 md:block">
-          <nav className="grid gap-1 p-4">
-            {routes.map((route) => (
-              <Link
-                key={route.to}
-                to={route.to}
-                className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
-                  route.active ? "bg-muted text-foreground" : "text-muted-foreground",
-                )}>
-                <route.icon className="h-4 w-4" />
-                {route.label}
-              </Link>
-            ))}
-            
-          </nav>
+          <motion.nav
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: { transition: { staggerChildren: 0.05 } },
+              hidden: {},
+            }}
+            className="grid gap-1 p-4"
+          >
+            {routes.map((route) => {
+              const Icon = route.icon;
+              const active = location.pathname === route.to;
+              return (
+                <motion.div key={route.to} variants={fadeInUp}>
+                  <Link
+                    to={route.to}
+                    className={cn(
+                      "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
+                      active ? "bg-muted text-foreground" : "text-muted-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {route.label}
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </motion.nav>
         </aside>
-        <main className="flex-1">{children}</main>
+
+        {/* Main Content */}
+        <main className="flex-1 p-2 md:p-4">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+
+        {/* Floating Navigation */}
         <FloatingNav />
       </div>
     </div>
-  )
+  );
 }
