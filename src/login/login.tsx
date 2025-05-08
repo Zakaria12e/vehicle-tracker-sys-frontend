@@ -119,17 +119,7 @@ export default function LoginForm({
                   >
                     {loading ? "Logging in..." : "Login"}
                   </Button>
-                  <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                    <span className="bg-background text-muted-foreground relative z-10 px-2">
-                      Or continue with
-                    </span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    className="w-full gap-3 cursor-pointer h-10"
-                  >
-                    <GoogleLogo /> Continue with Google
-                  </Button>
+
                   <div className="text-center text-sm">
                     Don&apos;t have an account?{" "}
                     <Link to="/signup" className="underline underline-offset-4">
@@ -139,7 +129,7 @@ export default function LoginForm({
                 </div>
               </form>
 
-              <div className="relative hidden md:flex flex-col items-center justify-center p-8 bg-slate-50 dark:bg-slate-900/50">
+              <div className="relative hidden md:flex flex-col items-center justify-center p-8 bg-slate-50 dark:bg-black">
                 <div className="relative z-20 flex flex-col items-center justify-center gap-6 text-center">
                   <div className="flex items-center justify-center w-32 h-32 rounded-full bg-slate-200/50 dark:bg-slate-700/50 p-6">
                     <TruckTrackingSVG />
