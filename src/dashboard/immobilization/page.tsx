@@ -33,7 +33,8 @@ export default function ImmobilizationPage() {
       </div>
       
       <Tabs defaultValue="active" className="w-full">
-        <TabsList className="mb-4 w-full">
+      <TabsList className="mb-4 w-full overflow-x-auto whitespace-nowrap">
+
           <TabsTrigger value="active" className="flex-1">Active Immobilizations</TabsTrigger>
           <TabsTrigger value="history" className="flex-1">Immobilization History</TabsTrigger>
         </TabsList>
