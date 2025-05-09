@@ -20,22 +20,7 @@ export function NotificationsSettings() {
             </div>
             <Switch defaultChecked />
           </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <h3 className="font-medium">SMS Notifications</h3>
-              <p className="text-sm text-muted-foreground">Receive text messages for critical alerts</p>
-            </div>
-            <Switch />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <h3 className="font-medium">Push Notifications</h3>
-              <p className="text-sm text-muted-foreground">Receive push notifications in the mobile app</p>
-            </div>
-            <Switch defaultChecked />
-          </div>
+         
         </CardContent>
         <CardFooter>
           <Button>Save Preferences</Button>
