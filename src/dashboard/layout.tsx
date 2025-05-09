@@ -14,62 +14,64 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const location = useLocation()
   const { user } = useAuth()
 
-  const routes = [
-    {
-      to: "/dashboard",
-      label: "Dashboard",
-      icon: Home,
-      active: location.pathname === "/dashboard",
-    },
-    {
-      to: "/dashboard/vehicles",
-      label: "Vehicles",
-      icon: Car,
-      active: location.pathname === "/dashboard/vehicles",
-    },
-    {
-      to: "/dashboard/tracking",
-      label: "Live Tracking",
-      icon: Map,
-      active: location.pathname === "/dashboard/tracking",
-    },
-    {
-      to: "/dashboard/history",
-      label: "Trip History",
-      icon: Clock,
-      active: location.pathname === "/dashboard/history",
-    },
-    {
-      to: "/dashboard/geofencing",
-      label: "Geofencing",
-      icon: Shield,
-      active: location.pathname === "/dashboard/geofencing",
-    },
-    {
-      to: "/dashboard/immobilization",
-      label: "Immobilization",
-      icon: Lock,
-      active: location.pathname === "/dashboard/immobilization",
-    },
-    {
-      to: "/dashboard/alerts",
-      label: "Alerts",
-      icon: Bell,
-      active: location.pathname === "/dashboard/alerts",
-    },
-    {
-      to: "/dashboard/statistics",
-      label: "Statistics",
-      icon: BarChart,
-      active: location.pathname === "/dashboard/statistics",
-    },
-    {
-      to: "/dashboard/settings",
-      label: "Settings",
-      icon: Settings,
-      active: location.pathname === "/dashboard/settings",
-    },
-  ]
+const routes = [
+  {
+    to: "/dashboard",
+    label: "Dashboard",
+    icon: Home,
+    color: "text-blue-600 dark:text-blue-400",
+  },
+  {
+    to: "/dashboard/vehicles",
+    label: "Vehicles",
+    icon: Car,
+    color: "text-orange-600 dark:text-orange-400",
+  },
+  {
+    to: "/dashboard/tracking",
+    label: "Live Tracking",
+    icon: Map,
+    color: "text-green-600 dark:text-green-400",
+  },
+  {
+    to: "/dashboard/history",
+    label: "Trip History",
+    icon: Clock,
+    color: "text-purple-600 dark:text-purple-400",
+  },
+  {
+    to: "/dashboard/geofencing",
+    label: "Geofencing",
+    icon: Shield,
+    color: "text-red-600 dark:text-red-400",
+  },
+  {
+    to: "/dashboard/immobilization",
+    label: "Immobilization",
+    icon: Lock,
+    color: "text-yellow-600 dark:text-yellow-400",
+  },
+  {
+    to: "/dashboard/alerts",
+    label: "Alerts",
+    icon: Bell,
+    color: "text-pink-600 dark:text-pink-400",
+  },
+  {
+    to: "/dashboard/statistics",
+    label: "Statistics",
+    icon: BarChart,
+    color: "text-cyan-600 dark:text-cyan-400",
+  },
+  {
+    to: "/dashboard/settings",
+    label: "Settings",
+    icon: Settings,
+    color: "text-gray-600 dark:text-gray-300",
+  },
+];
+
+
 
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -148,7 +150,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             active ? "bg-muted text-foreground" : "text-muted-foreground"
                           )}
                         >
-                          <Icon className="h-4 w-4" />
+                          <Icon className={cn("h-4 w-4", route.color)} />
+
                           {route.label}
                         </Link>
                       </motion.div>
@@ -195,7 +198,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       active ? "bg-muted text-foreground" : "text-muted-foreground"
                     )}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className={cn("h-4 w-4", route.color)} />
+
                     {route.label}
                   </Link>
                 </motion.div>
