@@ -38,6 +38,7 @@ import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import Mapgeofences from "./Mapgeofences";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export default function GeofencingPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -70,6 +71,18 @@ export default function GeofencingPage() {
       return window.innerWidth < 768 ? 2 : 3;
     }
     return 3;
+  };
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.07,
+        duration: 0.4,
+        ease: "easeOut",
+      },
+    }),
   };
 
   const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
@@ -275,7 +288,13 @@ export default function GeofencingPage() {
 
   return (
     <div className="flex flex-col gap-6 p-3 md:p-8">
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+        custom={0}
+        className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
+      >
         <div>
           <h1 className="text-xl md:text-2xl font-bold tracking-tight">
             Geofencing
@@ -348,7 +367,7 @@ export default function GeofencingPage() {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
+      </motion.div>
 
       {/* Mobile tab navigation */}
       <div className="flex md:hidden">
@@ -421,8 +440,15 @@ export default function GeofencingPage() {
                   No zones created yet. Add a zone to get started.
                 </div>
               ) : (
-                paginatedZones.map((zone) => (
-                  <div key={zone._id} className="rounded-lg border p-3">
+                paginatedZones.map((zone, i) => (
+                  <motion.div
+                    key={zone._id}
+                    className="rounded-lg border p-3"
+                    custom={i}
+                    initial="hidden"
+                    animate="visible"
+                    variants={fadeInUp}
+                  >
                     <div className="flex items-center justify-between">
                       <div className="font-medium truncate max-w-[70%]">
                         {zone.name}
@@ -483,7 +509,7 @@ export default function GeofencingPage() {
                       </div>
                       <Switch defaultChecked={zone.notifyOnExit} />
                     </div>
-                  </div>
+                  </motion.div>
                 ))
               )}
             </CardContent>
@@ -550,8 +576,12 @@ export default function GeofencingPage() {
                 <tbody>
                   {paginatedAssignments.map(
                     ({ vehicle, zoneName, status }, index) => (
-                      <tr
+                      <motion.tr
                         key={`${vehicle._id}-${zoneName}-${index}`}
+                        custom={index}
+                        initial="hidden"
+                        animate="visible"
+                        variants={fadeInUp}
                         className="border-b"
                       >
                         <td className="whitespace-nowrap px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm">
@@ -599,7 +629,7 @@ export default function GeofencingPage() {
                             Edit
                           </Button>
                         </td>
-                      </tr>
+                      </motion.tr>
                     )
                   )}
                 </tbody>
