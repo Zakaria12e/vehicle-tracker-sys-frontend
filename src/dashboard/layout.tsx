@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useAuth } from "@/context/AuthContext"
 import FloatingNav from "@/components/FloatingNav";
 import { motion, AnimatePresence } from "framer-motion";
-import { ModeToggle } from "@/components/mode-toggle"
+import {ModeToggle} from "@/components/mode-toggle"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
