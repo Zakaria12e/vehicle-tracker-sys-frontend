@@ -11,7 +11,7 @@ export default function ImmobilizationPage() {
   const [selectedVehicle, setSelectedVehicle] = useState("")
   
   return (
-    <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-8 max-w-[100vw] overflow-hidden">
+    <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-8 max-w-[100vw] ml-[-12px] overflow-hidden">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="space-y-1">
           <h1 className="text-xl font-bold tracking-tight md:text-2xl">Vehicle Immobilization</h1>
