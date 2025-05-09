@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TabsContent } from "@/components/ui/tabs"
-import { ModeToggle } from "@/components/mode-toggle"
 
 export function PreferencesSettings() {
   return (
@@ -26,8 +25,6 @@ export function PreferencesSettings() {
               </SelectContent>
             </Select>
           </div>
-          <Label htmlFor="theme-toggle">Toggle Theme</Label>
-          <ModeToggle/>
         </CardContent>
         <CardFooter>
           <Button>Save Preferences</Button>
