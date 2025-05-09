@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -217,7 +218,20 @@ export default function Signup({
               <div className="relative hidden md:block ">
                 <div className="relative z-20 flex flex-col items-center justify-center h-full p-8 text-center">
                   <div className="relative flex items-center justify-center w-28 h-28 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-sm mb-4">
-                    <span className="absolute inset-0 rounded-full zoom-animate bg-primary/10 dark:bg-blue-500/10 z-0" />
+                    <motion.div
+                      className="absolute inset-0 rounded-full bg-primary/10 dark:bg-blue-500/10 z-0"
+                      initial={{ scale: 1, opacity: 0.6 }}
+                      animate={{
+                        scale: [1, 1.15, 1],
+                        opacity: [0.6, 1, 0.6],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+
                     <div className="relative z-10 p-5">
                       <TruckTrackingSVG />
                     </div>
