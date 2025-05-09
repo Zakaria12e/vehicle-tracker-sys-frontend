@@ -1,18 +1,6 @@
-"use client"
-
-import { Car, MapPin } from "lucide-react"
-import { useEffect, useState } from "react"
+import { MapPin } from "lucide-react"
 
 export default function VehicleLoader() {
-  const [rotation, setRotation] = useState(0)
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRotation((prev) => (prev + 2) % 360)
-    }, 20)
-
-    return () => clearInterval(interval)
-  }, [])
 
   return (
     <div className="flex flex-col items-center justify-center">
