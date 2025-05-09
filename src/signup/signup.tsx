@@ -65,12 +65,12 @@ export default function Signup({
   };
   
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center p-4 sm:p-6 md:p-10">
-      <div className="w-full max-w-sm md:max-w-5xl">
+    <div className="flex min-h-svh flex-col items-center justify-center p-4 sm:p-6 md:p-6">
+      <div className="w-full max-w-sm md:max-w-3xl">
         <div className={cn("flex flex-col gap-4 sm:gap-6", className)} {...props}>
           <Card className="overflow-hidden p-0 shadow-md">
             <CardContent className="grid p-0 md:grid-cols-2">
-              <form className="p-4 sm:p-6 md:p-8" onSubmit={handleSubmit}>
+              <form className="p-4 sm:p-6 md:p-6" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-4 sm:gap-6">
                   <div className="flex flex-col items-center text-center">
                     <h1 className="text-xl sm:text-2xl font-bold">Create an Account</h1>
@@ -80,7 +80,7 @@ export default function Signup({
                   </div>
                   
                   {/* On mobile, stack fields vertically */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
                     <div className="grid gap-2 sm:gap-3">
                       <Label htmlFor="name">Full Name</Label>
                       <Input
@@ -104,7 +104,7 @@ export default function Signup({
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
                     <div className="grid gap-2 sm:gap-3">
                       <Label htmlFor="company">Company Name</Label>
                       <Input
