@@ -163,11 +163,10 @@ export default function GeofencingPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Request failed");
 
-      // json.data is already an array of { vehicleId, vehicleName, inside: […] }
-      const newStatuses: Record<string, "inside" | "outside"> = {};
+      const newStatuses: { [vehicleId: string]: { id: string; name?: string }[] } = {};
       (json.data as Array<{ vehicleId: string; inside: any[] }>).forEach(
         (entry) => {
-          newStatuses[entry.vehicleId] = entry.inside;
+          newStatuses[entry.vehicleId] = entry.inside.map((z) => ({ id: z.id, name: z.name }));
         }
       );
 
