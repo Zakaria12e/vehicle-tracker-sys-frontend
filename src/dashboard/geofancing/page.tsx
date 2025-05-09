@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
-import Mapgeofences from "./Mapgeofences";
+import Mapgeofences from "./components/Mapgeofences";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
