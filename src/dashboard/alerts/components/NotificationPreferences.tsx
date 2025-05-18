@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { AlertTriangle, Battery, Bell, Clock, Fuel, Mail, MessageSquare, ShieldAlert, ChevronDown, ChevronUp } from "lucide-react"
+import { AlertTriangle, Battery, Bell, Clock, Mail, MessageSquare, ShieldAlert, ChevronDown, ChevronUp } from "lucide-react"
 import { useState } from "react"
 
 export function NotificationPreferences() {
@@ -124,14 +124,13 @@ export function NotificationPreferences() {
                 { icon: ShieldAlert, color: "red", label: "Geofence Alerts" },
                 { icon: Battery, color: "blue", label: "Battery Alerts" },
                 { icon: Clock, color: "purple", label: "Idle Time Alerts" },
-                { icon: Fuel, color: "green", label: "Fuel Level Alerts" },
               ].map(({ icon: Icon, color, label }, index) => (
                 <div key={index} className="flex items-center justify-between rounded-lg border p-3">
                   <div className="flex items-center gap-2">
                     <Icon className="h-4 w-4" />
                     <span>{label}</span>
                   </div>
-                  <Switch defaultChecked={label !== "Fuel Level Alerts"} />
+                  <Switch  />
                 </div>
               ))}
             </div>
