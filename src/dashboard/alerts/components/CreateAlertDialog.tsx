@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -73,17 +71,17 @@ export function CreateAlertDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-1">
+        <Button className="gap-1 w-full sm:w-auto">
           <Plus className="h-4 w-4" />
-          Create Alert
+          <span className="sm:inline">Create Alert</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="w-[90vw] max-w-md sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Create New Alert</DialogTitle>
           <DialogDescription>Set up a new alert for your vehicles</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-1">
           <div className="space-y-2">
             <Label htmlFor="alert-name">Alert Name</Label>
             <Input
@@ -123,7 +121,7 @@ export function CreateAlertDialog() {
                 type="number"
                 placeholder="90"
               />
-              <span>km/h</span>
+              <span className="whitespace-nowrap">km/h</span>
             </div>
           </div>
           <div className="space-y-2">
@@ -145,34 +143,50 @@ export function CreateAlertDialog() {
           </div>
           <div className="space-y-2">
             <Label>Notification Methods</Label>
-            <div className="flex items-center space-x-2 pt-2">
-              <Checkbox
-                id="email"
-                checked={formData.notifications.email}
-                onCheckedChange={(checked) => handleCheckboxChange("email", !!checked)}
-              />
-              <Label htmlFor="email" className="text-sm font-normal">Email</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="sms"
-                checked={formData.notifications.sms}
-                onCheckedChange={(checked) => handleCheckboxChange("sms", !!checked)}
-              />
-              <Label htmlFor="sms" className="text-sm font-normal">SMS</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="app"
-                checked={formData.notifications.app}
-                onCheckedChange={(checked) => handleCheckboxChange("app", !!checked)}
-              />
-              <Label htmlFor="app" className="text-sm font-normal">In-app notification</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="flex items-center space-x-2 pt-2">
+                <Checkbox
+                  id="email"
+                  checked={formData.notifications.email}
+                  onCheckedChange={(checked) => handleCheckboxChange("email", !!checked)}
+                />
+                <Label htmlFor="email" className="text-sm font-normal">Email</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="sms"
+                  checked={formData.notifications.sms}
+                  onCheckedChange={(checked) => handleCheckboxChange("sms", !!checked)}
+                />
+                <Label htmlFor="sms" className="text-sm font-normal">SMS</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="app"
+                  checked={formData.notifications.app}
+                  onCheckedChange={(checked) => handleCheckboxChange("app", !!checked)}
+                />
+                <Label htmlFor="app" className="text-sm font-normal">In-app notification</Label>
+              </div>
             </div>
           </div>
         </div>
-        <DialogFooter>
-          <Button type="button" onClick={handleSubmit}>Create Alert</Button>
+        <DialogFooter className="flex flex-col sm:flex-row gap-2">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => setIsOpen(false)}
+            className="w-full sm:w-auto order-2 sm:order-1"
+          >
+            Cancel
+          </Button>
+          <Button 
+            type="button" 
+            onClick={handleSubmit}
+            className="w-full sm:w-auto order-1 sm:order-2"
+          >
+            Create Alert
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
