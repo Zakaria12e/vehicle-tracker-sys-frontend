@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertTriangle, Battery, Clock, ShieldAlert } from "lucide-react"
+import { AlertTriangle, Battery, Clock, ShieldAlert, ChevronRight } from "lucide-react"
 
 export function AlertHistory() {
   return (
@@ -10,7 +10,8 @@ export function AlertHistory() {
         <CardDescription>Past alerts and notifications</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="relative overflow-x-auto rounded-md border">
+        {/* Desktop view - Table */}
+        <div className="hidden md:block relative overflow-x-auto rounded-md border">
           <table className="w-full text-sm">
             <thead className="bg-muted text-muted-foreground">
               <tr>
@@ -40,9 +41,31 @@ export function AlertHistory() {
                   <Button variant="ghost" size="sm">View</Button>
                 </td>
               </tr>
-              
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile view - Card list */}
+        <div className="md:hidden space-y-3">
+          <div className="rounded-lg border p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-amber-500" />
+                <span className="font-medium">Speed Alert</span>
+              </div>
+              <span className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-1 text-xs text-amber-800 dark:text-amber-400">Active</span>
+            </div>
+            <div className="space-y-1 text-sm">
+              <p className="text-muted-foreground">Ford Transit (ABC-789)</p>
+              <p>Exceeded speed limit (92 km/h)</p>
+              <p className="text-xs text-muted-foreground">Apr 30, 2023 9:15 AM</p>
+            </div>
+            <div className="mt-3 flex justify-end">
+              <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                View <ChevronRight className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
