@@ -10,35 +10,37 @@ interface TripSummaryProps {
 
 export function TripSummary({ totalDistance, totalTrips, drivingTime, averageSpeed, maxSpeed }: TripSummaryProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Trip Summary</CardTitle>
-        <CardDescription>Statistics for selected period</CardDescription>
+    <Card className="w-full">
+      <CardHeader className="pb-3 sm:pb-4">
+        <CardTitle className="text-lg">Trip Summary</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">Statistics for selected period</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">Total Distance</div>
-          <div className="text-2xl font-bold">{totalDistance} km</div>
-        </div>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-1">
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground sm:text-sm">Total Distance</div>
+            <div className="text-lg font-bold sm:text-xl md:text-2xl">{totalDistance} km</div>
+          </div>
 
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">Total Trips</div>
-          <div className="text-2xl font-bold">{totalTrips}</div>
-        </div>
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground sm:text-sm">Total Trips</div>
+            <div className="text-lg font-bold sm:text-xl md:text-2xl">{totalTrips}</div>
+          </div>
 
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">Driving Time</div>
-          <div className="text-2xl font-bold">{drivingTime}</div>
-        </div>
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground sm:text-sm">Driving Time</div>
+            <div className="text-lg font-bold sm:text-xl md:text-2xl">{drivingTime}</div>
+          </div>
 
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">Average Speed</div>
-          <div className="text-2xl font-bold">{averageSpeed} km/h</div>
-        </div>
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground sm:text-sm">Average Speed</div>
+            <div className="text-lg font-bold sm:text-xl md:text-2xl">{averageSpeed} km/h</div>
+          </div>
 
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">Max Speed</div>
-          <div className="text-2xl font-bold">{maxSpeed} km/h</div>
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground sm:text-sm">Max Speed</div>
+            <div className="text-lg font-bold sm:text-xl md:text-2xl">{maxSpeed} km/h</div>
+          </div>
         </div>
       </CardContent>
     </Card>
