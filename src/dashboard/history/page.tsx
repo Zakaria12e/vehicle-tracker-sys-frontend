@@ -58,7 +58,7 @@ export default function HistoryPage() {
       />
 
       <div className="grid gap-6 md:grid-cols-3">
-        <TripMap selectedTripId={selectedTripId} />
+        <TripMap />
         <TripSummary
           totalDistance={1248}
           totalTrips={42}

@@ -1,34 +1,57 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Suspense } from "react"
+import { useEffect,  } from "react"
+import {
+  MapContainer,
+  TileLayer,
+  useMap
+} from "react-leaflet"
+import "leaflet/dist/leaflet.css"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
 
-interface TripMapProps {
-  selectedTripId?: string | null
+const defaultCenter: [number, number] = [31.7917, -7.0926]
+
+
+
+const MapAutoZoom = ({ bounds }: { bounds: [[number, number], [number, number]] | null }) => {
+  const map = useMap()
+  useEffect(() => {
+    if (bounds) {
+      map.fitBounds(bounds, { animate: true, duration: 2 })
+    }
+  }, [bounds, map])
+  return null
 }
 
-export function TripMap({ selectedTripId }: TripMapProps) {
+export function TripMap() {
+
   return (
     <Card className="w-full lg:col-span-2">
       <CardHeader className="pb-3 sm:pb-4">
         <CardTitle className="text-lg">Trip Map</CardTitle>
-        <CardDescription className="text-xs sm:text-sm">Visualization of selected trips</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
+          Selected trip route visualization
+        </CardDescription>
       </CardHeader>
       <CardContent className="h-[250px] p-0 sm:h-[300px] md:h-[350px] lg:h-[400px]">
-        <Suspense fallback={<MapLoading />}>
-          {/* Map component will go here */}
-          <div className="h-full w-full flex items-center justify-center bg-muted/20">
-            <p className="text-sm text-muted-foreground">Map placeholder</p>
-          </div>
-        </Suspense>
+        <MapContainer center={defaultCenter} zoom={6} className="h-full w-full rounded-lg">
+          <TileLayer
+            attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+          />
+          <TileLayer
+            className="hidden dark:block"
+            attribution='&copy; <a href="https://carto.com/">Carto</a>'
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          />
+         
+      
+        </MapContainer>
       </CardContent>
     </Card>
   )
 }
-
-const MapLoading = () => (
-  <div className="h-full w-full flex items-center justify-center bg-muted/20">
-    <div className="flex flex-col items-center gap-2">
-      <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary border-t-transparent sm:h-8 sm:w-8"></div>
-      <p className="text-xs sm:text-sm text-muted-foreground">Loading map...</p>
-    </div>
-  </div>
-)

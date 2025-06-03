@@ -1,7 +1,7 @@
 import React from "react"
 import { Link, useLocation , useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { MapPin, Car, Clock, Bell, Settings, LogOut, Menu, Home, Shield, Map, BarChart, Lock } from "lucide-react"
+import { MapPin, Car, Clock, Bell, Settings, LogOut, Menu, Home, Shield, Map, BarChart, Lock ,Users} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -62,6 +62,13 @@ const routes = [
     label: "Statistics",
     icon: BarChart,
     color: "text-cyan-600 dark:text-cyan-400",
+  },
+   {
+    to: "/dashboard/users",
+    label: "Users",
+    icon: Users,
+    color: "text-teal-600 dark:text-teal-400",
+    visible: user?.role === "admin",
   },
   {
     to: "/dashboard/settings",
@@ -138,25 +145,27 @@ const routes = [
                   }}
                   className="grid gap-1 p-2"
                 >
-                  {routes.map((route, i) => {
-                    const Icon = route.icon;
-                    const active = location.pathname === route.to;
-                    return (
-                      <motion.div key={route.to} variants={fadeInUp}>
-                        <Link
-                          to={route.to}
-                          className={cn(
-                            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
-                            active ? "bg-muted text-foreground" : "text-muted-foreground"
-                          )}
-                        >
-                          <Icon className={cn("h-4 w-4", route.color)} />
+                  {routes
+                    .filter((route) => route.visible !== false)
+                    .map((route, i) => {
+                      const Icon = route.icon;
+                      const active = location.pathname === route.to;
+                      return (
+                        <motion.div key={route.to} variants={fadeInUp}>
+                          <Link
+                            to={route.to}
+                            className={cn(
+                              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
+                              active ? "bg-muted text-foreground" : "text-muted-foreground"
+                            )}
+                          >
+                            <Icon className={cn("h-4 w-4", route.color)} />
 
-                          {route.label}
-                        </Link>
-                      </motion.div>
-                    );
-                  })}
+                            {route.label}
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
                   <motion.div variants={fadeInUp}>
                     <button
                       onClick={handleLogout}
@@ -186,25 +195,27 @@ const routes = [
             }}
             className="grid gap-1 p-4"
           >
-            {routes.map((route) => {
-              const Icon = route.icon;
-              const active = location.pathname === route.to;
-              return (
-                <motion.div key={route.to} variants={fadeInUp}>
-                  <Link
-                    to={route.to}
-                    className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
-                      active ? "bg-muted text-foreground" : "text-muted-foreground"
-                    )}
-                  >
-                    <Icon className={cn("h-4 w-4", route.color)} />
+            {routes
+              .filter((route) => route.visible !== false)
+              .map((route) => {
+                const Icon = route.icon;
+                const active = location.pathname === route.to;
+                return (
+                  <motion.div key={route.to} variants={fadeInUp}>
+                    <Link
+                      to={route.to}
+                      className={cn(
+                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted",
+                        active ? "bg-muted text-foreground" : "text-muted-foreground"
+                      )}
+                    >
+                      <Icon className={cn("h-4 w-4", route.color)} />
 
-                    {route.label}
-                  </Link>
-                </motion.div>
-              );
-            })}
+                      {route.label}
+                    </Link>
+                  </motion.div>
+                );
+              })}
           </motion.nav>
         </aside>
 
