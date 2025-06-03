@@ -1,85 +1,140 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import {formatDistanceToNow} from "date-fns/formatDistanceToNow"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
+import { Button } from "@/components/ui/button";
 import {
-  Users, Search, Download, Edit, Trash2, Eye,
-  MoreHorizontal, UserCheck, UserX , BadgeCheck
-} from "lucide-react"
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel,
-  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
-  AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
-} from "@/components/ui/alert-dialog"
+  Users,
+  Search,
+  Download,
+  Edit,
+  Trash2,
+  Eye,
+  MoreHorizontal,
+  UserCheck,
+  UserX,
+  BadgeCheck,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface User {
-  _id: string
-  name: string
-  email: string
-  role: string
-  status: string
-  lastActive: string
-  createdAt: string
-  vehiclesAssigned?: number
-  totalTrips?: number
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  lastActive: string;
+  createdAt: string;
+  vehiclesAssigned?: number;
+  totalTrips?: number;
 }
 
+interface UpdateUserResponse {
+  success: boolean;
+  data: User;
+}
+
+
 export default function AdminPage() {
-  const [users, setUsers] = useState<User[]>([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [roleFilter, setRoleFilter] = useState("all")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(5)
-  const API_URL = import.meta.env.VITE_API_URL
+  const [users, setUsers] = useState<User[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    axios.get<{ data: User[] }>(`${API_URL}/users`, { withCredentials: true })
-      .then(res => setUsers(res.data.data))
-      .catch(err => console.error(err))
-  }, [API_URL])
+    axios
+      .get<{ data: User[] }>(`${API_URL}/users`, { withCredentials: true })
+      .then((res) => setUsers(res.data.data))
+      .catch((err) => console.error(err));
+  }, [API_URL]);
 
-  const handleStatusChange = (userId: string, newStatus: string) => {
+const handleStatusChange = async (userId: string, newStatus: string) => {
+  try {
+    const res = await axios.patch<UpdateUserResponse>(
+      `${API_URL}/users/${userId}/status`,
+      { status: newStatus },
+      { withCredentials: true }
+    );
+
+    const updatedUser = res.data.data;
+
     setUsers(users.map(user =>
-      user._id === userId ? { ...user, status: newStatus } : user
-    ))
+      user._id === userId ? updatedUser : user
+    ));
+  } catch (error) {
+    console.error("Error updating user status:", error);
   }
+};
+
+
 
   const handleDeleteUser = (userId: string) => {
-    setUsers(users.filter(user => user._id !== userId))
-  }
+    setUsers(users.filter((user) => user._id !== userId));
+  };
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = statusFilter === "all" || user.status === statusFilter
-    const matchesRole = roleFilter === "all" || user.role === roleFilter
+    const matchesStatus =
+      statusFilter === "all" || user.status === statusFilter;
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
 
-    return matchesSearch && matchesStatus && matchesRole
-  })
+    return matchesSearch && matchesStatus && matchesRole;
+  });
 
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
-  )
+  );
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <CardTitle className="text-2xl font-bold tracking-tight">User Management</CardTitle>
-          <CardDescription className="text-muted-foreground">Manage system users and their permissions</CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            User Management
+          </CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Manage system users and their permissions
+          </CardDescription>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="gap-1">
@@ -131,76 +186,121 @@ export default function AdminPage() {
                 <tr>
                   <th className="px-4 py-3 text-left font-medium">User</th>
                   <th className="px-4 py-3 text-left font-medium">Status</th>
-                  <th className="px-4 py-3 text-left font-medium">Last Active</th>
+                  <th className="px-4 py-3 text-left font-medium">
+                    Last Active
+                  </th>
                   <th className="px-4 py-3 text-left font-medium">Role</th>
                   <th className="px-4 py-3 text-left font-medium">Joined</th>
                   <th className="px-4 py-3 text-left font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="text-xs sm:text-sm">
-                {paginatedUsers.map(user => (
+                {paginatedUsers.map((user) => (
                   <tr key={user._id} className="border-b">
                     <td className="px-4 py-3">
                       <div className="font-medium">{user.name}</div>
-                      <div className="text-xs text-muted-foreground">{user.email}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {user.email}
+                      </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
-                        {user.status}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {user.lastActive ? formatDistanceToNow(new Date(user.lastActive), { addSuffix: true }) : 'N/A'}
-                    </td>
-
-                    <td className="px-4 py-3 capitalize">
-  <div className="flex items-center gap-2">
-    {user.role === "admin" ? (
-      <BadgeCheck className="h-4 w-4 text-yellow-500" />
-    ) : (
-      <BadgeCheck className="h-4 w-4 text-blue-500" />
-    )}
-    {user.role}
-  </div>
+      <td className="px-4 py-3">
+  <Badge
+    className={`capitalize px-2 py-1 text-xs font-medium border ${
+      user.status === "active"
+        ? "bg-green-500/10 text-green-400 border-green-500/20"
+        : "bg-red-500/10 text-red-400 border-red-500/20"
+    }`}
+  >
+    {user.status}
+  </Badge>
 </td>
 
 
                     <td className="px-4 py-3 text-muted-foreground">
-                      {new Date(user.createdAt).toLocaleDateString('en-GB')}
+                      {user.lastActive
+                        ? formatDistanceToNow(new Date(user.lastActive), {
+                            addSuffix: true,
+                          })
+                        : "N/A"}
+                    </td>
+
+                    <td className="px-4 py-3 capitalize">
+                      <div className="flex items-center gap-2">
+                        {user.role === "admin" ? (
+                          <BadgeCheck className="h-4 w-4 text-yellow-500" />
+                        ) : (
+                          <BadgeCheck className="h-4 w-4 text-blue-500" />
+                        )}
+                        {user.role}
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {new Date(user.createdAt).toLocaleDateString("en-GB")}
                     </td>
                     <td className="px-4 py-3">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                          >
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem><Eye className="mr-2 h-4 w-4" /> View</DropdownMenuItem>
-                          <DropdownMenuItem><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Eye className="mr-2 h-4 w-4" /> View
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Edit className="mr-2 h-4 w-4" /> Edit
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleStatusChange(user._id, user.status === 'active' ? 'inactive' : 'active')}>
-                            {user.status === 'active'
-                              ? <><UserX className="mr-2 h-4 w-4" /> Deactivate</>
-                              : <><UserCheck className="mr-2 h-4 w-4" /> Activate</>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleStatusChange(
+                                user._id,
+                                user.status === "active" ? "inactive" : "active"
+                              )
                             }
+                          >
+                            {user.status === "active" ? (
+                              <>
+                                <UserX className="mr-2 h-4 w-4" /> Deactivate
+                              </>
+                            ) : (
+                              <>
+                                <UserCheck className="mr-2 h-4 w-4" /> Activate
+                              </>
+                            )}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                              <DropdownMenuItem
+                                onSelect={(e) => e.preventDefault()}
+                              >
                                 <Trash2 className="mr-2 h-4 w-4" /> Delete
                               </DropdownMenuItem>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                <AlertDialogDescription>This will delete the user account.</AlertDialogDescription>
+                                <AlertDialogTitle>
+                                  Are you sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will delete the user account.
+                                </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDeleteUser(user._id)}>Delete</AlertDialogAction>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteUser(user._id)}
+                                >
+                                  Delete
+                                </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
@@ -219,7 +319,7 @@ export default function AdminPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
               >
                 Previous
@@ -230,7 +330,9 @@ export default function AdminPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
                 disabled={currentPage === totalPages}
               >
                 Next
@@ -240,5 +342,5 @@ export default function AdminPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
