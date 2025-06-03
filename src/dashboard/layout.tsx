@@ -68,7 +68,7 @@ const routes = [
     label: "Users",
     icon: Users,
     color: "text-teal-600 dark:text-teal-400",
-    visible: user?.role === "admin",
+    visible: user?.role === "admin" || user?.role === "superadmin",
   },
   {
     to: "/dashboard/settings",

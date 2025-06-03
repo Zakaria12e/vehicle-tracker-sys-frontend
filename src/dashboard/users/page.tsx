@@ -1,52 +1,30 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext"; // to get current user
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
+  Card, CardContent, CardDescription, CardTitle
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
-  Users,
-  Search,
-  Download,
-  Edit,
-  Trash2,
-  Eye,
-  MoreHorizontal,
-  UserCheck,
-  UserX,
-  BadgeCheck,
+  Select, SelectTrigger, SelectValue,
+  SelectContent, SelectItem
+} from "@/components/ui/select";
+import {
+  Eye, Edit, Trash2, UserX, UserCheck,
+  BadgeCheck, ShieldCheck, MoreHorizontal
 } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 
 interface User {
@@ -57,17 +35,10 @@ interface User {
   status: string;
   lastActive: string;
   createdAt: string;
-  vehiclesAssigned?: number;
-  totalTrips?: number;
 }
-
-interface UpdateUserResponse {
-  success: boolean;
-  data: User;
-}
-
 
 export default function AdminPage() {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -80,42 +51,39 @@ export default function AdminPage() {
     axios
       .get<{ data: User[] }>(`${API_URL}/users`, { withCredentials: true })
       .then((res) => setUsers(res.data.data))
-      .catch((err) => console.error(err));
+      .catch(console.error);
   }, [API_URL]);
 
-const handleStatusChange = async (userId: string, newStatus: string) => {
-  try {
-    const res = await axios.patch<UpdateUserResponse>(
-      `${API_URL}/users/${userId}/status`,
-      { status: newStatus },
-      { withCredentials: true }
-    );
+  const handleStatusChange = async (userId: string, newStatus: string) => {
+    try {
+      const res = await axios.patch(`${API_URL}/users/${userId}/status`, {
+        status: newStatus,
+      }, { withCredentials: true });
 
-    const updatedUser = res.data.data;
-
-    setUsers(users.map(user =>
-      user._id === userId ? updatedUser : user
-    ));
-  } catch (error) {
-    console.error("Error updating user status:", error);
-  }
-};
-
-
+      const updatedUser = res.data.data;
+      setUsers(users.map(user => user._id === userId ? updatedUser : user));
+    } catch (err) {
+      console.error("Error changing status", err);
+    }
+  };
 
   const handleDeleteUser = (userId: string) => {
-    setUsers(users.filter((user) => user._id !== userId));
+    setUsers(users.filter(user => user._id !== userId));
+  };
+
+  const canModify = (target: User) => {
+    if (!currentUser) return false;
+    if (currentUser.role === "superadmin") return true;
+    if (currentUser.role === "admin" && target.role === "user") return true;
+    return false;
   };
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      statusFilter === "all" || user.status === statusFilter;
+    const matchesStatus = statusFilter === "all" || user.status === statusFilter;
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
-
     return matchesSearch && matchesStatus && matchesRole;
   });
 
@@ -127,40 +95,23 @@ const handleStatusChange = async (userId: string, newStatus: string) => {
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex justify-between items-center">
         <div>
-          <CardTitle className="text-2xl font-bold tracking-tight">
-            User Management
-          </CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Manage system users and their permissions
-          </CardDescription>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="gap-1">
-            <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">Export Data</span>
-          </Button>
+          <CardTitle>User Management</CardTitle>
+          <CardDescription>Manage users and their permissions</CardDescription>
         </div>
       </div>
 
       <Card>
         <CardContent>
-          {/* Filters */}
-          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-4">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search users..."
-                className="h-9 pl-8 text-xs sm:text-sm"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4">
+            <Input
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
@@ -168,65 +119,56 @@ const handleStatusChange = async (userId: string, newStatus: string) => {
               </SelectContent>
             </Select>
             <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="Role" />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Role" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="superadmin">Superadmin</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
                 <SelectItem value="user">User</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Table */}
           <div className="overflow-x-auto rounded-md border">
             <table className="w-full text-sm">
               <thead className="bg-muted text-xs text-muted-foreground sm:text-sm">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium">User</th>
-                  <th className="px-4 py-3 text-left font-medium">Status</th>
-                  <th className="px-4 py-3 text-left font-medium">
-                    Last Active
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium">Role</th>
-                  <th className="px-4 py-3 text-left font-medium">Joined</th>
-                  <th className="px-4 py-3 text-left font-medium">Actions</th>
+                  <th className="px-4 py-3 text-left">User</th>
+                  <th className="px-4 py-3 text-left">Status</th>
+                  <th className="px-4 py-3 text-left">Last Active</th>
+                  <th className="px-4 py-3 text-left">Role</th>
+                  <th className="px-4 py-3 text-left">Joined</th>
+                  <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody className="text-xs sm:text-sm">
+              <tbody>
                 {paginatedUsers.map((user) => (
                   <tr key={user._id} className="border-b">
                     <td className="px-4 py-3">
                       <div className="font-medium">{user.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {user.email}
-                      </div>
+                      <div className="text-xs text-muted-foreground">{user.email}</div>
                     </td>
-      <td className="px-4 py-3">
-  <Badge
-    className={`capitalize px-2 py-1 text-xs font-medium border ${
-      user.status === "active"
-        ? "bg-green-500/10 text-green-400 border-green-500/20"
-        : "bg-red-500/10 text-red-400 border-red-500/20"
-    }`}
-  >
-    {user.status}
-  </Badge>
-</td>
-
-
+                    <td className="px-4 py-3">
+                      <Badge
+                        className={`capitalize px-2 py-1 border text-xs font-medium ${
+                          user.status === "active"
+                            ? "bg-green-500/10 text-green-400 border-green-500/20"
+                            : "bg-red-500/10 text-red-400 border-red-500/20"
+                        }`}
+                      >
+                        {user.status}
+                      </Badge>
+                    </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {user.lastActive
-                        ? formatDistanceToNow(new Date(user.lastActive), {
-                            addSuffix: true,
-                          })
+                        ? formatDistanceToNow(new Date(user.lastActive), { addSuffix: true })
                         : "N/A"}
                     </td>
-
                     <td className="px-4 py-3 capitalize">
                       <div className="flex items-center gap-2">
-                        {user.role === "admin" ? (
+                        {user.role === "superadmin" ? (
+                          <ShieldCheck className="h-4 w-4 text-purple-500" />
+                        ) : user.role === "admin" ? (
                           <BadgeCheck className="h-4 w-4 text-yellow-500" />
                         ) : (
                           <BadgeCheck className="h-4 w-4 text-blue-500" />
@@ -234,18 +176,13 @@ const handleStatusChange = async (userId: string, newStatus: string) => {
                         {user.role}
                       </div>
                     </td>
-
                     <td className="px-4 py-3 text-muted-foreground">
                       {new Date(user.createdAt).toLocaleDateString("en-GB")}
                     </td>
                     <td className="px-4 py-3">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                          >
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -254,11 +191,12 @@ const handleStatusChange = async (userId: string, newStatus: string) => {
                           <DropdownMenuItem>
                             <Eye className="mr-2 h-4 w-4" /> View
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem disabled={!canModify(user)}>
                             <Edit className="mr-2 h-4 w-4" /> Edit
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
+                            disabled={!canModify(user)}
                             onClick={() =>
                               handleStatusChange(
                                 user._id,
@@ -280,6 +218,7 @@ const handleStatusChange = async (userId: string, newStatus: string) => {
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <DropdownMenuItem
+                                disabled={!canModify(user)}
                                 onSelect={(e) => e.preventDefault()}
                               >
                                 <Trash2 className="mr-2 h-4 w-4" /> Delete
@@ -287,9 +226,7 @@ const handleStatusChange = async (userId: string, newStatus: string) => {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Are you sure?
-                                </AlertDialogTitle>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                 <AlertDialogDescription>
                                   This will delete the user account.
                                 </AlertDialogDescription>
@@ -313,13 +250,12 @@ const handleStatusChange = async (userId: string, newStatus: string) => {
             </table>
           </div>
 
-          {/* Pagination Controls */}
           {totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-4">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
               >
                 Previous
@@ -330,9 +266,7 @@ const handleStatusChange = async (userId: string, newStatus: string) => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
               >
                 Next
