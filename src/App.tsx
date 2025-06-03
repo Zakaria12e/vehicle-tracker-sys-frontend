@@ -18,6 +18,7 @@ import LoginPage from "./login/login";
 import SignupPage from "./signup/signup";
 import ForgotPassword from "./login/forgotPassword";
 import ResetPassword from "./login/resetPassword";
+import AdminPage from "./dashboard/users/page";
 import "./App.css";
 import "leaflet/dist/leaflet.css"
 function App() {
@@ -108,6 +109,16 @@ function App() {
                 <PrivateRoute>
                   <DashboardLayout>
                     <StatisticsPage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard/users"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <AdminPage />
                   </DashboardLayout>
                 </PrivateRoute>
               }
