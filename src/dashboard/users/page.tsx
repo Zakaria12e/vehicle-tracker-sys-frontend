@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import {
   Users, Search, Download, Edit, Trash2, Eye,
-  MoreHorizontal, UserCheck, UserX
+  MoreHorizontal, UserCheck, UserX , BadgeCheck
 } from "lucide-react"
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -132,7 +132,7 @@ export default function AdminPage() {
                   <th className="px-4 py-3 text-left font-medium">User</th>
                   <th className="px-4 py-3 text-left font-medium">Status</th>
                   <th className="px-4 py-3 text-left font-medium">Last Active</th>
-                  <th className="px-4 py-3 text-left font-medium">Vehicles</th>
+                  <th className="px-4 py-3 text-left font-medium">Role</th>
                   <th className="px-4 py-3 text-left font-medium">Joined</th>
                   <th className="px-4 py-3 text-left font-medium">Actions</th>
                 </tr>
@@ -152,7 +152,19 @@ export default function AdminPage() {
                     <td className="px-4 py-3 text-muted-foreground">
                       {user.lastActive ? formatDistanceToNow(new Date(user.lastActive), { addSuffix: true }) : 'N/A'}
                     </td>
-                    <td className="px-4 py-3">{user.vehiclesAssigned || 0}</td>
+
+                    <td className="px-4 py-3 capitalize">
+  <div className="flex items-center gap-2">
+    {user.role === "admin" ? (
+      <BadgeCheck className="h-4 w-4 text-yellow-500" />
+    ) : (
+      <BadgeCheck className="h-4 w-4 text-blue-500" />
+    )}
+    {user.role}
+  </div>
+</td>
+
+
                     <td className="px-4 py-3 text-muted-foreground">
                       {new Date(user.createdAt).toLocaleDateString('en-GB')}
                     </td>
