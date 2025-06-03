@@ -13,8 +13,7 @@ import {
   SelectContent, SelectItem
 } from "@/components/ui/select";
 import {
-  Eye, Edit, Trash2, UserX, UserCheck,
-  BadgeCheck, ShieldCheck, MoreHorizontal
+  Eye, Edit, Trash2, UserX, UserCheck, ShieldCheck, MoreHorizontal , User
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -60,7 +59,7 @@ export default function AdminPage() {
         status: newStatus,
       }, { withCredentials: true });
 
-      const updatedUser = res.data.data;
+      const updatedUser = (res.data as { data: User }).data;
       setUsers(users.map(user => user._id === userId ? updatedUser : user));
     } catch (err) {
       console.error("Error changing status", err);
@@ -78,6 +77,8 @@ export default function AdminPage() {
     return false;
   };
 
+
+
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -92,6 +93,22 @@ export default function AdminPage() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const handleRoleChange = async (userId: string, currentRole: string) => {
+  try {
+    const newRole = currentRole === "user" ? "admin" : "user";
+
+    const res = await axios.patch(`${API_URL}/users/${userId}/role`, {
+      role: newRole,
+    }, { withCredentials: true });
+
+    const updatedUser = (res.data as { data: User }).data;
+    setUsers(users.map(user => user._id === userId ? updatedUser : user));
+  } catch (err) {
+    console.error("Error updating role", err);
+  }
+};
+
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
@@ -169,9 +186,9 @@ export default function AdminPage() {
                         {user.role === "superadmin" ? (
                           <ShieldCheck className="h-4 w-4 text-purple-500" />
                         ) : user.role === "admin" ? (
-                          <BadgeCheck className="h-4 w-4 text-yellow-500" />
+                          <ShieldCheck className="h-4 w-4 text-yellow-500" />
                         ) : (
-                          <BadgeCheck className="h-4 w-4 text-blue-500" />
+                          <User className="h-4 w-4 text-blue-500" />
                         )}
                         {user.role}
                       </div>
@@ -191,9 +208,28 @@ export default function AdminPage() {
                           <DropdownMenuItem>
                             <Eye className="mr-2 h-4 w-4" /> View
                           </DropdownMenuItem>
-                          <DropdownMenuItem disabled={!canModify(user)}>
-                            <Edit className="mr-2 h-4 w-4" /> Edit
-                          </DropdownMenuItem>
+                          <DropdownMenuItem
+  disabled={!canModify(user)}
+  onClick={() => handleRoleChange(user._id, user.role)}
+>
+  {user.role === "user" ? (
+    <>
+      <ShieldCheck className="mr-2 h-4 w-4 text-yellow-500" />
+      Promote to Admin
+    </>
+  ) : user.role === "admin" ? (
+    <>
+      <UserX className="mr-2 h-4 w-4 text-blue-500" />
+      Demote to User
+    </>
+  ) : (
+    <>
+      <Edit className="mr-2 h-4 w-4" />
+      Not Editable
+    </>
+  )}
+</DropdownMenuItem>
+
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             disabled={!canModify(user)}
