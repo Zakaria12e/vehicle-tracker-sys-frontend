@@ -156,7 +156,7 @@ export default function UserDetailView() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-600 dark:text-blue-300 text-xs sm:text-sm font-medium uppercase tracking-wide mb-1">Total Cars</p>
-                  <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{user.totalCars || 0}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{vehicleStats?.totalVehicles || 0}</p>
                   <p className="text-blue-400 dark:text-blue-500 text-xs sm:text-sm mt-1">All registered vehicles</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/20 backdrop-blur-sm rounded-xl">
@@ -174,7 +174,7 @@ export default function UserDetailView() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-emerald-600 dark:text-emerald-300 text-xs sm:text-sm font-medium uppercase tracking-wide mb-1">Active Cars</p>
-                  <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{user.activeCars || 0}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{vehicleStats?.movingVehicles || 0}</p>
                   <p className="text-emerald-400 dark:text-emerald-500 text-xs sm:text-sm mt-1">Currently operational</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-emerald-100 dark:bg-emerald-900/20 backdrop-blur-sm rounded-xl">
