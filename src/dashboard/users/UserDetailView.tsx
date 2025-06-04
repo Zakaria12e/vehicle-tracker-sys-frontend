@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   User,
   ShieldCheck,
@@ -86,12 +87,17 @@ export default function UserDetailView() {
         <div className="mb-8">
           <div className="flex items-center gap-6 p-6  rounded-2xl shadow-sm border ">
             <div className="relative">
-              <img
-                src={`http://localhost:5000${user?.photo}`}
+              <Avatar className="h-16 w-16 border">
+              <AvatarImage
+               src={`http://localhost:5000${user?.photo}`}
                 alt={user?.name || "User"}
                 crossOrigin="anonymous"
                 className="w-24 h-24 rounded-2xl object-cover"
               />
+              <AvatarFallback className="text-xl font-bold capitalize">
+                {user?.name?.[0] ?? "?"}
+              </AvatarFallback>
+            </Avatar>
               <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full border-4 border-white dark:border-slate-800 shadow-lg flex items-center justify-center ${
                 user.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'
               }`}>
