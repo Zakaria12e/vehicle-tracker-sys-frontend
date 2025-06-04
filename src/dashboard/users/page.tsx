@@ -210,14 +210,16 @@ export default function AdminPage() {
                 {paginatedUsers.map((user) => (
                   <tr key={user._id} className="border-b">
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        {user.role === "superadmin" ? (
-                          <ShieldCheck className="h-4 w-4 text-purple-500" />
-                        ) : user.role === "admin" ? (
-                          <ShieldCheck className="h-4 w-4 text-yellow-500" />
-                        ) : (
-                          <User className="h-4 w-4 text-blue-500" />
-                        )}
+                      <div className="flex items-center gap-2 sm:gap-0">
+                        <div className="block sm:hidden">
+                          {user.role === "superadmin" ? (
+                            <ShieldCheck className="h-4 w-4 text-purple-500" />
+                          ) : user.role === "admin" ? (
+                            <ShieldCheck className="h-4 w-4 text-yellow-500" />
+                          ) : (
+                            <User className="h-4 w-4 text-blue-500" />
+                          )}
+                        </div>
                         <div>
                           <div className="font-medium">{user.name}</div>
                           <div className="text-xs text-muted-foreground">
@@ -245,7 +247,16 @@ export default function AdminPage() {
                         : "N/A"}
                     </td>
                     <td className="px-4 py-3 capitalize hidden sm:table-cell">
-                      {user.role}
+                      <div className="flex items-center gap-2">
+                        {user.role === "superadmin" ? (
+                          <ShieldCheck className="h-4 w-4 text-purple-500" />
+                        ) : user.role === "admin" ? (
+                          <ShieldCheck className="h-4 w-4 text-yellow-500" />
+                        ) : (
+                          <User className="h-4 w-4 text-blue-500" />
+                        )}
+                        {user.role}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">
                       {new Date(user.createdAt).toLocaleDateString("en-GB")}
