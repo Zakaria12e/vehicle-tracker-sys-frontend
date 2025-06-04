@@ -109,61 +109,77 @@ return (
     </div>
 
     {/* Stat Cards */}
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      <motion.div custom={0} variants={fadeInUp} initial="hidden" animate="visible">
-        <Card className="shadow-sm lg:py-1 lg:h-[150px]">
-          <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
-            <CardTitle className="text-xs font-medium md:text-sm">Total Vehicles</CardTitle>
-            <Car className="h-4 w-4 text-blue-600 dark:text-blue-500" />
-          </CardHeader>
-          <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
-            <div className="text-lg font-bold md:text-2xl">{vehicleStats.total}</div>
-            <p className="text-xs text-muted-foreground">
-              {vehicleStats.difference} from last month
-            </p>
-          </CardContent>
-        </Card>
-      </motion.div>
+<div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+  {/* Total Vehicles */}
+  <motion.div custom={0} variants={fadeInUp} initial="hidden" animate="visible">
+    <Card className="relative overflow-hidden shadow-sm lg:py-1 lg:h-[150px]">
+      {/* Bubbles */}
+      <div className="absolute -top-4 -right-4 w-20 h-20 bg-blue-600/10 dark:bg-blue-900/10 rounded-full" />
+      <div className="absolute -bottom-6 -left-6 w-28 h-28 bg-blue-600/5 dark:bg-blue-900/5 rounded-full" />
 
-      <motion.div custom={1} variants={fadeInUp} initial="hidden" animate="visible">
-        <Card className="shadow-sm lg:py-1 lg:h-[150px]">
-          <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
-            <CardTitle className="text-xs font-medium md:text-sm">Active Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
-          </CardHeader>
-          <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
-            <div className="text-lg font-bold md:text-2xl">0</div>
-            <p className="text-xs text-muted-foreground">0 speed, 0 geofence</p>
-          </CardContent>
-        </Card>
-      </motion.div>
+      <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
+        <CardTitle className="text-xs font-medium md:text-sm">Total Vehicles</CardTitle>
+        <Car className="h-4 w-4 text-blue-600 dark:text-blue-500" />
+      </CardHeader>
+      <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
+        <div className="text-lg font-bold md:text-2xl">{vehicleStats.total}</div>
+        <p className="text-xs text-muted-foreground">{vehicleStats.difference} from last month</p>
+      </CardContent>
+    </Card>
+  </motion.div>
 
-      <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible">
-        <Card className="shadow-sm lg:py-1 lg:h-[150px]">
-          <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
-            <CardTitle className="text-xs font-medium md:text-sm">Total Distance</CardTitle>
-            <Clock className="h-4 w-4 text-purple-600 dark:text-purple-500" />
-          </CardHeader>
-          <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
-            <div className="text-lg font-bold md:text-2xl">0 km</div>
-            <p className="text-xs text-muted-foreground">This month</p>
-          </CardContent>
-        </Card>
-      </motion.div>
+  {/* Active Alerts */}
+  <motion.div custom={1} variants={fadeInUp} initial="hidden" animate="visible">
+    <Card className="relative overflow-hidden shadow-sm lg:py-1 lg:h-[150px]">
+      <div className="absolute -top-4 -right-4 w-20 h-20 bg-amber-600/10 dark:bg-amber-900/10 rounded-full" />
+      <div className="absolute -bottom-6 -left-6 w-28 h-28 bg-amber-600/5 dark:bg-amber-900/5 rounded-full" />
 
-      <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible">
-        <Card className="shadow-sm lg:py-1 lg:h-[150px]">
-          <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
-            <CardTitle className="text-xs font-medium md:text-sm">Active Vehicles</CardTitle>
-            <MapPin className="h-4 w-4 text-green-600 dark:text-green-500" />
-          </CardHeader>
-          <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
-            <div className="text-lg font-bold md:text-2xl">0</div>
-            <p className="text-xs text-muted-foreground">0 idle, 0 moving</p>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </div>
+      <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
+        <CardTitle className="text-xs font-medium md:text-sm">Active Alerts</CardTitle>
+        <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+      </CardHeader>
+      <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
+        <div className="text-lg font-bold md:text-2xl">0</div>
+        <p className="text-xs text-muted-foreground">0 speed, 0 geofence</p>
+      </CardContent>
+    </Card>
+  </motion.div>
+
+  {/* Total Distance */}
+  <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible">
+    <Card className="relative overflow-hidden shadow-sm lg:py-1 lg:h-[150px]">
+      <div className="absolute -top-4 -right-4 w-20 h-20 bg-purple-600/10 dark:bg-purple-900/10 rounded-full" />
+      <div className="absolute -bottom-6 -left-6 w-28 h-28 bg-purple-600/5 dark:bg-purple-900/5 rounded-full" />
+
+      <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
+        <CardTitle className="text-xs font-medium md:text-sm">Total Distance</CardTitle>
+        <Clock className="h-4 w-4 text-purple-600 dark:text-purple-500" />
+      </CardHeader>
+      <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
+        <div className="text-lg font-bold md:text-2xl">0 km</div>
+        <p className="text-xs text-muted-foreground">This month</p>
+      </CardContent>
+    </Card>
+  </motion.div>
+
+  {/* Active Vehicles */}
+  <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible">
+    <Card className="relative overflow-hidden shadow-sm lg:py-1 lg:h-[150px]">
+      <div className="absolute -top-4 -right-4 w-20 h-20 bg-green-600/10 dark:bg-green-900/10 rounded-full" />
+      <div className="absolute -bottom-6 -left-6 w-28 h-28 bg-green-600/5 dark:bg-green-900/5 rounded-full" />
+
+      <CardHeader className="flex flex-row items-center justify-between p-3 pb-2 md:p-4 md:pb-2">
+        <CardTitle className="text-xs font-medium md:text-sm">Active Vehicles</CardTitle>
+        <MapPin className="h-4 w-4 text-green-600 dark:text-green-500" />
+      </CardHeader>
+      <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
+        <div className="text-lg font-bold md:text-2xl">0</div>
+        <p className="text-xs text-muted-foreground">0 idle, 0 moving</p>
+      </CardContent>
+    </Card>
+  </motion.div>
+</div>
+
 
     {/* Map and Alerts Section */}
     <div className="grid gap-3 md:grid-cols-7">
