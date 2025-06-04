@@ -39,6 +39,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Mapgeofences from "./components/Mapgeofences";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import AssignVehiclesDialog from "./components/AssignVehiclesDialog";
 
 export default function GeofencingPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -661,82 +662,21 @@ export default function GeofencingPage() {
         </Card>
       )}
 
-      <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
-        <DialogContent className="w-[95vw] max-w-md">
-          <DialogHeader>
-            <DialogTitle>Assign Vehicles to Zone</DialogTitle>
-            <DialogDescription>
-              Select vehicles to assign to this geofence
-            </DialogDescription>
-          </DialogHeader>
+<Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+  {assignDialogOpen && (
+    <AssignVehiclesDialog
+  open={assignDialogOpen}
+  onClose={() => setAssignDialogOpen(false)}
+  vehicles={vehicleList}
+  selectedZoneId={selectedZoneId}
+  initiallyAssigned={selectedVehicles}
+  apiUrl={API_URL}
+  onSuccess={fetchZones}
+/>
 
-          <div className="space-y-3 max-h-60 overflow-y-auto mt-2">
-            {vehicleList.length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground">
-                No vehicles available for assignment
-              </div>
-            ) : (
-              vehicleList.map((vehicle) => (
-                <div key={vehicle._id} className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    id={`veh-${vehicle._id}`}
-                    checked={selectedVehicles.includes(vehicle._id)}
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      setSelectedVehicles((prev) =>
-                        checked
-                          ? [...prev, vehicle._id]
-                          : prev.filter((id) => id !== vehicle._id)
-                      );
-                    }}
-                  />
-                  <label
-                    htmlFor={`veh-${vehicle._id}`}
-                    className="text-sm truncate"
-                  >
-                    {vehicle.name} – {vehicle.licensePlate}
-                  </label>
-                </div>
-              ))
-            )}
-          </div>
+  )}
+</Dialog>
 
-          <DialogFooter className="mt-4">
-            <Button
-              className="w-full md:w-auto"
-              onClick={async () => {
-                if (!selectedZoneId) return;
-
-                try {
-                  const res = await fetch(
-                    `${API_URL}/geofences/${selectedZoneId}/vehicles`,
-                    {
-                      method: "PUT",
-                      headers: { "Content-Type": "application/json" },
-                      credentials: "include",
-                      body: JSON.stringify({ vehicles: selectedVehicles }),
-                    }
-                  );
-
-                  if (res.ok) {
-                    toast.success("Vehicles assigned");
-                    setAssignDialogOpen(false);
-                    fetchZones(); // refresh zones
-                  } else {
-                    const data = await res.json();
-                    toast.error(data.message || "Assignment failed");
-                  }
-                } catch {
-                  toast.error("Connection error");
-                }
-              }}
-            >
-              Save Assignments
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
