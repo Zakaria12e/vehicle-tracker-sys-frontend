@@ -82,37 +82,37 @@ export default function UserDetailView() {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-6 p-6  rounded-2xl shadow-sm ">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl shadow-sm">
             <div className="relative">
-              <Avatar className="h-16 w-16 border">
+              <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border">
               <AvatarImage
                src={`http://localhost:5000${user?.photo}`}
                 alt={user?.name || "User"}
                 crossOrigin="anonymous"
-                className="w-24 h-24 rounded-2xl object-cover"
+                className="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl object-cover"
               />
               <AvatarFallback className="text-xl font-bold capitalize">
                 {user?.name?.[0] ?? "?"}
               </AvatarFallback>
             </Avatar>
-              <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full border-4 border-white dark:border-slate-800 shadow-lg flex items-center justify-center ${
+              <div className={`absolute -bottom-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 rounded-full border-4 border-white dark:border-slate-800 shadow-lg flex items-center justify-center ${
                 user.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'
               }`}>
                 {user.status === 'active' ? (
-                  <CheckCircle className="h-4 w-4 text-white" />
+                  <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                 ) : (
-                  <AlertTriangle className="h-4 w-4 text-white" />
+                  <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                 )}
               </div>
             </div>
             
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">{user.name}</h1>
-              <p className="text-lg text-slate-600 dark:text-slate-400 mb-3">{user.email}</p>
-              <div className="flex items-center gap-3">
+            <div className="flex-1 text-center sm:text-left">
+              <h1 className="text-2xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-2">{user.name}</h1>
+              <p className="text-sm sm:text-lg text-slate-600 dark:text-slate-400 mb-3">{user.email}</p>
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3">
                 <Badge className={`capitalize flex items-center gap-2 px-3 py-1 font-medium ${getRoleBadgeColor(user.role)}`}>
                   {getRoleIcon(user.role)}
                   {user.role}
@@ -135,82 +135,82 @@ export default function UserDetailView() {
         </div>
 
         {/* Modern Statistics Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Total Cars Card */}
           <Card className="relative overflow-hidden border-0 shadow-lg">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-600 dark:text-blue-300 text-sm font-medium uppercase tracking-wide mb-1">Total Cars</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{user.totalCars || 0}</p>
-                  <p className="text-blue-400 dark:text-blue-500 text-sm mt-1">All registered vehicles</p>
+                  <p className="text-blue-600 dark:text-blue-300 text-xs sm:text-sm font-medium uppercase tracking-wide mb-1">Total Cars</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{user.totalCars || 0}</p>
+                  <p className="text-blue-400 dark:text-blue-500 text-xs sm:text-sm mt-1">All registered vehicles</p>
                 </div>
-                <div className="p-4 bg-blue-100 dark:bg-blue-900/20 backdrop-blur-sm rounded-2xl">
-                  <Car className="h-8 w-8 text-blue-600 dark:text-blue-300" />
+                <div className="p-3 sm:p-4 bg-blue-100 dark:bg-blue-900/20 backdrop-blur-sm rounded-2xl">
+                  <Car className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 dark:text-blue-300" />
                 </div>
               </div>
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-blue-300/10 dark:bg-blue-900/10 rounded-full"></div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-blue-300/5 dark:bg-blue-900/5 rounded-full"></div>
+              <div className="absolute -top-4 -right-4 w-16 h-16 sm:w-24 sm:h-24 bg-blue-300/10 dark:bg-blue-900/10 rounded-full"></div>
+              <div className="absolute -bottom-6 -left-6 w-24 h-24 sm:w-32 sm:h-32 bg-blue-300/5 dark:bg-blue-900/5 rounded-full"></div>
             </CardContent>
           </Card>
 
           {/* Active Cars Card */}
-          <Card className="relative overflow-hidden border-0 shadow-lg ">
-            <CardContent className="p-6">
+          <Card className="relative overflow-hidden border-0 shadow-lg">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-emerald-600 dark:text-emerald-300 text-sm font-medium uppercase tracking-wide mb-1">Active Cars</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{user.activeCars || 0}</p>
-                  <p className="text-emerald-400 dark:text-emerald-500 text-sm mt-1">Currently operational</p>
+                  <p className="text-emerald-600 dark:text-emerald-300 text-xs sm:text-sm font-medium uppercase tracking-wide mb-1">Active Cars</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{user.activeCars || 0}</p>
+                  <p className="text-emerald-400 dark:text-emerald-500 text-xs sm:text-sm mt-1">Currently operational</p>
                 </div>
-                <div className="p-4 bg-emerald-100 dark:bg-emerald-900/20 backdrop-blur-sm rounded-2xl">
-                  <CheckCircle className="h-8 w-8 text-emerald-600 dark:text-emerald-300" />
+                <div className="p-3 sm:p-4 bg-emerald-100 dark:bg-emerald-900/20 backdrop-blur-sm rounded-2xl">
+                  <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-600 dark:text-emerald-300" />
                 </div>
               </div>
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-emerald-300/10 dark:bg-emerald-900/10 rounded-full"></div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-emerald-300/5 dark:bg-emerald-900/5 rounded-full"></div>
+              <div className="absolute -top-4 -right-4 w-16 h-16 sm:w-24 sm:h-24 bg-emerald-300/10 dark:bg-emerald-900/10 rounded-full"></div>
+              <div className="absolute -bottom-6 -left-6 w-24 h-24 sm:w-32 sm:h-32 bg-emerald-300/5 dark:bg-emerald-900/5 rounded-full"></div>
             </CardContent>
           </Card>
 
           {/* Total Alerts Card */}
-          <Card className="relative overflow-hidden border-0 shadow-lg ">
-            <CardContent className="p-6">
+          <Card className="relative overflow-hidden border-0 shadow-lg">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-amber-600 dark:text-amber-300 text-sm font-medium uppercase tracking-wide mb-1">Total Alerts</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white">{user.totalAlerts || 0}</p>
-                  <p className="   text-sm mt-1">System notifications</p>
+                  <p className="text-amber-600 dark:text-amber-300 text-xs sm:text-sm font-medium uppercase tracking-wide mb-1">Total Alerts</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{user.totalAlerts || 0}</p>
+                  <p className="text-amber-400 dark:text-amber-500 text-xs sm:text-sm mt-1">System notifications</p>
                 </div>
-                <div className="p-4 bg-amber-100 dark:bg-amber-900/20 backdrop-blur-sm rounded-2xl">
-                  <AlertTriangle className="h-8 w-8 text-amber-600 dark:text-amber-300" />
+                <div className="p-3 sm:p-4 bg-amber-100 dark:bg-amber-900/20 backdrop-blur-sm rounded-2xl">
+                  <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-amber-600 dark:text-amber-300" />
                 </div>
               </div>
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-amber-300/10 dark:bg-amber-900/10 rounded-full"></div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-amber-300/5 dark:bg-amber-900/5 rounded-full"></div>
+              <div className="absolute -top-4 -right-4 w-16 h-16 sm:w-24 sm:h-24 bg-amber-300/10 dark:bg-amber-900/10 rounded-full"></div>
+              <div className="absolute -bottom-6 -left-6 w-24 h-24 sm:w-32 sm:h-32 bg-amber-300/5 dark:bg-amber-900/5 rounded-full"></div>
             </CardContent>
           </Card>
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Account Overview */}
             <Card className="border-0 shadow-lg">
               <CardHeader className="pb-4">
-                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-slate-900 dark:text-white">
-                  <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <CardTitle className="text-lg sm:text-xl font-semibold flex items-center gap-2 text-slate-900 dark:text-white">
+                  <User className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
                   Account Overview
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex items-center gap-4 p-4 rounded-xl">
-                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                      <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <CardContent className="space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl">
+                    <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Member Since</p>
-                      <p className="text-lg font-semibold text-slate-900 dark:text-white">
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Member Since</p>
+                      <p className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
                         {new Date(user.createdAt).toLocaleDateString('en-US', { 
                           year: 'numeric', 
                           month: 'long', 
@@ -220,13 +220,13 @@ export default function UserDetailView() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-4 p-4 rounded-xl">
-                    <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-                      <Clock className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl">
+                    <div className="p-2 sm:p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                      <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Last Active</p>
-                      <p className="text-lg font-semibold text-slate-900 dark:text-white">
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Last Active</p>
+                      <p className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
                         {formatDistanceToNow(new Date(user.lastActive), { addSuffix: true })}
                       </p>
                     </div>
@@ -237,39 +237,39 @@ export default function UserDetailView() {
           </div>
 
           {/* Billing Information */}
-          <div className="space-y-6">
-            <Card className="border-0 shadow-lg ">
+          <div className="space-y-4 sm:space-y-6">
+            <Card className="border-0 shadow-lg">
               <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-white">
-                  <CreditCard className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-slate-900 dark:text-white">
+                  <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
                   Current Plan
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="text-center p-6 bg-black text-white  rounded-2xl  relative overflow-hidden">
+              <CardContent className="space-y-4 sm:space-y-6">
+                <div className="text-center p-4 sm:p-6 bg-black text-white rounded-2xl relative overflow-hidden">
                   <div className="relative z-10">
-                    <h3 className="font-bold text-xl mb-2">Premium</h3>
-                    <p className="text-3xl font-bold mb-1">
+                    <h3 className="font-bold text-lg sm:text-xl mb-2">Premium</h3>
+                    <p className="text-2xl sm:text-3xl font-bold mb-1">
                       $29.99
-                      <span className="text-lg  font-normal">/month</span>
+                      <span className="text-base sm:text-lg font-normal">/month</span>
                     </p>
-                    <p className="text-sm">Full access to all features</p>
+                    <p className="text-xs sm:text-sm">Full access to all features</p>
                   </div>
-                  <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full"></div>
-                  <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white/5 rounded-full"></div>
+                  <div className="absolute -top-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 bg-white/10 rounded-full"></div>
+                  <div className="absolute -bottom-4 -left-4 w-12 h-12 sm:w-16 sm:h-16 bg-white/5 rounded-full"></div>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3  rounded-lg">
-                    <span className="text-slate-600 dark:text-slate-400 font-medium">Next Billing</span>
-                    <span className="font-semibold text-slate-900 dark:text-white">July 4, 2025</span>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg">
+                    <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Next Billing</span>
+                    <span className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">July 4, 2025</span>
                   </div>
-                  <div className="flex items-center justify-between p-3  rounded-lg">
-                    <span className="text-slate-600 dark:text-slate-400 font-medium">Payment Method</span>
-                    <span className="font-semibold text-slate-900 dark:text-white">•••• 1234</span>
+                  <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg">
+                    <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Payment Method</span>
+                    <span className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">•••• 1234</span>
                   </div>
-                  <div className="flex items-center justify-between p-3  rounded-lg">
-                    <span className="text-slate-600 dark:text-slate-400 font-medium">Billing Status</span>
+                  <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg">
+                    <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Billing Status</span>
                     <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800">
                       Active
                     </Badge>
