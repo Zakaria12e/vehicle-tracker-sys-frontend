@@ -5,8 +5,6 @@ import { useAuth } from "@/context/AuthContext"; // to get current user
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -24,7 +22,7 @@ import {
   Trash2,
   UserX,
   UserCheck,
-  ShieldCheck,
+  Crown,
   MoreHorizontal,
   User,
 } from "lucide-react";
@@ -213,9 +211,9 @@ export default function AdminPage() {
                       <div className="flex items-center gap-2 sm:gap-0">
                         <div className="block sm:hidden">
                           {user.role === "superadmin" ? (
-                            <ShieldCheck className="h-4 w-4 text-purple-500" />
+                            <Crown className="h-4 w-4 text-purple-500" />
                           ) : user.role === "admin" ? (
-                            <ShieldCheck className="h-4 w-4 text-yellow-500" />
+                            <Crown className="h-4 w-4 text-yellow-500" />
                           ) : (
                             <User className="h-4 w-4 text-blue-500" />
                           )}
@@ -249,9 +247,9 @@ export default function AdminPage() {
                     <td className="px-4 py-3 capitalize hidden sm:table-cell">
                       <div className="flex items-center gap-2">
                         {user.role === "superadmin" ? (
-                          <ShieldCheck className="h-4 w-4 text-purple-500" />
+                          <Crown className="h-4 w-4 text-purple-500" />
                         ) : user.role === "admin" ? (
-                          <ShieldCheck className="h-4 w-4 text-yellow-500" />
+                          <Crown className="h-4 w-4 text-yellow-500" />
                         ) : (
                           <User className="h-4 w-4 text-blue-500" />
                         )}
@@ -289,7 +287,7 @@ export default function AdminPage() {
                           >
                             {user.role === "user" ? (
                               <>
-                                <ShieldCheck className="mr-2 h-4 w-4 text-yellow-500" />
+                                <Crown className="mr-2 h-4 w-4 text-yellow-500" />
                                 Promote to Admin
                               </>
                             ) : user.role === "admin" ? (
