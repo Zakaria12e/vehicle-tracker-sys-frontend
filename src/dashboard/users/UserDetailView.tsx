@@ -28,6 +28,7 @@ export default function UserDetailView() {
   const { id: userId } = useParams();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [vehicleStats, setVehicleStats] = useState<{ totalVehicles: number, movingVehicles: number } | null>(null);
 
   useEffect(() => {
     const fetchUserDetail = async () => {
@@ -43,8 +44,21 @@ export default function UserDetailView() {
         setLoading(false);
       }
     };
+    const fetchStats = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}/stats`, {
+        withCredentials: true,
+      });
+      setVehicleStats((res.data as { data: { totalVehicles: number, movingVehicles: number } }).data);
+    } catch (err) {
+      console.error("Failed to fetch vehicle stats", err);
+    }
+  };
 
-    if (userId) fetchUserDetail();
+  if (userId) {
+    fetchUserDetail();
+    fetchStats();
+  }
   }, [userId]);
 
   if (loading) {
