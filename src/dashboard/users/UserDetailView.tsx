@@ -22,6 +22,7 @@ import {
   Clock,
   Shield,
   Crown,
+  Circle,
 } from "lucide-react";
 
 export default function UserDetailView() {
@@ -112,15 +113,18 @@ export default function UserDetailView() {
                   {user?.name?.[0] ?? "?"}
                 </AvatarFallback>
               </Avatar>
-              <div className={`absolute -bottom-2 -right-2 w-5 h-5 sm:w-7 sm:h-7 rounded-full border-3 border-white dark:border-slate-800 shadow-lg flex items-center justify-center ${
-                user.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'
-              }`}>
-                {user.status === 'active' ? (
-                  <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-                ) : (
-                  <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-                )}
-              </div>
+                <div className={`absolute -bottom-0 -right-0 w-4 h-4 sm:w-5 sm:h-5 rounded-full border-3 border-white dark:border-slate-800 shadow-lg flex items-center justify-center ${
+                  user.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'
+                }`}>
+                  <span
+                  className={`
+                    absolute inset-0 rounded-full
+                    ${user.status === 'active' ? 'bg-emerald-400/40' : 'bg-red-400/40'}
+                    animate-ping
+                  `}
+                  />
+                  
+                </div>
             </div>
 
             <div className="flex-1 text-center sm:text-left">
