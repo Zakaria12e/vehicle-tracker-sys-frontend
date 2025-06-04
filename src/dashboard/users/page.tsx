@@ -160,38 +160,49 @@ export default function AdminPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="superadmin">Superadmin</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="user">User</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-3">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="superadmin">Superadmin</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="user">User</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
+          {/* Adjusting table for mobile responsiveness, adding role icon beside the name, and displaying email under the name */}
           <div className="overflow-x-auto rounded-md border">
             <table className="w-full text-sm">
               <thead className="bg-muted text-xs text-muted-foreground sm:text-sm">
                 <tr>
                   <th className="px-4 py-3 text-left">User</th>
-                  <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Last Active</th>
-                  <th className="px-4 py-3 text-left">Role</th>
-                  <th className="px-4 py-3 text-left">Joined</th>
+                  <th className="px-4 py-3 text-left hidden sm:table-cell">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-left hidden sm:table-cell">
+                    Last Active
+                  </th>
+                  <th className="px-4 py-3 text-left hidden sm:table-cell">
+                    Role
+                  </th>
+                  <th className="px-4 py-3 text-left hidden sm:table-cell">
+                    Joined
+                  </th>
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
@@ -199,12 +210,23 @@ export default function AdminPage() {
                 {paginatedUsers.map((user) => (
                   <tr key={user._id} className="border-b">
                     <td className="px-4 py-3">
-                      <div className="font-medium">{user.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {user.email}
+                      <div className="flex items-center gap-2">
+                        {user.role === "superadmin" ? (
+                          <ShieldCheck className="h-4 w-4 text-purple-500" />
+                        ) : user.role === "admin" ? (
+                          <ShieldCheck className="h-4 w-4 text-yellow-500" />
+                        ) : (
+                          <User className="h-4 w-4 text-blue-500" />
+                        )}
+                        <div>
+                          <div className="font-medium">{user.name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {user.email}
+                          </div>
+                        </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 hidden sm:table-cell">
                       <Badge
                         className={`capitalize px-2 py-1 border text-xs font-medium ${
                           user.status === "active"
@@ -215,26 +237,17 @@ export default function AdminPage() {
                         {user.status}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">
+                    <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">
                       {user.lastActive
                         ? formatDistanceToNow(new Date(user.lastActive), {
                             addSuffix: true,
                           })
                         : "N/A"}
                     </td>
-                    <td className="px-4 py-3 capitalize">
-                      <div className="flex items-center gap-2">
-                        {user.role === "superadmin" ? (
-                          <ShieldCheck className="h-4 w-4 text-purple-500" />
-                        ) : user.role === "admin" ? (
-                          <ShieldCheck className="h-4 w-4 text-yellow-500" />
-                        ) : (
-                          <User className="h-4 w-4 text-blue-500" />
-                        )}
-                        {user.role}
-                      </div>
+                    <td className="px-4 py-3 capitalize hidden sm:table-cell">
+                      {user.role}
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">
+                    <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">
                       {new Date(user.createdAt).toLocaleDateString("en-GB")}
                     </td>
                     <td className="px-4 py-3">
@@ -251,15 +264,16 @@ export default function AdminPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem className="cursor-pointer">
-                            <Link to={`/dashboard/users/${user._id}`} className="flex items-center">
+                            <Link
+                              to={`/dashboard/users/${user._id}`}
+                              className="flex items-center"
+                            >
                               <Eye className="mr-2 h-4 w-4" /> View
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             disabled={!canModify(user)}
-                            onClick={() =>
-                              handleRoleChange(user._id, user.role)
-                            }
+                            onClick={() => handleRoleChange(user._id, user.role)}
                             className="cursor-pointer"
                           >
                             {user.role === "user" ? (
