@@ -19,6 +19,8 @@ import SignupPage from "./signup/signup";
 import ForgotPassword from "./login/forgotPassword";
 import ResetPassword from "./login/resetPassword";
 import AdminPage from "./dashboard/users/page";
+import UserDetailView from "./dashboard/users/UserDetailView";
+
 import "./App.css";
 import "leaflet/dist/leaflet.css"
 function App() {
@@ -119,6 +121,16 @@ function App() {
                 <PrivateRoute>
                   <DashboardLayout>
                     <AdminPage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard/users/:id"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <UserDetailView />
                   </DashboardLayout>
                 </PrivateRoute>
               }

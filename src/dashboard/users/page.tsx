@@ -3,27 +3,50 @@ import axios from "axios";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { useAuth } from "@/context/AuthContext"; // to get current user
 import {
-  Card, CardContent, CardDescription, CardTitle
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Select, SelectTrigger, SelectValue,
-  SelectContent, SelectItem
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
 } from "@/components/ui/select";
 import {
-  Eye, Edit, Trash2, UserX, UserCheck, ShieldCheck, MoreHorizontal , User
+  Eye,
+  Edit,
+  Trash2,
+  UserX,
+  UserCheck,
+  ShieldCheck,
+  MoreHorizontal,
+  User,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel,
-  AlertDialogContent, AlertDialogDescription,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-  AlertDialogTrigger
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 interface User {
@@ -55,19 +78,23 @@ export default function AdminPage() {
 
   const handleStatusChange = async (userId: string, newStatus: string) => {
     try {
-      const res = await axios.patch(`${API_URL}/users/${userId}/status`, {
-        status: newStatus,
-      }, { withCredentials: true });
+      const res = await axios.patch(
+        `${API_URL}/users/${userId}/status`,
+        {
+          status: newStatus,
+        },
+        { withCredentials: true }
+      );
 
       const updatedUser = (res.data as { data: User }).data;
-      setUsers(users.map(user => user._id === userId ? updatedUser : user));
+      setUsers(users.map((user) => (user._id === userId ? updatedUser : user)));
     } catch (err) {
       console.error("Error changing status", err);
     }
   };
 
   const handleDeleteUser = (userId: string) => {
-    setUsers(users.filter(user => user._id !== userId));
+    setUsers(users.filter((user) => user._id !== userId));
   };
 
   const canModify = (target: User) => {
@@ -77,13 +104,12 @@ export default function AdminPage() {
     return false;
   };
 
-
-
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || user.status === statusFilter;
+    const matchesStatus =
+      statusFilter === "all" || user.status === statusFilter;
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
     return matchesSearch && matchesStatus && matchesRole;
   });
@@ -95,27 +121,34 @@ export default function AdminPage() {
   );
 
   const handleRoleChange = async (userId: string, currentRole: string) => {
-  try {
-    const newRole = currentRole === "user" ? "admin" : "user";
+    try {
+      const newRole = currentRole === "user" ? "admin" : "user";
 
-    const res = await axios.patch(`${API_URL}/users/${userId}/role`, {
-      role: newRole,
-    }, { withCredentials: true });
+      const res = await axios.patch(
+        `${API_URL}/users/${userId}/role`,
+        {
+          role: newRole,
+        },
+        { withCredentials: true }
+      );
 
-    const updatedUser = (res.data as { data: User }).data;
-    setUsers(users.map(user => user._id === userId ? updatedUser : user));
-  } catch (err) {
-    console.error("Error updating role", err);
-  }
-};
-
+      const updatedUser = (res.data as { data: User }).data;
+      setUsers(users.map((user) => (user._id === userId ? updatedUser : user)));
+    } catch (err) {
+      console.error("Error updating role", err);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
       <div className="flex justify-between items-center">
         <div>
-          <CardTitle>User Management</CardTitle>
-          <CardDescription>Manage users and their permissions</CardDescription>
+          <h1 className="text-xl font-bold tracking-tight md:text-2xl">
+            User Management
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Manage users and their permissions
+          </p>
         </div>
       </div>
 
@@ -128,7 +161,9 @@ export default function AdminPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
@@ -136,7 +171,9 @@ export default function AdminPage() {
               </SelectContent>
             </Select>
             <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger><SelectValue placeholder="Role" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Role" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="superadmin">Superadmin</SelectItem>
@@ -163,7 +200,9 @@ export default function AdminPage() {
                   <tr key={user._id} className="border-b">
                     <td className="px-4 py-3">
                       <div className="font-medium">{user.name}</div>
-                      <div className="text-xs text-muted-foreground">{user.email}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {user.email}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <Badge
@@ -178,7 +217,9 @@ export default function AdminPage() {
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {user.lastActive
-                        ? formatDistanceToNow(new Date(user.lastActive), { addSuffix: true })
+                        ? formatDistanceToNow(new Date(user.lastActive), {
+                            addSuffix: true,
+                          })
                         : "N/A"}
                     </td>
                     <td className="px-4 py-3 capitalize">
@@ -199,39 +240,49 @@ export default function AdminPage() {
                     <td className="px-4 py-3">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 cursor-pointer"
+                          >
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" /> View
+                          <DropdownMenuItem className="cursor-pointer">
+                            <Link to={`/dashboard/users/${user._id}`} className="flex items-center">
+                              <Eye className="mr-2 h-4 w-4" /> View
+                            </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
-  disabled={!canModify(user)}
-  onClick={() => handleRoleChange(user._id, user.role)}
->
-  {user.role === "user" ? (
-    <>
-      <ShieldCheck className="mr-2 h-4 w-4 text-yellow-500" />
-      Promote to Admin
-    </>
-  ) : user.role === "admin" ? (
-    <>
-      <UserX className="mr-2 h-4 w-4 text-blue-500" />
-      Demote to User
-    </>
-  ) : (
-    <>
-      <Edit className="mr-2 h-4 w-4" />
-      Not Editable
-    </>
-  )}
-</DropdownMenuItem>
+                            disabled={!canModify(user)}
+                            onClick={() =>
+                              handleRoleChange(user._id, user.role)
+                            }
+                            className="cursor-pointer"
+                          >
+                            {user.role === "user" ? (
+                              <>
+                                <ShieldCheck className="mr-2 h-4 w-4 text-yellow-500" />
+                                Promote to Admin
+                              </>
+                            ) : user.role === "admin" ? (
+                              <>
+                                <UserX className="mr-2 h-4 w-4 text-blue-500" />
+                                Demote to User
+                              </>
+                            ) : (
+                              <>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Not Editable
+                              </>
+                            )}
+                          </DropdownMenuItem>
 
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
+                            className="cursor-pointer"
                             disabled={!canModify(user)}
                             onClick={() =>
                               handleStatusChange(
@@ -254,6 +305,7 @@ export default function AdminPage() {
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <DropdownMenuItem
+                                className="cursor-pointer"
                                 disabled={!canModify(user)}
                                 onSelect={(e) => e.preventDefault()}
                               >
@@ -262,7 +314,9 @@ export default function AdminPage() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogTitle>
+                                  Are you sure?
+                                </AlertDialogTitle>
                                 <AlertDialogDescription>
                                   This will delete the user account.
                                 </AlertDialogDescription>
@@ -291,7 +345,7 @@ export default function AdminPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
               >
                 Previous
@@ -302,7 +356,9 @@ export default function AdminPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
                 disabled={currentPage === totalPages}
               >
                 Next
