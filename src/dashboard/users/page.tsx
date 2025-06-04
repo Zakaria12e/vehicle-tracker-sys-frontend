@@ -222,7 +222,7 @@ export default function AdminPage() {
                         </div>
                         <div>
                           <div className="font-medium">{user.name}</div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-xs text-muted-foreground hidden sm:table-cell">
                             {user.email}
                           </div>
                         </div>
