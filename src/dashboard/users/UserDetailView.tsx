@@ -78,7 +78,7 @@ export default function UserDetailView() {
       case "superadmin":
         return <Crown className="h-4 w-4 text-purple-600 dark:text-purple-400" />;
       case "admin":
-        return <Shield className="h-4 w-4 text-amber-600 dark:text-amber-400" />;
+        return <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />;
       default:
         return <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
     }
@@ -128,14 +128,16 @@ export default function UserDetailView() {
             </div>
 
             <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">{user.name}</h1>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mb-2">{user.email}</p>
-              <div className="flex flex-wrap justify-center sm:justify-start gap-1 sm:gap-2">
-                <Badge className={`capitalize flex items-center gap-1 px-2 py-1 font-medium ${getRoleBadgeColor(user.role)}`}>
-                  {getRoleIcon(user.role)}
-                  {user.role}
-                </Badge>
+              <div className="flex items-center justify-center sm:justify-start gap-2">
+                <h1 className="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+                  {user.name}
+                  <Badge className={`capitalize flex items-center gap-1 px-2 py-1 font-medium ${getRoleBadgeColor(user.role)}`}>
+                    {getRoleIcon(user.role)}
+                    {user.role}
+                  </Badge>
+                </h1>
               </div>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mb-2">{user.email}</p>
             </div>
           </div>
         </div>
