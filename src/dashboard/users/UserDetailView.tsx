@@ -135,18 +135,6 @@ export default function UserDetailView() {
                   {getRoleIcon(user.role)}
                   {user.role}
                 </Badge>
-                <Badge className={`flex items-center gap-1 px-2 py-1 font-medium ${
-                  user.status === 'active' 
-                    ? 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800'
-                    : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800'
-                }`}>
-                  {user.status === 'active' ? (
-                    <CheckCircle className="h-3 w-3" />
-                  ) : (
-                    <AlertTriangle className="h-3 w-3" />
-                  )}
-                  {user.status}
-                </Badge>
               </div>
             </div>
           </div>
