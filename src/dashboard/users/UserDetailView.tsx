@@ -85,7 +85,7 @@ export default function UserDetailView() {
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-6 p-6  rounded-2xl shadow-sm border ">
+          <div className="flex items-center gap-6 p-6  rounded-2xl shadow-sm ">
             <div className="relative">
               <Avatar className="h-16 w-16 border">
               <AvatarImage
@@ -246,14 +246,14 @@ export default function UserDetailView() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="text-center p-6 bg-gradient-to-br from-purple-800 to-blue-600 rounded-2xl text-white relative overflow-hidden">
+                <div className="text-center p-6 bg-black text-white  rounded-2xl  relative overflow-hidden">
                   <div className="relative z-10">
                     <h3 className="font-bold text-xl mb-2">Premium</h3>
                     <p className="text-3xl font-bold mb-1">
                       $29.99
-                      <span className="text-lg text-purple-200 font-normal">/month</span>
+                      <span className="text-lg  font-normal">/month</span>
                     </p>
-                    <p className="text-purple-200 text-sm">Full access to all features</p>
+                    <p className="text-sm">Full access to all features</p>
                   </div>
                   <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full"></div>
                   <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white/5 rounded-full"></div>
