@@ -95,11 +95,10 @@ export default function AdminPage() {
     setUsers(users.filter((user) => user._id !== userId));
   };
 
-  const canModify = (target: User) => {
+  const canModify = () => {
     if (!currentUser) return false;
-    if (currentUser.role === "superadmin") return true;
-    if (currentUser.role === "admin" && target.role === "user") return true;
-    return false;
+    // Only superadmin can promote or demote users
+    return currentUser.role === "superadmin";
   };
 
   const filteredUsers = users.filter((user) => {
@@ -281,7 +280,7 @@ export default function AdminPage() {
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            disabled={!canModify(user)}
+                            disabled={!canModify()}
                             onClick={() => handleRoleChange(user._id, user.role)}
                             className="cursor-pointer"
                           >
@@ -306,7 +305,7 @@ export default function AdminPage() {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="cursor-pointer"
-                            disabled={!canModify(user)}
+                            disabled={!canModify()}
                             onClick={() =>
                               handleStatusChange(
                                 user._id,
@@ -329,7 +328,7 @@ export default function AdminPage() {
                             <AlertDialogTrigger asChild>
                               <DropdownMenuItem
                                 className="cursor-pointer"
-                                disabled={!canModify(user)}
+                                disabled={!canModify()}
                                 onSelect={(e) => e.preventDefault()}
                               >
                                 <Trash2 className="mr-2 h-4 w-4" /> Delete
