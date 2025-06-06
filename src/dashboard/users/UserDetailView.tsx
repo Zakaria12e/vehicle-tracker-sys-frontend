@@ -254,7 +254,7 @@ export default function UserDetailView() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4">
-                <div className="text-center p-3 sm:p-4 bg-black text-white rounded-xl relative overflow-hidden">
+                <div className="text-center border-1 p-3 sm:p-4 bg-black text-white rounded-xl relative overflow-hidden">
                   <div className="relative z-10">
                     <h3 className="font-bold text-base sm:text-lg mb-1">Premium</h3>
                     <p className="text-xl sm:text-2xl font-bold mb-1">
