@@ -13,16 +13,13 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   User,
-  ShieldCheck,
   CreditCard,
   Car,
   CheckCircle,
   AlertTriangle,
   Calendar,
   Clock,
-  Shield,
   Crown,
-  Circle,
 } from "lucide-react";
 
 export default function UserDetailView() {
@@ -100,7 +97,7 @@ export default function UserDetailView() {
       <div className="max-w-4xl mx-auto p-3 sm:p-4">
         {/* Header */}
         <div className="mb-4 sm:mb-6">
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl shadow-sm">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl">
             <div className="relative">
               <Avatar className="h-14 w-14 sm:h-18 sm:w-18 border">
                 <AvatarImage

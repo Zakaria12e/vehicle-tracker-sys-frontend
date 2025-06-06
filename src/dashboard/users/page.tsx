@@ -276,7 +276,7 @@ export default function AdminPage() {
                               to={`/dashboard/users/${user._id}`}
                               className="flex items-center"
                             >
-                              <Eye className="mr-2 h-4 w-4" /> View
+                              <Eye className="mr-2 h-4 w-4" /> View Details
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
