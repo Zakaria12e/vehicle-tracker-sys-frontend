@@ -145,7 +145,7 @@ export default function UserDetailView() {
         {/* Modern Statistics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
           {/* Total Cars Card */}
-          <Card className="relative overflow-hidden border-0 shadow-md">
+          <Card className="relative overflow-hidden border-1 shadow-sm ">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -163,7 +163,7 @@ export default function UserDetailView() {
           </Card>
 
           {/* Active Cars Card */}
-          <Card className="relative overflow-hidden border-0 shadow-md">
+          <Card className="relative overflow-hidden border-1 shadow-sm">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -181,7 +181,7 @@ export default function UserDetailView() {
           </Card>
 
           {/* Total Alerts Card */}
-          <Card className="relative overflow-hidden border-0 shadow-md">
+          <Card className="relative overflow-hidden border-1 shadow-sm">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -203,7 +203,7 @@ export default function UserDetailView() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
           <div className="lg:col-span-2 space-y-3 sm:space-y-4">
             {/* Account Overview */}
-            <Card className="border-0 shadow-md">
+            <Card className="border-1 shadow-md">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2 text-slate-900 dark:text-white">
                   <User className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
@@ -246,7 +246,7 @@ export default function UserDetailView() {
 
           {/* Billing Information */}
           <div className="space-y-3 sm:space-y-4">
-            <Card className="border-0 shadow-md">
+            <Card className="border-1 shadow-md">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
                   <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
