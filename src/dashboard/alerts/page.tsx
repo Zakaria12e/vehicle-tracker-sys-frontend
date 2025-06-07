@@ -14,12 +14,15 @@ export default function AlertsPage() {
           <h1 className="text-xl md:text-2xl font-bold tracking-tight">Alerts & Notifications</h1>
           <p className="text-sm md:text-base text-muted-foreground">Configure alerts and notification preferences</p>
         </div>
-         <Button asChild className="self-end md:self-auto md:ml-auto md:w-auto md:h-8 md:text-sm">
-        <Link to="/alerts/create" className="gap-1">
-          <Plus className="h-4 w-4" />
-          Create Rule
-        </Link>
-      </Button>
+        <Button
+          asChild
+          className="w-full justify-center self-center md:self-auto md:ml-auto md:w-auto md:h-8 md:text-sm"
+        >
+          <Link to="/alerts/create" className="gap-1 flex items-center justify-center">
+            <Plus className="h-4 w-4" />
+            Create Rule
+          </Link>
+        </Button>
       </div>
      
 
