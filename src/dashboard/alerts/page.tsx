@@ -1,9 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CreateAlertDialog } from "./components/CreateAlertDialog"
 import { CurrentAlerts } from "./components/CurrentAlerts"
 import { AlertRules } from "./components/AlertRules"
 import { AlertHistory } from "./components/AlertHistory"
-import { NotificationPreferences } from "./components/NotificationPreferences"
+import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
+import { Plus } from "lucide-react"
 
 export default function AlertsPage() {
   return (
@@ -13,15 +14,20 @@ export default function AlertsPage() {
           <h1 className="text-xl md:text-2xl font-bold tracking-tight">Alerts & Notifications</h1>
           <p className="text-sm md:text-base text-muted-foreground">Configure alerts and notification preferences</p>
         </div>
-        <CreateAlertDialog />
       </div>
+<Button asChild>
+  <Link to="/alerts/create" className="gap-1">
+    <Plus className="h-4 w-4" />
+    Create Rule
+  </Link>
+</Button>
 
       <Tabs defaultValue="active" className="w-full">
         <div className="overflow-x-auto pb-2">
+          
           <TabsList className="mb-2 md:mb-4 h-9 w-full sm:w-auto">
             <TabsTrigger value="active" className="text-xs sm:text-sm">Active Alerts</TabsTrigger>
             <TabsTrigger value="history" className="text-xs sm:text-sm">Alert History</TabsTrigger>
-            <TabsTrigger value="settings" className="text-xs sm:text-sm">Notification Settings</TabsTrigger>
           </TabsList>
         </div>
 
@@ -32,10 +38,6 @@ export default function AlertsPage() {
 
         <TabsContent value="history" className="space-y-4 mt-0">
           <AlertHistory />
-        </TabsContent>
-
-        <TabsContent value="settings" className="space-y-4 mt-0">
-          <NotificationPreferences />
         </TabsContent>
       </Tabs>
     </div>
