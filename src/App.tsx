@@ -20,6 +20,7 @@ import ForgotPassword from "./login/forgotPassword";
 import ResetPassword from "./login/resetPassword";
 import AdminPage from "./dashboard/users/page";
 import UserDetailView from "./dashboard/users/UserDetailView";
+import CreateAlertRulePage from "./dashboard/alerts/CreateAlertRulePage";
 
 import "./App.css";
 import "leaflet/dist/leaflet.css"
@@ -155,6 +156,14 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route path="/alerts/create" element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <CreateAlertRulePage />
+                </DashboardLayout>
+              </PrivateRoute>
+            } />
+
           </Routes>
           <Toaster />
         </BrowserRouter>
