@@ -1,7 +1,5 @@
-"use client"
-
 import type React from "react"
-
+import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -346,10 +344,6 @@ export function AlertRules() {
           <CardTitle className="text-xl">Alert Rules</CardTitle>
           <CardDescription>Manage your configured alert rules</CardDescription>
         </div>
-        <Button onClick={() => navigate("/dashboard/alerts/create")}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Rule
-        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -362,9 +356,11 @@ export function AlertRules() {
               <p className="text-sm text-muted-foreground mb-4">
                 Create your first alert rule to start monitoring your vehicles
               </p>
-              <Button onClick={() => navigate("/dashboard/alerts/create")}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create Alert Rule
+              <Button asChild className="self-end md:self-auto md:ml-auto md:w-auto md:h-8 md:text-sm">
+                <Link to="/alerts/create" className="gap-1">
+                  <Plus className="h-4 w-4" />
+                  Create Alert Rule
+                </Link>
               </Button>
             </div>
           ) : (

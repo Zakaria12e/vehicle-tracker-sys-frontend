@@ -14,20 +14,21 @@ export default function AlertsPage() {
           <h1 className="text-xl md:text-2xl font-bold tracking-tight">Alerts & Notifications</h1>
           <p className="text-sm md:text-base text-muted-foreground">Configure alerts and notification preferences</p>
         </div>
+         <Button asChild className="self-end md:self-auto md:ml-auto md:w-auto md:h-8 md:text-sm">
+        <Link to="/alerts/create" className="gap-1">
+          <Plus className="h-4 w-4" />
+          Create Rule
+        </Link>
+      </Button>
       </div>
-<Button asChild>
-  <Link to="/alerts/create" className="gap-1">
-    <Plus className="h-4 w-4" />
-    Create Rule
-  </Link>
-</Button>
+     
 
       <Tabs defaultValue="active" className="w-full">
         <div className="overflow-x-auto pb-2">
           
-          <TabsList className="mb-2 md:mb-4 h-9 w-full sm:w-auto">
-            <TabsTrigger value="active" className="text-xs sm:text-sm">Active Alerts</TabsTrigger>
-            <TabsTrigger value="history" className="text-xs sm:text-sm">Alert History</TabsTrigger>
+          <TabsList className="mb-4 w-full overflow-x-auto whitespace-nowrap">
+            <TabsTrigger value="active" className="flex-1">Active Alerts</TabsTrigger>
+            <TabsTrigger value="history" className="flex-1">Alert History</TabsTrigger>
           </TabsList>
         </div>
 
