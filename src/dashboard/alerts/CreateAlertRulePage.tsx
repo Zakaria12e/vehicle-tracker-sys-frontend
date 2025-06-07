@@ -195,7 +195,7 @@ export default function CreateAlertRulePage() {
                             <span className="text-lg">{alertType.icon}</span>
                             <div className="text-left">
                               <div className="font-medium">{alertType.label}</div>
-                              <div className="text-xs text-muted-foreground">{alertType.description}</div>
+                              <div className="text-xs text-muted-foreground hidden lg:block">{alertType.description}</div>
                             </div>
                           </div>
                         </SelectItem>
