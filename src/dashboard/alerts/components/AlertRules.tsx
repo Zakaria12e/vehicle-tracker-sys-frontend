@@ -80,8 +80,16 @@ export function AlertRules() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [ruleToDelete, setRuleToDelete] = useState<string | null>(null)
   const [actionInProgress, setActionInProgress] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const navigate = useNavigate()
+  const rulesPerPage = 3
+
+  const indexOfLastRule = currentPage * rulesPerPage
+  const indexOfFirstRule = indexOfLastRule - rulesPerPage
+  const currentRules = rules.slice(indexOfFirstRule, indexOfLastRule)
+
+  const totalPages = Math.ceil(rules.length / rulesPerPage)
 
   const fetchRules = async () => {
     setLoading(true)
@@ -337,6 +345,18 @@ export function AlertRules() {
       ))
   }
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1)
+    }
+  }
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1)
+    }
+  }
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -349,7 +369,7 @@ export function AlertRules() {
         <div className="space-y-4">
           {loading ? (
             renderSkeletons()
-          ) : rules.length === 0 ? (
+          ) : currentRules.length === 0 ? (
             <div className="text-center py-8 border rounded-lg bg-muted/30">
               <Bell className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
               <h3 className="text-lg font-medium mb-1">No alert rules found</h3>
@@ -364,8 +384,19 @@ export function AlertRules() {
               </Button>
             </div>
           ) : (
-            rules.map(renderRuleCard)
+            currentRules.map(renderRuleCard)
           )}
+        </div>
+        <div className="flex justify-between items-center mt-4">
+          <Button onClick={handlePreviousPage} disabled={currentPage === 1}>
+            Previous
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+            Next
+          </Button>
         </div>
       </CardContent>
 
