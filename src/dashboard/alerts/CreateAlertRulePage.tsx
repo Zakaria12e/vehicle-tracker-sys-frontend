@@ -141,8 +141,8 @@ export default function CreateAlertRulePage() {
             Back to Alerts
           </Button>
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Create Alert Rule</h1>
-            <p className="text-muted-foreground text-lg">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Create Alert Rule</h1>
+            <p className="text-muted-foreground text-base sm:text-lg">
               Set up automated alerts to monitor your vehicles and stay informed about important events.
             </p>
           </div>
