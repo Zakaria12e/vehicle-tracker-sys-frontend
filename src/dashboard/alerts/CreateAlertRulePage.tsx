@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { AlertCircle, Bell, Mail, Smartphone, ArrowLeft, Loader2 } from "lucide-react"
 import axios from "axios"
 import { toast } from "sonner"
+import { Car, BatteryCharging, MapPin, Target } from "lucide-react"
 
 interface AlertRuleForm {
   name: string
@@ -26,30 +27,30 @@ interface AlertRuleForm {
 }
 
 const ALERT_TYPES = [
-  {
-    value: "SPEED_ALERT",
-    label: "Speed Limit Exceeded",
-    description: "Alert when vehicle exceeds speed limit",
-    icon: "🚗",
-  },
-  {
-    value: "BATTERY_ALERT",
-    label: "Low Battery",
-    description: "Alert when battery level is low",
-    icon: "🔋",
-  },
-  {
-    value: "GEOFENCE_EXIT",
-    label: "Exited Geofence",
-    description: "Alert when vehicle leaves designated area",
-    icon: "📍",
-  },
-  {
-    value: "GEOFENCE_ENTRY",
-    label: "Entered Geofence",
-    description: "Alert when vehicle enters designated area",
-    icon: "🎯",
-  },
+    {
+        value: "SPEED_ALERT",
+        label: "Speed Limit Exceeded",
+        description: "Alert when vehicle exceeds speed limit",
+        icon: <Car className="h-5 w-5 text-purple-600 dark:text-purple-600" />,
+    },
+    {
+        value: "BATTERY_ALERT",
+        label: "Low Battery",
+        description: "Alert when battery level is low",
+        icon: <BatteryCharging className="h-5 w-5 text-yellow-400 dark:text-yellow-600" />,
+    },
+    {
+        value: "GEOFENCE_EXIT",
+        label: "Exited Geofence",
+        description: "Alert when vehicle leaves designated area",
+        icon: <Target className="h-5 w-5 text-red-500 dark:text-red-600" />,
+    },
+    {
+        value: "GEOFENCE_ENTRY",
+        label: "Entered Geofence",
+        description: "Alert when vehicle enters designated area",
+        icon: <Target className="h-5 w-5 text-green-500 dark:text-green-600" />,
+    },
 ]
 
 export default function CreateAlertRulePage() {

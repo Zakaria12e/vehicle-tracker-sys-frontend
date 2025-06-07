@@ -62,9 +62,9 @@ const ALERT_TYPE_CONFIG: Record<string, { icon: React.ReactNode; label: string; 
     color: "bg-red-100 text-red-700 border-red-200",
   },
   GEOFENCE_EXIT: {
-    icon: <MapPin className="h-4 w-4" />,
+    icon: <Target className="h-4 w-4" />,
     label: "Geofence Exit",
-    color: "bg-blue-100 text-blue-700 border-blue-200",
+    color: "bg-orange-100 text-orange-700 border-orange-200",
   },
   GEOFENCE_ENTRY: {
     icon: <Target className="h-4 w-4" />,
