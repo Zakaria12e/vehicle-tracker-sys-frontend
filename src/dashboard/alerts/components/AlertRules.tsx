@@ -387,17 +387,19 @@ export function AlertRules() {
             currentRules.map(renderRuleCard)
           )}
         </div>
-        <div className="flex justify-between items-center mt-4">
-          <Button onClick={handlePreviousPage} disabled={currentPage === 1}>
-            Previous
-          </Button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
-            Next
-          </Button>
-        </div>
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center mt-4">
+            <Button onClick={handlePreviousPage} disabled={currentPage === 1}>
+              Previous
+            </Button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+              Next
+            </Button>
+          </div>
+        )}
       </CardContent>
 
       {/* Delete confirmation dialog */}
