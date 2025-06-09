@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CurrentAlerts } from "./components/CurrentAlerts"
 import { AlertRules } from "./components/AlertRules"
@@ -7,6 +8,8 @@ import { Link } from "react-router-dom"
 import { Plus } from "lucide-react"
 
 export default function AlertsPage() {
+  const { user } = useAuth();
+
   return (
     <div className="flex flex-col gap-4 md:gap-6 p-3 md:p-8">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -14,15 +17,17 @@ export default function AlertsPage() {
           <h1 className="text-xl md:text-2xl font-bold tracking-tight">Alerts & Notifications</h1>
           <p className="text-sm md:text-base text-muted-foreground">Configure alerts and notification preferences</p>
         </div>
-        <Button
-          asChild
-          className="w-full justify-center self-center md:self-auto md:ml-auto md:w-auto md:h-8 md:text-sm"
-        >
-          <Link to="/alerts/create" className="gap-1 flex items-center justify-center">
-            <Plus className="h-4 w-4" />
-            Create Rule
-          </Link>
-        </Button>
+        {user?.role !== "user" && (
+          <Button
+            asChild
+            className="w-full justify-center self-center md:self-auto md:ml-auto md:w-auto md:h-8 md:text-sm"
+          >
+            <Link to="/alerts/create" className="gap-1 flex items-center justify-center">
+              <Plus className="h-4 w-4" />
+              Create Rule
+            </Link>
+          </Button>
+        )}
       </div>
      
 
@@ -37,7 +42,7 @@ export default function AlertsPage() {
 
         <TabsContent value="active" className="space-y-4 mt-0">
           <CurrentAlerts />
-          <AlertRules />
+          {user?.role !== "user" && <AlertRules />}
         </TabsContent>
 
         <TabsContent value="history" className="space-y-4 mt-0">
@@ -45,5 +50,5 @@ export default function AlertsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

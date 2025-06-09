@@ -139,8 +139,8 @@ return (
         <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
       </CardHeader>
       <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
-        <div className="text-lg font-bold md:text-2xl">0</div>
-        <p className="text-xs text-muted-foreground">0 speed, 0 geofence</p>
+        <div className="text-lg font-bold md:text-2xl">1</div>
+        <p className="text-xs text-muted-foreground">1 speed, 0 geofence</p>
       </CardContent>
     </Card>
   </motion.div>
@@ -156,7 +156,7 @@ return (
         <Clock className="h-4 w-4 text-purple-600 dark:text-purple-500" />
       </CardHeader>
       <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
-        <div className="text-lg font-bold md:text-2xl">0 km</div>
+        <div className="text-lg font-bold md:text-2xl">72 km</div>
         <p className="text-xs text-muted-foreground">This month</p>
       </CardContent>
     </Card>
