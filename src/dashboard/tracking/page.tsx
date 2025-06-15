@@ -124,37 +124,36 @@ export default function TrackingPage() {
 
     loadInitialVehicles();
 
-    socket.on('vehicle_data', (data) => {
-      setVehicles((prev) => {
-        const index = prev.findIndex((v) => v.imei === data.imei);
-        const updated = {
-          ...prev[index],
-          lat: data.lat,
-          lon: data.lon,
-          currentStatus: data.ignition
-            ? data.speed > 0
-              ? 'moving'
-              : 'stopped'
-            : 'inactive',
-          telemetry: {
-            ...prev[index]?.telemetry,
-            ...data,
-          },
-        };
-
-        if (index !== -1) {
-          const copy = [...prev];
-          copy[index] = updated;
-          return copy;
-        } else {
-          return [...prev, updated];
-        }
-      });
-    });
-
-    return () => {
-      socket.off('vehicle_data');
+ socket.on("vehicle_data", (data) => {
+  setVehicles((prev) => {
+    const index = prev.findIndex((v) => v.imei === data.imei);
+    const updated = {
+      ...(prev[index] || {}),  // safe in case it's a new vehicle
+      lat: data.lat,
+      lon: data.lon,
+      speed: data.speed ?? data.speedGps ?? 0,
+      ignition: data.ignition,
+      timestamp: data.timestamp,
+      currentStatus: data.ignition
+        ? (data.speed ?? data.speedGps ?? 0) > 0
+          ? 'moving'
+          : 'stopped'
+        : 'inactive',
+      extendedData: {
+        ...data.extendedData,
+      },
     };
+
+    if (index !== -1) {
+      const copy = [...prev];
+      copy[index] = updated;
+      return copy;
+    } else {
+      return [...prev, updated];
+    }
+  });
+});
+
   }, []);
 
   const selected =
@@ -339,7 +338,7 @@ export default function TrackingPage() {
                         <h3 className="text-base sm:text-lg font-semibold">{selected.name}</h3>
                         <div className="flex items-center gap-3 text-xs sm:text-sm text-muted-foreground">
                           <span>{selected.licensePlate}</span>
-                          <span>• {getRelativeTime(selected.telemetry.timestamp)}</span>
+                          <span>• {getRelativeTime(selected.timestamp)}</span>
                         </div>
                       </motion.div>
 
@@ -370,20 +369,28 @@ export default function TrackingPage() {
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground">Speed</p>
                           <p className="text-sm font-medium">
-                            {selected.telemetry.speed} km/h
+                            {selected.speed} km/h
                           </p>
                         </div>
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground">Battery</p>
                           <div className="flex items-center gap-1">
                             <Battery className="h-3.5 w-3.5 text-muted-foreground" />
-                            <p className="text-sm font-medium">{selected.telemetry.vehicleBattery}%</p>
+                            <p className="text-sm font-medium">
+                              {selected.extendedData?.vehicleBattery !== undefined
+                                ? `${selected.extendedData.vehicleBattery}%`
+                                : "Data not available"}
+                            </p>
                           </div>
                         </div>
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground">Ignition</p>
                           <p className="text-sm font-medium">
-                            {selected.telemetry.ignition ? "On" : "Off"}
+                            {selected.ignition !== undefined
+                              ? selected.ignition
+                                ? "On"
+                                : "Off"
+                              : "Data not available"}
                           </p>
                         </div>
                       </motion.div>

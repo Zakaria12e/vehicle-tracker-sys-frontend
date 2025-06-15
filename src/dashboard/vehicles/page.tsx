@@ -89,15 +89,7 @@ export default function VehiclesPage() {
       if (res.ok) {
         const updated = data.data.vehicles.map((v: any) => {
           let status = v.currentStatus
-          if (status !== "immobilized") {
-            if (!v.telemetry?.ignition || v.telemetry?.vehicleBattery === 0) {
-              status = "inactive"
-            } else if (v.telemetry?.speed === 0) {
-              status = "stopped"
-            } else {
-              status = "moving"
-            }
-          }
+        
 
           return {
             _id: v._id,
@@ -107,7 +99,7 @@ export default function VehiclesPage() {
             licensePlate: v.licensePlate,
             currentStatus: status,
             telemetry: {
-              vehicleBattery: v.telemetry?.vehicleBattery ?? 0,
+              vehicleBattery: v.lastPosition?.vehicleBattery ?? 0,
               ignition: v.telemetry?.ignition ?? false,
               speed: v.telemetry?.speed ?? 0,
               timestamp: v.telemetry?.timestamp ?? null,

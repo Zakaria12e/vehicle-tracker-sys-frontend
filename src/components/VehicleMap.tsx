@@ -179,21 +179,21 @@ const VehicleMap: React.FC<Props & { triggerZoom: boolean; geofences?: any[] }> 
                         <Gauge className="h-3.5 w-3.5" />
                         Speed
                       </span>
-                      <span>{v.telemetry.speed ?? 0} km/h</span>
+                      <span>{v.speed ?? "--"} km/h</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="flex items-center gap-1.5">
                         <Battery className="h-3.5 w-3.5" />
                         Battery
                       </span>
-                      <span>{v.telemetry.vehicleBattery ?? "--"}%</span>
+                      <span>{v.extendedData?.vehicleBattery ?? "--"}%</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="flex items-center gap-1.5">
                         <Power className="h-3.5 w-3.5" />
                         Ignition
                       </span>
-                      <span>{v.telemetry.ignition ? "On" : "Off"}</span>
+                      <span>{v.ignition ? "On" : "Off"}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -204,25 +204,24 @@ const VehicleMap: React.FC<Props & { triggerZoom: boolean; geofences?: any[] }> 
       ))}
 
       {geofences.map((geofence, index) => (
-  <React.Fragment key={index}>
-    <Circle
-      center={[geofence.center.lat, geofence.center.lon]}
-      radius={geofence.radius}
-      pathOptions={{ color: "blue", weight: 2, fillOpacity: 0.1 }}
-    />
-    <Marker
-      position={[geofence.center.lat, geofence.center.lon]}
-      icon={L.divIcon({
-        className: 'geofence-label',
-        html: `<div style="font-size: 12px; font-weight: bold; color: #1d4ed8; text-shadow: 0 0 2px white">${geofence.name}</div>`,
-        iconSize: [100, 20],
-        iconAnchor: [50, 10],
-      })}
-      interactive={false}
-    />
-  </React.Fragment>
-))}
-
+        <React.Fragment key={index}>
+          <Circle
+            center={[geofence.center.lat, geofence.center.lon]}
+            radius={geofence.radius}
+            pathOptions={{ color: "blue", weight: 2, fillOpacity: 0.1 }}
+          />
+          <Marker
+            position={[geofence.center.lat, geofence.center.lon]}
+            icon={L.divIcon({
+              className: 'geofence-label',
+              html: `<div style="font-size: 12px; font-weight: bold; color: #1d4ed8; text-shadow: 0 0 2px white">${geofence.name}</div>`,
+              iconSize: [100, 20],
+              iconAnchor: [50, 10],
+            })}
+            interactive={false}
+          />
+        </React.Fragment>
+      ))}
     </MapContainer>
   );
 };
