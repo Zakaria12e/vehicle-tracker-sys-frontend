@@ -2,27 +2,67 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog"
 import { Lock, AlertTriangle, Loader2 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
 
 interface ImmobilizeDialogProps {
+  vehicleId: string;
   disabled: boolean;
 }
 
-export const ImmobilizeDialog = ({ disabled }: ImmobilizeDialogProps) => {
+const API_URL = import.meta.env.VITE_API_URL;
+
+export const ImmobilizeDialog = ({ vehicleId, disabled }: ImmobilizeDialogProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isImmobilizing, setIsImmobilizing] = useState(false)
   const [reason, setReason] = useState("")
 
-  const handleImmobilize = () => {
-    setIsImmobilizing(true)
-    setTimeout(() => {
-      setIsImmobilizing(false)
-      setIsOpen(false)
-      setReason("")
-    }, 2000)
+  const handleImmobilize = async () => {
+    if (!vehicleId || !reason) return;
+
+    setIsImmobilizing(true);
+
+    try {
+      const res = await fetch(`${API_URL}/immobilizations`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          vehicle: vehicleId,
+          action: "immobilize",
+          reason,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success("Vehicle immobilized successfully!");
+        setIsOpen(false);
+        setReason("");
+      } else {
+        toast.error(data.message || "Failed to immobilize vehicle.");
+      }
+
+    } catch (err) {
+      console.error("Error immobilizing:", err);
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setIsImmobilizing(false);
+    }
   }
 
   return (
@@ -37,8 +77,7 @@ export const ImmobilizeDialog = ({ disabled }: ImmobilizeDialogProps) => {
         <DialogHeader>
           <DialogTitle>Confirm Vehicle Immobilization</DialogTitle>
           <DialogDescription>
-            This will remotely immobilize the selected vehicle. The vehicle will not be able to start until you
-            remove the immobilization.
+            This will remotely immobilize the selected vehicle. It will not be able to start until reactivated.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -59,24 +98,19 @@ export const ImmobilizeDialog = ({ disabled }: ImmobilizeDialogProps) => {
               <div>
                 <h4 className="font-medium text-amber-800 dark:text-amber-500">Important Safety Notice</h4>
                 <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
-                  Only immobilize vehicles when they are safely parked. Immobilizing a moving vehicle can be
-                  dangerous.
+                  Only immobilize vehicles when they are safely parked. Immobilizing a moving vehicle can be dangerous.
                 </p>
               </div>
             </div>
           </div>
         </div>
         <DialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsOpen(false)}
-            className="w-full sm:w-auto"
-          >
+          <Button variant="outline" onClick={() => setIsOpen(false)} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <Button 
-            onClick={handleImmobilize} 
-            disabled={isImmobilizing || !reason} 
+          <Button
+            onClick={handleImmobilize}
+            disabled={isImmobilizing || !reason}
             className="gap-1 w-full sm:w-auto"
           >
             {isImmobilizing ? (
