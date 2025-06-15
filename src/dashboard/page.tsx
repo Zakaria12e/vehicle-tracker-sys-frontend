@@ -24,44 +24,14 @@ export default function DashboardPage() {
     lastMonthCount: 0,
     currentMonthCount: 0,
     difference: "+0",
+    activeVehicles: 0,
+    idleVehicles: 0,
+    movingVehicles: 0,
   });
   
   
    const [vehicles, setVehicles] = useState<any[]>([]);
 
-useEffect(() => {
-    socket.on('vehicle_data', (data) => {
-      setVehicles((prev) => {
-        const index = prev.findIndex((v) => v.imei === data.imei);
-        const updated = {
-          ...prev[index],
-          lat: data.lat,
-          lon: data.lon,
-          currentStatus: data.ignition
-            ? data.speed > 0
-              ? 'moving'
-              : 'stopped'
-            : 'inactive',
-          telemetry: {
-            ...prev[index]?.telemetry,
-            ...data,
-          },
-        };
-
-        if (index !== -1) {
-          const copy = [...prev];
-          copy[index] = updated;
-          return copy;
-        } else {
-          return [...prev, updated];
-        }
-      });
-    });
-
-    return () => {
-      socket.off('vehicle_data');
-    };
-  }, []);
 
 useEffect(() => {
   socket.on("vehicle_data", (data) => {
@@ -197,8 +167,8 @@ return (
         <MapPin className="h-4 w-4 text-green-600 dark:text-green-500" />
       </CardHeader>
       <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
-        <div className="text-lg font-bold md:text-2xl">0</div>
-        <p className="text-xs text-muted-foreground">0 idle, 0 moving</p>
+        <div className="text-lg font-bold md:text-2xl">{vehicleStats.activeVehicles}</div>
+        <p className="text-xs text-muted-foreground">{vehicleStats.idleVehicles} idle, {vehicleStats.movingVehicles} moving</p>
       </CardContent>
     </Card>
   </motion.div>
