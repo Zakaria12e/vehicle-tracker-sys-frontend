@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Car, AlertTriangle, Clock, Battery, MapPin, ShieldAlert } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
 import { useEffect, useState } from "react";
-import VehicleMap from "@/components/VehicleMap";
+import VehicleDashboardMap from "@/components/VehicleDashboardMap";
 import { motion } from "framer-motion";
 import { io } from "socket.io-client";
 
@@ -192,7 +192,7 @@ return (
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[250px] p-0 overflow-hidden rounded-md sm:h-[300px] md:h-[320px] lg:h-[360px]">
-            <VehicleMap
+            <VehicleDashboardMap
               devices={vehicles.filter((v) => v.lat !== 0 && v.lon !== 0)}
               selectedVehicle="all"
               triggerZoom={false}
