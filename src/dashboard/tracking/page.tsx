@@ -94,6 +94,7 @@ export default function TrackingPage() {
   const [showGeofences, setShowGeofences] = useState(true);
   const [triggerZoom, setTriggerZoom] = useState(false);
   const [activeTab, setActiveTab] = useState<'map' | 'details'>('map');
+  const [geofences, setGeofences] = useState<any[]>([]);
 
   const handleLocateClick = () => {
     setTriggerZoom(true);
@@ -163,6 +164,39 @@ export default function TrackingPage() {
       toast.error("Unable to connect to vehicle service");
     }
   };
+
+const fetchGeofences = async (vehicleId: string) => {
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  try {
+    const res = await fetch(`${API_URL}/geofences/vehicle/${vehicleId}`, {
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // Wrap single geofence object in array to match expected format
+      setGeofences(data.data ? [data.data] : []);
+    } else {
+      toast.error(res.statusText || "Failed to load geofences");
+    }
+  } catch (err) {
+    toast.error("Unable to connect to geofence service");
+  }
+};
+
+
+  useEffect(() => {
+    if (showGeofences && selectedVehicle !== "all") {
+      const selectedVehicleId = vehicles.find((v) => v.imei === selectedVehicle)?._id;
+      if (selectedVehicleId) {
+        fetchGeofences(selectedVehicleId);
+      }
+    } else {
+      setGeofences([]);
+    }
+  }, [showGeofences, selectedVehicle]);
 
   return (
     <motion.div 
@@ -256,6 +290,7 @@ export default function TrackingPage() {
                   devices={vehicles.filter((v) => v.lat !== 0 && v.lon !== 0)}
                   selectedVehicle={selectedVehicle}
                   triggerZoom={triggerZoom}
+                  geofences={showGeofences ? geofences : []}
                 />
               </Suspense>
             </motion.div>
@@ -352,14 +387,7 @@ export default function TrackingPage() {
                       >
                         <h4 className="text-sm font-medium">Map Settings</h4>
                         <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <Label htmlFor="show-traffic" className="text-xs sm:text-sm">Show Traffic</Label>
-                            <Switch
-                              id="show-traffic"
-                              checked={showTraffic}
-                              onCheckedChange={setShowTraffic}
-                            />
-                          </div>
+                         
                           <div className="flex items-center justify-between">
                             <Label htmlFor="show-geofences" className="text-xs sm:text-sm">Show Geofences</Label>
                             <Switch
@@ -368,22 +396,7 @@ export default function TrackingPage() {
                               onCheckedChange={setShowGeofences}
                             />
                           </div>
-                          <div>
-                            <div className="flex justify-between mb-1">
-                              <Label htmlFor="refresh-interval" className="text-xs sm:text-sm">Refresh Interval</Label>
-                              <span className="text-xs text-muted-foreground">
-                                {refreshInterval}s
-                              </span>
-                            </div>
-                            <Slider
-                              id="refresh-interval"
-                              min={1}
-                              max={30}
-                              step={1}
-                              value={[refreshInterval]}
-                              onValueChange={(val) => setRefreshInterval(val[0])}
-                            />
-                          </div>
+                        
                         </div>
                       </motion.div>
 

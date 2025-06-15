@@ -19,14 +19,14 @@ export function CurrentAlerts() {
             <div className="space-y-2 flex-1">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                 <p className="font-medium">Speed Alert</p>
-                <p className="text-xs text-muted-foreground">Today, 9:15 AM</p>
+                <p className="text-xs text-muted-foreground">3 days ago</p>
               </div>
               <p className="text-sm">Vehicle ABC-789 exceeded speed limit (92 km/h)</p>
               <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                 <Car className="h-3 w-3" />
-                <span>Ford Transit</span>
+                <span>Soco</span>
                 <MapPin className="h-3 w-3 ml-0 sm:ml-2" />
-                <span>Highway 101, North District</span>
+                <span></span>
               </div>
               <div className="flex flex-col xs:flex-row gap-2 mt-2">
                 <Button variant="outline" size="sm" className="w-full xs:w-auto justify-center">View on Map</Button>

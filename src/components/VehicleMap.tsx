@@ -6,6 +6,7 @@ import {
   Marker,
   Popup,
   useMap,
+  Circle,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -111,7 +112,7 @@ const getStatusBadge = (status: string) => {
   }
 };
 
-const VehicleMap: React.FC<Props & { triggerZoom: boolean }> = ({ devices, selectedVehicle, triggerZoom }) => {
+const VehicleMap: React.FC<Props & { triggerZoom: boolean; geofences?: any[] }> = ({ devices, selectedVehicle, triggerZoom, geofences = [] }) => {
   const visibleDevices = devices.filter(
     (v) => selectedVehicle === "all" || v.imei === selectedVehicle
   );
@@ -128,17 +129,17 @@ const VehicleMap: React.FC<Props & { triggerZoom: boolean }> = ({ devices, selec
       className="h-full w-full z-0 rounded-lg shadow-sm"
     >
       <TileLayer
-    className="block dark:hidden"
-    attribution='&copy; <a href="https://www.esri.com/">Esri</a> & contributors'
-    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
-  />
+        className="block dark:hidden"
+        attribution='&copy; <a href="https://www.esri.com/">Esri</a> & contributors'
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+      />
 
-  {/* Dark theme tile layer */}
-  <TileLayer
-    className="hidden dark:block"
-    attribution='&copy; <a href="https://carto.com/">Carto</a>'
-    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-  />
+      {/* Dark theme tile layer */}
+      <TileLayer
+        className="hidden dark:block"
+        attribution='&copy; <a href="https://carto.com/">Carto</a>'
+        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      />
 
       <MapAutoZoom
         vehicle={focusedVehicle}
@@ -153,54 +154,75 @@ const VehicleMap: React.FC<Props & { triggerZoom: boolean }> = ({ devices, selec
           icon={createCustomMarker(v.currentStatus)}
         >
           <Popup>
-          <motion.div
-    initial={{ opacity: 0, scale: 0.95, y: 10 }}
-    animate={{ opacity: 1, scale: 1, y: 0 }}
-    transition={{ duration: 0.4, ease: "easeOut" }}
-  >
-            <Card className="border-0 shadow-none w-[250px] dark:bg-black">
-              <CardContent className="p-3">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="font-semibold text-base flex items-center gap-1.5">
-                    <Car className="h-4 w-4" />
-                    {v.name}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              <Card className="border-0 shadow-none w-[250px] dark:bg-black">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="font-semibold text-base flex items-center gap-1.5">
+                      <Car className="h-4 w-4" />
+                      {v.name}
+                    </div>
+                    {getStatusBadge(v.currentStatus)}
                   </div>
-                  {getStatusBadge(v.currentStatus)}
-                </div>
 
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <div className="flex justify-between">
-                    <span className="text-xs font-medium">IMEI</span>
-                    <span className="font-mono text-xs">{v.imei}</span>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <div className="flex justify-between">
+                      <span className="text-xs font-medium">IMEI</span>
+                      <span className="font-mono text-xs">{v.imei}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Gauge className="h-3.5 w-3.5" />
+                        Speed
+                      </span>
+                      <span>{v.telemetry.speed ?? 0} km/h</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Battery className="h-3.5 w-3.5" />
+                        Battery
+                      </span>
+                      <span>{v.telemetry.vehicleBattery ?? "--"}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Power className="h-3.5 w-3.5" />
+                        Ignition
+                      </span>
+                      <span>{v.telemetry.ignition ? "On" : "Off"}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <Gauge className="h-3.5 w-3.5" />
-                      Speed
-                    </span>
-                    <span>{v.telemetry.speed ?? 0} km/h</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <Battery className="h-3.5 w-3.5" />
-                      Battery
-                    </span>
-                    <span>{v.telemetry.vehicleBattery ?? "--"}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <Power className="h-3.5 w-3.5" />
-                      Ignition
-                    </span>
-                    <span>{v.telemetry.ignition ? "On" : "Off"}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+                </CardContent>
+              </Card>
+            </motion.div>
           </Popup>
         </Marker>
       ))}
+
+      {geofences.map((geofence, index) => (
+  <React.Fragment key={index}>
+    <Circle
+      center={[geofence.center.lat, geofence.center.lon]}
+      radius={geofence.radius}
+      pathOptions={{ color: "blue", weight: 2, fillOpacity: 0.1 }}
+    />
+    <Marker
+      position={[geofence.center.lat, geofence.center.lon]}
+      icon={L.divIcon({
+        className: 'geofence-label',
+        html: `<div style="font-size: 12px; font-weight: bold; color: #1d4ed8; text-shadow: 0 0 2px white">${geofence.name}</div>`,
+        iconSize: [100, 20],
+        iconAnchor: [50, 10],
+      })}
+      interactive={false}
+    />
+  </React.Fragment>
+))}
+
     </MapContainer>
   );
 };

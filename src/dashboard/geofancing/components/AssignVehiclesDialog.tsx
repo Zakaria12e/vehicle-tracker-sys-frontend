@@ -38,18 +38,24 @@ export default function AssignVehiclesDialog({
   const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
   const [showContent, setShowContent] = useState(false);
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
+useEffect(() => {
+  let timer: NodeJS.Timeout;
 
-    if (open) {
-      setSelectedVehicles(initiallyAssigned);
-      timer = setTimeout(() => setShowContent(true), 50);
-    } else {
-      setShowContent(false);
-    }
+  if (open) {
+    // Filter initiallyAssigned to only include valid vehicle IDs
+    const validIds = initiallyAssigned.filter((id) =>
+      vehicles.some((v) => v._id === id)
+    );
+    setSelectedVehicles(validIds);
 
-    return () => clearTimeout(timer);
-  }, [open, initiallyAssigned]);
+    timer = setTimeout(() => setShowContent(true), 50);
+  } else {
+    setShowContent(false);
+  }
+
+  return () => clearTimeout(timer);
+}, [open, initiallyAssigned, vehicles]);
+
 
   const handleChange = (vehicleId: string, checked: boolean) => {
     setSelectedVehicles((prev) =>
