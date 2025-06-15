@@ -369,7 +369,7 @@ export default function TrackingPage() {
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground">Speed</p>
                           <p className="text-sm font-medium">
-                            {selected.speed} km/h
+                            {selected.speed !== undefined ? `${selected.speed} km/h` : "0 km/h"}
                           </p>
                         </div>
                         <div className="space-y-1">
@@ -379,7 +379,7 @@ export default function TrackingPage() {
                             <p className="text-sm font-medium">
                               {selected.extendedData?.vehicleBattery !== undefined
                                 ? `${selected.extendedData.vehicleBattery}%`
-                                : "Data not available"}
+                                : "0%"}
                             </p>
                           </div>
                         </div>
@@ -390,7 +390,7 @@ export default function TrackingPage() {
                               ? selected.ignition
                                 ? "On"
                                 : "Off"
-                              : "Data not available"}
+                              : "Off"}
                           </p>
                         </div>
                       </motion.div>
