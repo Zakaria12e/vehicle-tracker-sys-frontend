@@ -27,12 +27,11 @@ interface Vehicle {
   imei: string
   licensePlate: string
   currentStatus: "moving" | "stopped" | "inactive" | "immobilized"
-  telemetry: {
-    vehicleBattery: number
-    ignition: boolean
-    speed: number
-    timestamp: string
-  }
+  vehicleBattery: number
+  ignition: boolean
+  speed: number
+  timestamp: string
+
 }
 
 // Animation variants with shorter, more consistent timing
@@ -96,14 +95,12 @@ export default function VehiclesPage() {
             name: v.name,
             model: v.model,
             imei: v.imei,
-            licensePlate: v.licensePlate,
             currentStatus: status,
-            telemetry: {
-              vehicleBattery: v.lastPosition?.vehicleBattery ?? 0,
-              ignition: v.telemetry?.ignition ?? false,
-              speed: v.telemetry?.speed ?? 0,
-              timestamp: v.telemetry?.timestamp ?? null,
-            },
+            licensePlate: v.licensePlate,
+            vehicleBattery: v.extendedData?.vehicleBattery ?? 0,
+            ignition: v.ignition ?? false,
+            speed: v.speed ?? 0,
+            timestamp: v.lastPosition?.timestamp ?? null,
           }
         })
         setVehicles(updated)
@@ -317,9 +314,9 @@ export default function VehiclesPage() {
                   imei={v.imei}
                   licensePlate={v.licensePlate}
                   status={v.currentStatus}
-                  speed={v.telemetry.speed}
-                  battery={v.telemetry.vehicleBattery}
-                  timestamp={v.telemetry.timestamp}
+                  speed={v.speed}
+                  battery={v.vehicleBattery}
+                  timestamp={v.timestamp}
                   onDelete={(id) => {
                     setVehicles((prev) => prev.filter((veh) => veh._id !== id))
                     if (selectedVehicle?._id === id) setSelectedVehicle(null)
