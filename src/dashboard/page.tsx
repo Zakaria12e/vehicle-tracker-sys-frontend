@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext"
 import { useEffect, useState } from "react";
 import VehicleMap from "@/components/VehicleMap";
 import { motion } from "framer-motion";
+import { io } from "socket.io-client";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -13,7 +14,9 @@ const fadeInUp = {
     transition: { delay: i * 0.1, duration: 1 },
   }),
 };
-
+const socket = io(import.meta.env.VITE_API_BASE_URL, {
+  withCredentials: true,
+});
 export default function DashboardPage() {
    const { user } = useAuth()
    const [vehicleStats, setVehicleStats] = useState({
@@ -27,52 +30,75 @@ export default function DashboardPage() {
    const [vehicles, setVehicles] = useState<any[]>([]);
 
 useEffect(() => {
-  const fetchVehicles = async () => {
-    const API_URL = import.meta.env.VITE_API_URL;
+    socket.on('vehicle_data', (data) => {
+      setVehicles((prev) => {
+        const index = prev.findIndex((v) => v.imei === data.imei);
+        const updated = {
+          ...prev[index],
+          lat: data.lat,
+          lon: data.lon,
+          currentStatus: data.ignition
+            ? data.speed > 0
+              ? 'moving'
+              : 'stopped'
+            : 'inactive',
+          telemetry: {
+            ...prev[index]?.telemetry,
+            ...data,
+          },
+        };
 
-    try {
-      const res = await fetch(`${API_URL}/vehicles`, {
-        credentials: "include",
+        if (index !== -1) {
+          const copy = [...prev];
+          copy[index] = updated;
+          return copy;
+        } else {
+          return [...prev, updated];
+        }
       });
-      const data = await res.json();
+    });
 
-      if (res.ok) {
-        const processed = data.data.vehicles.map((v: any) => {
-          const telemetry = v.telemetry || {};
-          let status = v.currentStatus;
+    return () => {
+      socket.off('vehicle_data');
+    };
+  }, []);
 
-          if (status !== "immobilized") {
-            if (!telemetry.ignition || telemetry.vehicleBattery === 0) {
-              status = "inactive";
-            } else if (telemetry.speed === 0) {
-              status = "stopped";
-            } else {
-              status = "moving";
-            }
-          }
+useEffect(() => {
+  socket.on("vehicle_data", (data) => {
+    setVehicles((prev) => {
+      const index = prev.findIndex((v) => v.imei === data.imei);
+      const updated = {
+        ...prev[index],
+        lat: data.lat,
+        lon: data.lon,
+        currentStatus: data.ignition
+          ? data.speed > 0
+            ? 'moving'
+            : 'stopped'
+          : 'inactive',
+        telemetry: {
+          ...prev[index]?.telemetry,
+          ...data,
+        },
+      };
 
-          const lat = telemetry.lat ?? 0;
-          const lon = telemetry.lon ?? 0;
-
-          return {
-            ...v,
-            currentStatus: status,
-            lat,
-            lon,
-            telemetry,
-          };
-        });
-
-        setVehicles(processed);
+      if (index !== -1) {
+        const copy = [...prev];
+        copy[index] = updated;
+        return copy;
       } else {
-        console.error("Failed to load vehicles");
+        return [...prev, updated];
       }
-    } catch (err) {
-      console.error("Unable to connect to vehicle service");
-    }
+    });
+  });
+
+  return () => {
+    socket.off('vehicle_data');
   };
 
+}, []);
 
+useEffect(() => {
   const fetchStats = async () => {
     const API_URL = import.meta.env.VITE_API_URL;
     try {
@@ -89,10 +115,8 @@ useEffect(() => {
       console.error("Error fetching vehicle stats:", error);
     }
   };
-  
-  
+
   fetchStats();
-  fetchVehicles();
 }, []);
 
 
