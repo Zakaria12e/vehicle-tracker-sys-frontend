@@ -10,6 +10,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { io } from 'socket.io-client';
 import { Locate, Lock, Battery, AlertTriangle, Car } from "lucide-react";
 import { toast } from "sonner";
 import VehicleMap from "@/components/VehicleMap";
@@ -84,7 +85,9 @@ const MapLoading = () => (
     </div>
   </motion.div>
 );
-
+const socket = io(import.meta.env.VITE_API_BASE_URL, {
+  withCredentials: true,
+});
 export default function TrackingPage() {
   const { imei } = useParams();
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -101,17 +104,63 @@ export default function TrackingPage() {
     setTimeout(() => setTriggerZoom(false), 1000);
   };
 
+  useEffect(() => {
+    const loadInitialVehicles = async () => {
+      const API_URL = import.meta.env.VITE_API_URL;
+      try {
+        const res = await fetch(`${API_URL}/vehicles`, {
+          credentials: 'include',
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setVehicles(data.data.vehicles);
+        } else {
+          toast.error("Failed to load vehicles");
+        }
+      } catch (err) {
+        toast.error("Unable to connect to vehicle service");
+      }
+    };
+
+    loadInitialVehicles();
+
+    socket.on('vehicle_data', (data) => {
+      setVehicles((prev) => {
+        const index = prev.findIndex((v) => v.imei === data.imei);
+        const updated = {
+          ...prev[index],
+          lat: data.lat,
+          lon: data.lon,
+          currentStatus: data.ignition
+            ? data.speed > 0
+              ? 'moving'
+              : 'stopped'
+            : 'inactive',
+          telemetry: {
+            ...prev[index]?.telemetry,
+            ...data,
+          },
+        };
+
+        if (index !== -1) {
+          const copy = [...prev];
+          copy[index] = updated;
+          return copy;
+        } else {
+          return [...prev, updated];
+        }
+      });
+    });
+
+    return () => {
+      socket.off('vehicle_data');
+    };
+  }, []);
+
   const selected =
-    selectedVehicle === "all"
+    selectedVehicle === 'all'
       ? null
       : vehicles.find((v) => v.imei === selectedVehicle);
-
-  useEffect(() => {
-    fetchVehicles();
-    const interval = setInterval(fetchVehicles, refreshInterval * 1000);
-    
-    return () => clearInterval(interval);
-  }, [refreshInterval]);
 
   // Set details as active tab when a vehicle is selected on mobile
   useEffect(() => {
@@ -120,71 +169,26 @@ export default function TrackingPage() {
     }
   }, [selectedVehicle]);
 
-  const fetchVehicles = async () => {
+  const fetchGeofences = async (vehicleId: string) => {
     const API_URL = import.meta.env.VITE_API_URL;
 
     try {
-      const res = await fetch(`${API_URL}/vehicles`, {
+      const res = await fetch(`${API_URL}/geofences/vehicle/${vehicleId}`, {
         credentials: "include",
       });
+
       const data = await res.json();
 
       if (res.ok) {
-        const processed = data.data.vehicles.map((v: any) => {
-          const telemetry = v.telemetry || {};
-          let status = v.currentStatus;
-
-          if (status !== "immobilized") {
-            if (!telemetry.ignition || telemetry.vehicleBattery === 0) {
-              status = "inactive";
-            } else if (telemetry.speed === 0) {
-              status = "stopped";
-            } else {
-              status = "moving";
-            }
-          }
-
-          const lat = telemetry.lat ?? 0;
-          const lon = telemetry.lon ?? 0;
-
-          return {
-            ...v,
-            currentStatus: status,
-            lat,
-            lon,
-            telemetry,
-          };
-        });
-
-        setVehicles(processed);
+        // Wrap single geofence object in array to match expected format
+        setGeofences(data.data ? [data.data] : []);
       } else {
-        toast.error("Failed to load vehicles");
+        toast.error(res.statusText || "Failed to load geofences");
       }
     } catch (err) {
-      toast.error("Unable to connect to vehicle service");
+      toast.error("Unable to connect to geofence service");
     }
   };
-
-const fetchGeofences = async (vehicleId: string) => {
-  const API_URL = import.meta.env.VITE_API_URL;
-
-  try {
-    const res = await fetch(`${API_URL}/geofences/vehicle/${vehicleId}`, {
-      credentials: "include",
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      // Wrap single geofence object in array to match expected format
-      setGeofences(data.data ? [data.data] : []);
-    } else {
-      toast.error(res.statusText || "Failed to load geofences");
-    }
-  } catch (err) {
-    toast.error("Unable to connect to geofence service");
-  }
-};
 
 
   useEffect(() => {
@@ -286,12 +290,15 @@ const fetchGeofences = async (vehicleId: string) => {
               transition={{ duration: 0.3 }}
             >
               <Suspense fallback={<MapLoading />}>
-                <VehicleMap
-                  devices={vehicles.filter((v) => v.lat !== 0 && v.lon !== 0)}
-                  selectedVehicle={selectedVehicle}
-                  triggerZoom={triggerZoom}
-                  geofences={showGeofences ? geofences : []}
-                />
+              <VehicleMap
+  devices={vehicles.filter(
+    (v) => typeof v.lat === 'number' && typeof v.lon === 'number'
+  )}
+  selectedVehicle={selectedVehicle}
+  triggerZoom={triggerZoom}
+  geofences={showGeofences ? geofences : []}
+/>
+
               </Suspense>
             </motion.div>
           )}
