@@ -19,11 +19,12 @@ import { toast } from "sonner"
 interface ImmobilizeDialogProps {
   vehicleId: string;
   disabled: boolean;
+  onSuccess?: () => void; // ✅ callback
 }
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const ImmobilizeDialog = ({ vehicleId, disabled }: ImmobilizeDialogProps) => {
+export const ImmobilizeDialog = ({ vehicleId, disabled, onSuccess }: ImmobilizeDialogProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isImmobilizing, setIsImmobilizing] = useState(false)
   const [reason, setReason] = useState("")
@@ -37,9 +38,7 @@ export const ImmobilizeDialog = ({ vehicleId, disabled }: ImmobilizeDialogProps)
       const res = await fetch(`${API_URL}/immobilizations`, {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           vehicle: vehicleId,
           action: "immobilize",
@@ -53,6 +52,7 @@ export const ImmobilizeDialog = ({ vehicleId, disabled }: ImmobilizeDialogProps)
         toast.success("Vehicle immobilized successfully!");
         setIsOpen(false);
         setReason("");
+        if (onSuccess) onSuccess(); // ✅ trigger refresh
       } else {
         toast.error(data.message || "Failed to immobilize vehicle.");
       }

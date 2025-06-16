@@ -14,6 +14,9 @@ const API_URL = import.meta.env.VITE_API_URL
 export default function ImmobilizationPage() {
   const [selectedVehicle, setSelectedVehicle] = useState("")
   const [vehicles, setVehicles] = useState<any[]>([])
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
+
+  const triggerRefresh = () => setRefreshTrigger(prev => prev + 1)
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -55,7 +58,11 @@ export default function ImmobilizationPage() {
               ))}
             </SelectContent>
           </Select>
-          <ImmobilizeDialog vehicleId={selectedVehicle} disabled={!selectedVehicle} />
+          <ImmobilizeDialog
+            vehicleId={selectedVehicle}
+            disabled={!selectedVehicle}
+            onSuccess={triggerRefresh}
+          />
         </div>
       </div>
 
@@ -65,7 +72,7 @@ export default function ImmobilizationPage() {
           <TabsTrigger value="history" className="flex-1">Immobilization History</TabsTrigger>
         </TabsList>
         <TabsContent value="active" className="space-y-4">
-          <ActiveImmobilizations />
+          <ActiveImmobilizations refreshTrigger={refreshTrigger} />
         </TabsContent>
         <TabsContent value="history" className="space-y-4">
           <ImmobilizationHistory />

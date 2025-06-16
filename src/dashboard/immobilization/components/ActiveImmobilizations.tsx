@@ -26,7 +26,11 @@ interface Immobilization {
   status: "active" | "inactive";
 }
 
-export const ActiveImmobilizations = () => {
+interface Props {
+  refreshTrigger?: number;
+}
+
+export const ActiveImmobilizations = ({ refreshTrigger = 0 }: Props) => {
   const [immobilizations, setImmobilizations] = useState<Immobilization[]>([])
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -55,7 +59,7 @@ export const ActiveImmobilizations = () => {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [refreshTrigger])
 
   const handleRelease = async (id: string) => {
     setLoadingId(id)
