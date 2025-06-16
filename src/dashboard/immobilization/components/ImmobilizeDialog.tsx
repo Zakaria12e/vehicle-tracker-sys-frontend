@@ -52,9 +52,9 @@ export const ImmobilizeDialog = ({ vehicleId, disabled, onSuccess }: ImmobilizeD
         toast.success("Vehicle immobilized successfully!");
         setIsOpen(false);
         setReason("");
-        if (onSuccess) onSuccess(); // ✅ trigger refresh
+        if (onSuccess) onSuccess();
       } else {
-        toast.error(data.message || "Failed to immobilize vehicle.");
+        toast.error(data.error || "Failed to immobilize vehicle.");
       }
 
     } catch (err) {
