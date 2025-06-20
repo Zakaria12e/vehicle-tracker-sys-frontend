@@ -104,57 +104,90 @@ export default function TrackingPage() {
     setTimeout(() => setTriggerZoom(false), 1000);
   };
 
-  useEffect(() => {
-    const loadInitialVehicles = async () => {
-      const API_URL = import.meta.env.VITE_API_URL;
-      try {
-        const res = await fetch(`${API_URL}/vehicles`, {
-          credentials: 'include',
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setVehicles(data.data.vehicles);
-        } else {
-          toast.error("Failed to load vehicles");
+useEffect(() => {
+  const loadInitialVehicles = async () => {
+    const API_URL = import.meta.env.VITE_API_URL;
+    try {
+      const res = await fetch(`${API_URL}/vehicles`, {
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setVehicles(data.data.vehicles);
+
+        // ✅ Join socket rooms for authorized IMEIs
+        interface Vehicle {
+          _id: string;
+          imei: string;
+          name: string;
+          licensePlate: string;
+          lat?: number;
+          lon?: number;
+          speed?: number;
+          speedGps?: number;
+          ignition?: boolean;
+          timestamp?: number;
+          currentStatus?: 'moving' | 'stopped' | 'inactive' | string;
+          extendedData?: {
+            vehicleBattery?: number;
+            [key: string]: any;
+          };
+          [key: string]: any;
         }
-      } catch (err) {
-        toast.error("Unable to connect to vehicle service");
+
+        interface VehiclesResponse {
+          data: {
+            vehicles: Vehicle[];
+          };
+        }
+
+        const imeis: string[] = (data as VehiclesResponse).data.vehicles.map((v) => v.imei);
+        socket.emit("join_rooms", imeis);
+      } else {
+        toast.error("Failed to load vehicles");
       }
-    };
-
-    loadInitialVehicles();
-
- socket.on("vehicle_data", (data) => {
-  setVehicles((prev) => {
-    const index = prev.findIndex((v) => v.imei === data.imei);
-    const updated = {
-      ...(prev[index] || {}),  // safe in case it's a new vehicle
-      lat: data.lat,
-      lon: data.lon,
-      speed: data.speed ?? data.speedGps ?? 0,
-      ignition: data.ignition,
-      timestamp: data.timestamp,
-      currentStatus: data.ignition
-        ? (data.speed ?? data.speedGps ?? 0) > 0
-          ? 'moving'
-          : 'stopped'
-        : 'inactive',
-      extendedData: {
-        ...data.extendedData,
-      },
-    };
-
-    if (index !== -1) {
-      const copy = [...prev];
-      copy[index] = updated;
-      return copy;
-    } else {
-      return [...prev, updated];
+    } catch (err) {
+      toast.error("Unable to connect to vehicle service");
     }
-  });
-});
+  };
 
-  }, []);
+  loadInitialVehicles();
+
+  socket.on("vehicle_data", (data) => {
+    setVehicles((prev) => {
+      const index = prev.findIndex((v) => v.imei === data.imei);
+      const updated = {
+        ...(prev[index] || {}),
+        lat: data.lat,
+        lon: data.lon,
+        speed: data.speed ?? data.speedGps ?? 0,
+        ignition: data.ignition,
+        timestamp: data.timestamp,
+        currentStatus: data.ignition
+          ? (data.speed ?? data.speedGps ?? 0) > 0
+            ? 'moving'
+            : 'stopped'
+          : 'inactive',
+        extendedData: {
+          ...data.extendedData,
+        },
+      };
+
+      if (index !== -1) {
+        const copy = [...prev];
+        copy[index] = updated;
+        return copy;
+      } else {
+        return [...prev, updated];
+      }
+    });
+  });
+
+  return () => {
+    socket.off("vehicle_data"); // ✅ cleanup
+  };
+}, []);
+
 
   const selected =
     selectedVehicle === 'all'
