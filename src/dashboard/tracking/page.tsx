@@ -112,36 +112,58 @@ useEffect(() => {
         credentials: 'include',
       });
       const data = await res.json();
-      if (res.ok) {
-        setVehicles(data.data.vehicles);
 
-        // ✅ Join socket rooms for authorized IMEIs
+      if (res.ok) {
+        // ✅ Preprocess vehicles to include last known positions
+        interface VehiclePosition {
+          lat?: number | null;
+          lon?: number | null;
+          speed?: number;
+          timestamp?: string | number | null;
+          ignition?: boolean;
+        }
+
+        interface VehicleExtendedData {
+          vehicleBattery?: number;
+          [key: string]: any;
+        }
+
         interface Vehicle {
           _id: string;
           imei: string;
           name: string;
           licensePlate: string;
-          lat?: number;
-          lon?: number;
-          speed?: number;
-          speedGps?: number;
-          ignition?: boolean;
-          timestamp?: number;
-          currentStatus?: 'moving' | 'stopped' | 'inactive' | string;
-          extendedData?: {
-            vehicleBattery?: number;
-            [key: string]: any;
-          };
-          [key: string]: any;
+          lastPosition?: VehiclePosition;
+          lat: number | null;
+          lon: number | null;
+          speed: number;
+          timestamp: string | number | null;
+          ignition: boolean;
+          currentStatus: string;
+          extendedData: VehicleExtendedData;
         }
 
-        interface VehiclesResponse {
+        interface VehiclesApiResponse {
           data: {
-            vehicles: Vehicle[];
+            vehicles: any[];
           };
         }
 
-        const imeis: string[] = (data as VehiclesResponse).data.vehicles.map((v) => v.imei);
+        const preparedVehicles: Vehicle[] = (data as VehiclesApiResponse).data.vehicles.map((v: any): Vehicle => ({
+          ...v,
+          lat: v.lastPosition?.lat ?? null,
+          lon: v.lastPosition?.lon ?? null,
+          speed: v.lastPosition?.speed ?? 0,
+          timestamp: v.lastPosition?.timestamp ?? null,
+          ignition: v.lastPosition?.ignition ?? false,
+          currentStatus: v.currentStatus ?? 'inactive',
+          extendedData: v.extendedData ?? {},
+        }));
+
+        setVehicles(preparedVehicles);
+
+        // ✅ Join socket rooms for IMEIs
+        const imeis: string[] = preparedVehicles.map((v) => v.imei);
         socket.emit("join_rooms", imeis);
       } else {
         toast.error("Failed to load vehicles");
@@ -169,13 +191,14 @@ useEffect(() => {
             : 'stopped'
           : 'inactive',
         extendedData: {
+          ...(prev[index]?.extendedData || {}),
           ...data.extendedData,
         },
       };
 
       if (index !== -1) {
         const copy = [...prev];
-        copy[index] = updated;
+        copy[index] = { ...copy[index], ...updated };
         return copy;
       } else {
         return [...prev, updated];
@@ -184,9 +207,10 @@ useEffect(() => {
   });
 
   return () => {
-    socket.off("vehicle_data"); // ✅ cleanup
+    socket.off("vehicle_data");
   };
 }, []);
+
 
 
   const selected =
