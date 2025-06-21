@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
+import { CircleMarker } from "react-leaflet"
 
 const defaultCenter: [number, number] = [31.7917, -7.0926]
 
@@ -118,24 +119,43 @@ export function TripMap({ selectedTripId, allTrips }: TripMapProps) {
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           />
 
-          {positions.map((line, idx) => {
-            const isSelected = allTrips[idx]?._id === selectedTripId
-            return (
-             <Polyline
-  key={idx}
-  positions={line}
+         {positions.map((line, idx) => {
+  const isSelected = allTrips[idx]?._id === selectedTripId
+
+  return (
+    <>
+      <Polyline
+        key={`poly-${idx}`}
+        positions={line}
+        pathOptions={{
+          color: isSelected ? '#8200db' : '#00a6f4',
+          weight: 4,
+          opacity: 0.8,
+          lineCap: 'round',
+          lineJoin: 'round',
+          dashArray: "6 4",
+        }}
+      />
+
+      {/* Start point marker */}
+      {line.length > 0 && (
+        <CircleMarker
+  key={`start-${idx}`}
+  center={line[0]}
+  radius={4} // smaller radius
   pathOptions={{
-    color: isSelected ? '#00a6f4' : '#8200db',
-    weight: 4,
-    opacity: 0.8,
-    lineCap: 'round',
-    lineJoin: 'round',
-    dashArray: "6 4", 
+    color: '#22c55e',       // Tailwind green-500
+    fillColor: '#22c55e',
+    fillOpacity: 1,
+    weight: 1,              // thinner border
   }}
 />
 
-            )
-          })}
+      )}
+    </>
+  )
+})}
+
 
           <MapAutoZoom bounds={bounds} />
         </MapContainer>

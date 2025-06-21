@@ -40,7 +40,7 @@ export function TripSummary({ totalDistance, totalTrips, drivingTime, averageSpe
 
           <div className="space-y-1">
             <div className="text-xs text-muted-foreground sm:text-sm">Max Speed</div>
-            <div className="text-lg font-bold sm:text-xl md:text-2xl">{maxSpeed} km/h</div>
+            <div className="text-lg font-bold sm:text-xl md:text-2xl">{maxSpeed.toFixed(2)} km/h</div>
           </div>
         </div>
       </CardContent>

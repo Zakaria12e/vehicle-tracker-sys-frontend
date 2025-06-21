@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -7,13 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { CalendarIcon, Filter } from "lucide-react"
+  CalendarIcon,
+  Filter
+} from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import {
   Popover,
@@ -22,6 +19,13 @@ import {
 } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandItem
+} from "@/components/ui/command"
 
 interface Vehicle {
   _id: string
@@ -60,22 +64,42 @@ export function TripFilters({
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Vehicle Select */}
+          {/* Vehicle Searchable Select */}
           <div className="space-y-1 sm:space-y-2">
             <label className="text-xs font-medium sm:text-sm">Vehicle</label>
-            <Select value={selectedVehicle} onValueChange={onVehicleChange}>
-              <SelectTrigger className="h-9 text-xs sm:h-10 sm:text-sm">
-                <SelectValue placeholder="Select vehicle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Vehicles</SelectItem>
-                {vehicles.map(vehicle => (
-                  <SelectItem key={vehicle._id} value={vehicle._id}>
-                    {vehicle.name} ({vehicle.licensePlate})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start h-9 sm:h-10 text-xs sm:text-sm"
+                >
+                  {selectedVehicle === "all"
+                    ? "All Vehicles"
+                    : vehicles.find(v => v._id === selectedVehicle)
+                      ? `${vehicles.find(v => v._id === selectedVehicle)?.name} (${vehicles.find(v => v._id === selectedVehicle)?.licensePlate})`
+                      : "Select vehicle"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[300px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search vehicle..." className="h-9" />
+                  <CommandList>
+                    <CommandEmpty>No vehicle found.</CommandEmpty>
+                    <CommandItem onSelect={() => onVehicleChange("all")}>
+                      All Vehicles
+                    </CommandItem>
+                    {vehicles.map(vehicle => (
+                      <CommandItem
+                        key={vehicle._id}
+                        onSelect={() => onVehicleChange(vehicle._id)}
+                      >
+                        {vehicle.name} ({vehicle.licensePlate})
+                      </CommandItem>
+                    ))}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Start Date */}
@@ -134,7 +158,7 @@ export function TripFilters({
             </Popover>
           </div>
 
-          {/* Apply Button */}
+          {/* Apply Filters Button */}
           <div className="flex items-end">
             <Button
               className="h-9 w-full gap-1 text-xs sm:h-10 sm:text-sm"
