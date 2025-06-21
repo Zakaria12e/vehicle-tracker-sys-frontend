@@ -1,18 +1,11 @@
+"use client"
+
 import { useEffect, useState } from "react"
-import {
-  MapContainer,
-  TileLayer,
-  Polyline,
-  useMap
-} from "react-leaflet"
+import { MapContainer, TileLayer, Polyline, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { MapPin, Loader2 } from "lucide-react"
 
 const defaultCenter: [number, number] = [31.7917, -7.0926]
 
@@ -42,11 +35,13 @@ interface Trip {
 interface TripMapProps {
   selectedTripId: string | null
   allTrips: Trip[]
+  loading?: boolean
 }
 
-export function TripMap({ selectedTripId, allTrips }: TripMapProps) {
+export function TripMap({ selectedTripId, allTrips, loading = false }: TripMapProps) {
   const [positions, setPositions] = useState<[number, number][][]>([])
   const [bounds, setBounds] = useState<[[number, number], [number, number]] | null>(null)
+  const [mapLoading, setMapLoading] = useState(false)
   const API_URL = import.meta.env.VITE_API_URL
 
   useEffect(() => {
@@ -57,6 +52,7 @@ export function TripMap({ selectedTripId, allTrips }: TripMapProps) {
         return
       }
 
+      setMapLoading(true)
       const allCoords: [number, number][][] = []
 
       for (const trip of allTrips) {
@@ -67,9 +63,8 @@ export function TripMap({ selectedTripId, allTrips }: TripMapProps) {
           const data: Position[] = await res.json()
 
           const coords = data
-            .map(p => [p.location.coordinates[1], p.location.coordinates[0]])
-            .filter((c): c is [number, number] =>
-              c.length === 2 && c.every(n => typeof n === "number"))
+            .map((p) => [p.location.coordinates[1], p.location.coordinates[0]])
+            .filter((c): c is [number, number] => c.length === 2 && c.every((n) => typeof n === "number"))
 
           if (coords.length > 0) {
             allCoords.push(coords)
@@ -83,16 +78,21 @@ export function TripMap({ selectedTripId, allTrips }: TripMapProps) {
       setPositions(allCoords)
 
       if (flat.length > 1) {
-        const lats = flat.map(c => c[0])
-        const lons = flat.map(c => c[1])
+        const lats = flat.map((c) => c[0])
+        const lons = flat.map((c) => c[1])
         const minLat = Math.min(...lats)
         const maxLat = Math.max(...lats)
         const minLon = Math.min(...lons)
         const maxLon = Math.max(...lons)
-        setBounds([[minLat, minLon], [maxLat, maxLon]])
+        setBounds([
+          [minLat, minLon],
+          [maxLat, maxLon],
+        ])
       } else {
         setBounds(null)
       }
+
+      setMapLoading(false)
     }
 
     fetchAllPositions()
@@ -100,45 +100,69 @@ export function TripMap({ selectedTripId, allTrips }: TripMapProps) {
 
   return (
     <Card className="w-full lg:col-span-2">
-      <CardHeader className="pb-3 sm:pb-4">
-        <CardTitle className="text-lg">Trip Map</CardTitle>
-        <CardDescription className="text-xs sm:text-sm">
-          All filtered trip routes are shown
-        </CardDescription>
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-lg font-semibold">Trip Map</CardTitle>
+            <CardDescription>All filtered trip routes are shown</CardDescription>
+          </div>
+          {allTrips.length > 0 && (
+            <Badge variant="secondary">
+              {allTrips.length} trip{allTrips.length !== 1 ? "s" : ""}
+            </Badge>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="h-[250px] p-0 sm:h-[300px] md:h-[350px] lg:h-[400px]">
-        <MapContainer center={defaultCenter} zoom={6} className="h-full w-full rounded-lg">
-          <TileLayer
-            attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
-          />
-          <TileLayer
-            className="hidden dark:block"
-            attribution='&copy; <a href="https://carto.com/">Carto</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          />
+        {loading || mapLoading ? (
+          <div className="h-full w-full flex items-center justify-center bg-muted/20 rounded-lg">
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Loading map...</p>
+            </div>
+          </div>
+        ) : allTrips.length === 0 ? (
+          <div className="h-full w-full flex items-center justify-center bg-muted/20 rounded-lg">
+            <div className="flex flex-col items-center gap-3">
+              <MapPin className="h-12 w-12 text-muted-foreground" />
+              <div className="text-center">
+                <h3 className="font-medium">No trips to display</h3>
+                <p className="text-sm text-muted-foreground">Apply filters to see trip routes</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <MapContainer center={defaultCenter} zoom={6} className="h-full w-full rounded-lg">
+            <TileLayer
+              attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+            />
+            <TileLayer
+              className="hidden dark:block"
+              attribution='&copy; <a href="https://carto.com/">Carto</a>'
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            />
 
-          {positions.map((line, idx) => {
-            const isSelected = allTrips[idx]?._id === selectedTripId
-            return (
-             <Polyline
-  key={idx}
-  positions={line}
-  pathOptions={{
-    color: isSelected ? '#8200db' : '#00a6f4',
-    weight: 4,
-    opacity: 0.8,
-    lineCap: 'round',
-    lineJoin: 'round',
-    dashArray: "6 4", 
-  }}
-/>
+            {positions.map((line, idx) => {
+              const isSelected = allTrips[idx]?._id === selectedTripId
+              return (
+                <Polyline
+                  key={idx}
+                  positions={line}
+                  pathOptions={{
+                    color: isSelected ? "#8200db" : "#00a6f4",
+                    weight: isSelected ? 5 : 3,
+                    opacity: isSelected ? 1 : 0.7,
+                    lineCap: "round",
+                    lineJoin: "round",
+                  }}
+                />
+              )
+            })}
 
-            )
-          })}
-
-          <MapAutoZoom bounds={bounds} />
-        </MapContainer>
+            <MapAutoZoom bounds={bounds} />
+          </MapContainer>
+        )}
       </CardContent>
     </Card>
   )
