@@ -52,9 +52,10 @@ function formatTime(dateStr: string) {
 
 function formatDuration(mins: number) {
   const h = Math.floor(mins / 60)
-  const m = mins % 60
+  const m = Math.round(mins % 60)
   return `${h}h ${m}m`
 }
+
 
 export function TripList({ trips, onViewTrip }: TripListProps) {
   return (
