@@ -2,14 +2,10 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card"
-import { Eye, ChevronLeft, ChevronRight } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { Eye, ChevronLeft, ChevronRight, Car, Clock, Route, Gauge } from "lucide-react"
 
 const ITEMS_PER_PAGE = 5
 
@@ -44,9 +40,10 @@ interface Trip {
 interface TripListProps {
   trips: Trip[]
   onViewTrip: (tripId: string) => void
+  loading?: boolean
 }
 
-// Utilitaires
+// Utilities
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString()
 }
@@ -61,7 +58,7 @@ function formatDuration(mins: number) {
   return `${h}h ${m}m`
 }
 
-export function TripList({ trips, onViewTrip }: TripListProps) {
+export function TripList({ trips, onViewTrip, loading = false }: TripListProps) {
   const [currentPage, setCurrentPage] = useState(1)
 
   const totalPages = Math.ceil(trips.length / ITEMS_PER_PAGE)
@@ -72,105 +69,202 @@ export function TripList({ trips, onViewTrip }: TripListProps) {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)))
   }
 
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader className="pb-4">
+          <div className="h-5 w-24 bg-muted animate-pulse rounded" />
+          <div className="h-4 w-48 bg-muted animate-pulse rounded" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="space-y-3 p-4 border rounded-lg">
+              <div className="flex justify-between items-start">
+                <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+                <div className="h-6 w-16 bg-muted animate-pulse rounded" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="h-4 w-20 bg-muted animate-pulse rounded" />
+                <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card>
-      <CardHeader className="pb-3 sm:pb-4">
-        <CardTitle className="text-lg">Trip List</CardTitle>
-        <CardDescription className="text-xs sm:text-sm">
-          Detailed list of all trips in the selected period
-        </CardDescription>
+      <CardHeader className="pb-4">
+        <CardTitle className="text-lg font-semibold">Trip List</CardTitle>
+        <CardDescription>Detailed list of all trips in the selected period</CardDescription>
       </CardHeader>
 
-      <CardContent className="p-0 sm:p-0">
-        {/* Desktop View */}
-        <div className="hidden sm:block">
-          <div className="relative overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-muted text-xs text-muted-foreground sm:text-sm">
-                <tr>
-                  <th className="px-4 py-3 text-left">Vehicle</th>
-                  <th className="px-4 py-3 text-left">Date</th>
-                  <th className="px-4 py-3 text-left">Start</th>
-                  <th className="px-4 py-3 text-left">End</th>
-                  <th className="px-4 py-3 text-left">Duration</th>
-                  <th className="px-4 py-3 text-left">Distance</th>
-                  <th className="px-4 py-3 text-left">Avg Speed</th>
-                  <th className="px-4 py-3 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentTrips.map((trip) => {
-                  const startDate = formatDate(trip.startTime)
-                  const startTime = formatTime(trip.startTime)
-                  const endTime = trip.endTime ? formatTime(trip.endTime) : "--"
-                  const duration = formatDuration(trip.summary.duration)
-                  const vehicleName = typeof trip.vehicle === "string" ? trip.vehicle : trip.vehicle?.name
-
-                  return (
-                    <tr key={trip._id} className="border-b">
-                      <td className="px-4 py-3">{vehicleName}</td>
-                      <td className="px-4 py-3">{startDate}</td>
-                      <td className="px-4 py-3">{startTime}</td>
-                      <td className="px-4 py-3">{endTime}</td>
-                      <td className="px-4 py-3">{duration}</td>
-                      <td className="px-4 py-3">{trip.summary.distance.toFixed(1)} km</td>
-                      <td className="px-4 py-3">{trip.summary.averageSpeed.toFixed(1)} km/h</td>
-                      <td className="px-4 py-3">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 gap-1 px-2"
-                          onClick={() => onViewTrip(trip._id)}
-                        >
-                          <Eye className="h-3 w-3" />
-                          View
-                        </Button>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+      <CardContent className="space-y-4">
+        {trips.length === 0 ? (
+          <div className="text-center py-12">
+            <Car className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-semibold">No trips found</h3>
+            <p className="text-muted-foreground">Try adjusting your filters to see trip data.</p>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Mobile View */}
+            <div className="space-y-4 sm:hidden">
+              {currentTrips.map((trip) => {
+                const startDate = formatDate(trip.startTime)
+                const startTime = formatTime(trip.startTime)
+                const endTime = trip.endTime ? formatTime(trip.endTime) : "--"
+                const duration = formatDuration(trip.summary.duration)
+                const vehicleName = typeof trip.vehicle === "string" ? trip.vehicle : trip.vehicle?.name
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-between items-center px-4 py-3">
-            <div className="text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
+                return (
+                  <Card key={trip._id} className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="font-semibold">{vehicleName}</h4>
+                        <p className="text-sm text-muted-foreground">{startDate}</p>
+                      </div>
+                      <Badge variant="secondary">{duration}</Badge>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-sm mb-4">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span>
+                          {startTime} - {endTime}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Route className="h-4 w-4 text-muted-foreground" />
+                        <span>{trip.summary.distance.toFixed(1)} km</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Gauge className="h-4 w-4 text-muted-foreground" />
+                        <span>{trip.summary.averageSpeed.toFixed(1)} km/h</span>
+                      </div>
+                    </div>
+
+                    <Button variant="outline" size="sm" className="w-full" onClick={() => onViewTrip(trip._id)}>
+                      <Eye className="mr-2 h-4 w-4" />
+                      View Details
+                    </Button>
+                  </Card>
+                )
+              })}
             </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </Button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <Button
-                  key={page}
-                  variant={page === currentPage ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => goToPage(page)}
-                >
-                  {page}
-                </Button>
-              ))}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+
+            {/* Desktop View */}
+            <div className="hidden sm:block">
+              <div className="rounded-md border">
+                <div className="grid grid-cols-8 gap-4 p-4 bg-muted/50 font-medium text-sm">
+                  <div>Vehicle</div>
+                  <div>Date</div>
+                  <div>Start</div>
+                  <div>End</div>
+                  <div>Duration</div>
+                  <div>Distance</div>
+                  <div>Avg Speed</div>
+                  <div>Actions</div>
+                </div>
+                <div className="divide-y">
+                  {currentTrips.map((trip) => {
+                    const startDate = formatDate(trip.startTime)
+                    const startTime = formatTime(trip.startTime)
+                    const endTime = trip.endTime ? formatTime(trip.endTime) : "--"
+                    const duration = formatDuration(trip.summary.duration)
+                    const vehicleName = typeof trip.vehicle === "string" ? trip.vehicle : trip.vehicle?.name
+
+                    return (
+                      <div
+                        key={trip._id}
+                        className="grid grid-cols-8 gap-4 p-4 text-sm hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="font-medium">{vehicleName}</div>
+                        <div>{startDate}</div>
+                        <div>{startTime}</div>
+                        <div>{endTime}</div>
+                        <div>
+                          <Badge variant="secondary" className="text-xs">
+                            {duration}
+                          </Badge>
+                        </div>
+                        <div>{trip.summary.distance.toFixed(1)} km</div>
+                        <div>{trip.summary.averageSpeed.toFixed(1)} km/h</div>
+                        <div>
+                          <Button variant="ghost" size="sm" className="h-8" onClick={() => onViewTrip(trip._id)}>
+                            <Eye className="mr-1 h-3 w-3" />
+                            View
+                          </Button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <>
+                <Separator />
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-muted-foreground">
+                    Showing {startIndex + 1} to {Math.min(startIndex + ITEMS_PER_PAGE, trips.length)} of {trips.length}{" "}
+                    trips
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Previous
+                    </Button>
+
+                    <div className="flex items-center space-x-1">
+                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                        let page = i + 1
+                        if (totalPages > 5) {
+                          if (currentPage > 3) {
+                            page = currentPage - 2 + i
+                          }
+                          if (currentPage > totalPages - 2) {
+                            page = totalPages - 4 + i
+                          }
+                        }
+
+                        return (
+                          <Button
+                            key={page}
+                            variant={page === currentPage ? "default" : "outline"}
+                            size="sm"
+                            className="w-8 h-8 p-0"
+                            onClick={() => goToPage(page)}
+                          >
+                            {page}
+                          </Button>
+                        )
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
