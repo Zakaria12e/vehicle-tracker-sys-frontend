@@ -9,7 +9,19 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover"
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandItem
+} from "@/components/ui/command"
+
 import { io } from 'socket.io-client';
 import { Locate, Lock, Battery, AlertTriangle, Car } from "lucide-react";
 import { toast } from "sonner";
@@ -285,19 +297,40 @@ useEffect(() => {
           animate="visible"
           transition={{ delay: 0.1 }}
         >
-          <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
-            <SelectTrigger className="h-9 text-sm w-full sm:w-[220px]">
-              <SelectValue placeholder="Select vehicle" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Vehicles</SelectItem>
-              {vehicles.map((v) => (
-                <SelectItem key={v._id} value={v.imei}>
-                  {v.name} ({v.licensePlate})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <Popover>
+  <PopoverTrigger asChild>
+    <Button
+      variant="outline"
+      className="h-9 w-full sm:w-[220px] justify-start text-sm"
+    >
+      {selectedVehicle === "all"
+        ? "All Vehicles"
+        : vehicles.find((v) => v.imei === selectedVehicle)
+        ? `${vehicles.find((v) => v.imei === selectedVehicle)?.name} (${vehicles.find((v) => v.imei === selectedVehicle)?.licensePlate})`
+        : "Select vehicle"}
+    </Button>
+  </PopoverTrigger>
+  <PopoverContent className="w-[300px] p-0">
+    <Command>
+      <CommandInput placeholder="Search vehicle..." className="h-9" />
+      <CommandList>
+        <CommandEmpty>No vehicle found.</CommandEmpty>
+        <CommandItem onSelect={() => setSelectedVehicle("all")}>
+          All Vehicles
+        </CommandItem>
+        {vehicles.map((v) => (
+          <CommandItem
+            key={v._id}
+            onSelect={() => setSelectedVehicle(v.imei)}
+          >
+            {v.name} ({v.licensePlate})
+          </CommandItem>
+        ))}
+      </CommandList>
+    </Command>
+  </PopoverContent>
+</Popover>
+
           <Button 
             variant="outline" 
             size="icon" 
