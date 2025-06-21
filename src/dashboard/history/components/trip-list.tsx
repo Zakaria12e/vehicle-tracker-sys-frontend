@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -6,7 +9,9 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
-import { Eye } from "lucide-react"
+import { Eye, ChevronLeft, ChevronRight } from "lucide-react"
+
+const ITEMS_PER_PAGE = 5
 
 interface Vehicle {
   _id: string
@@ -47,7 +52,7 @@ function formatDate(dateStr: string) {
 }
 
 function formatTime(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
 }
 
 function formatDuration(mins: number) {
@@ -56,8 +61,17 @@ function formatDuration(mins: number) {
   return `${h}h ${m}m`
 }
 
-
 export function TripList({ trips, onViewTrip }: TripListProps) {
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const totalPages = Math.ceil(trips.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const currentTrips = trips.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)))
+  }
+
   return (
     <Card>
       <CardHeader className="pb-3 sm:pb-4">
@@ -66,7 +80,9 @@ export function TripList({ trips, onViewTrip }: TripListProps) {
           Detailed list of all trips in the selected period
         </CardDescription>
       </CardHeader>
+
       <CardContent className="p-0 sm:p-0">
+        {/* Desktop View */}
         <div className="hidden sm:block">
           <div className="relative overflow-x-auto">
             <table className="w-full text-sm">
@@ -83,7 +99,7 @@ export function TripList({ trips, onViewTrip }: TripListProps) {
                 </tr>
               </thead>
               <tbody>
-                {trips.map((trip) => {
+                {currentTrips.map((trip) => {
                   const startDate = formatDate(trip.startTime)
                   const startTime = formatTime(trip.startTime)
                   const endTime = trip.endTime ? formatTime(trip.endTime) : "--"
@@ -118,45 +134,44 @@ export function TripList({ trips, onViewTrip }: TripListProps) {
           </div>
         </div>
 
-        {/* Mobile View */}
-        <div className="grid gap-2 p-4 sm:hidden">
-          {trips.map((trip) => {
-            const startDate = formatDate(trip.startTime)
-            const startTime = formatTime(trip.startTime)
-            const endTime = trip.endTime ? formatTime(trip.endTime) : "--"
-            const duration = formatDuration(trip.summary.duration)
-            const vehicleName = typeof trip.vehicle === "string" ? trip.vehicle : trip.vehicle?.name
-
-            return (
-              <div key={trip._id} className="rounded-md border p-3">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="font-medium">{vehicleName}</div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 gap-1 px-2"
-                    onClick={() => onViewTrip(trip._id)}
-                  >
-                    <Eye className="h-3 w-3" />
-                    View
-                  </Button>
-                </div>
-                <div className="grid grid-cols-2 gap-y-1 text-xs">
-                  <div className="text-muted-foreground">Date:</div>
-                  <div>{startDate}</div>
-                  <div className="text-muted-foreground">Time:</div>
-                  <div>{startTime} - {endTime}</div>
-                  <div className="text-muted-foreground">Duration:</div>
-                  <div>{duration}</div>
-                  <div className="text-muted-foreground">Distance:</div>
-                  <div>{trip.summary.distance.toFixed(1)} km</div>
-                  <div className="text-muted-foreground">Avg. Speed:</div>
-                  <div>{trip.summary.averageSpeed.toFixed(1)} km/h</div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center px-4 py-3">
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={page === currentPage ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => goToPage(page)}
+                >
+                  {page}
+                </Button>
+              ))}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
