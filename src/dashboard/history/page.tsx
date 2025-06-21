@@ -86,13 +86,21 @@ export default function HistoryPage() {
   const handleViewTrip = (tripId: string) => {
     setSelectedTripId(tripId)
   }
+  function formatDrivingTime(totalMinutes: number): string {
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = Math.round(totalMinutes % 60)
+
+  if (hours > 0 && minutes > 0) return `${hours}h ${minutes}min`
+  if (hours > 0) return `${hours}h`
+  return `${minutes}min`
+}
+
 
   // 🔢 Compute summary
   const totalDistance = trips.reduce((acc, t) => acc + (t.summary?.distance || 0), 0)
   const totalDurationMin = trips.reduce((acc, t) => acc + (t.summary?.duration || 0), 0)
-  const hours = Math.floor(totalDurationMin / 60)
-  const minutes = totalDurationMin % 60
-  const drivingTime = `${hours > 0 ? `${hours}h ` : ""}${minutes}min`
+ const drivingTime = formatDrivingTime(totalDurationMin)
+
   const averageSpeed =
     trips.length > 0
       ? Math.round(

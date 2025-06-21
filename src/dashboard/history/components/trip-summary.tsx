@@ -35,7 +35,7 @@ export function TripSummary({ totalDistance, totalTrips, drivingTime, averageSpe
 
           <div className="space-y-1">
             <div className="text-xs text-muted-foreground sm:text-sm">Average Speed</div>
-            <div className="text-lg font-bold sm:text-xl md:text-2xl">{averageSpeed} km/h</div>
+            <div className="text-lg font-bold sm:text-xl md:text-2xl">{averageSpeed.toFixed(2)} km/h</div>
           </div>
 
           <div className="space-y-1">
