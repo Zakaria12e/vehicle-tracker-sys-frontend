@@ -1,13 +1,36 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { CalendarIcon, Filter } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 
+interface Vehicle {
+  _id: string
+  name: string
+  licensePlate: string
+}
+
 interface TripFiltersProps {
+  vehicles: Vehicle[]
   startDate: Date | undefined
   endDate: Date | undefined
   selectedVehicle: string
@@ -18,6 +41,7 @@ interface TripFiltersProps {
 }
 
 export function TripFilters({
+  vehicles,
   startDate,
   endDate,
   selectedVehicle,
@@ -30,7 +54,9 @@ export function TripFilters({
     <Card>
       <CardHeader className="pb-3 sm:pb-4">
         <CardTitle className="text-lg">Trip Filters</CardTitle>
-        <CardDescription className="text-xs sm:text-sm">Select a vehicle and date range to view trip history</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
+          Select a vehicle and date range to view trip history
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -43,9 +69,11 @@ export function TripFilters({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Vehicles</SelectItem>
-                <SelectItem value="toyota">Toyota Corolla</SelectItem>
-                <SelectItem value="ford">Ford Transit</SelectItem>
-                <SelectItem value="honda">Honda Civic</SelectItem>
+                {vehicles.map(vehicle => (
+                  <SelectItem key={vehicle._id} value={vehicle._id}>
+                    {vehicle.name} ({vehicle.licensePlate})
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -56,10 +84,10 @@ export function TripFilters({
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  variant={"outline"}
+                  variant="outline"
                   size="sm"
                   className={cn(
-                    "h-9 w-full justify-start text-left text-xs font-normal sm:h-10 sm:text-sm", 
+                    "h-9 w-full justify-start text-left text-xs font-normal sm:h-10 sm:text-sm",
                     !startDate && "text-muted-foreground"
                   )}
                 >
@@ -68,7 +96,12 @@ export function TripFilters({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={startDate} onSelect={onStartDateChange} initialFocus />
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={onStartDateChange}
+                  initialFocus
+                />
               </PopoverContent>
             </Popover>
           </div>
@@ -79,10 +112,10 @@ export function TripFilters({
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  variant={"outline"}
+                  variant="outline"
                   size="sm"
                   className={cn(
-                    "h-9 w-full justify-start text-left text-xs font-normal sm:h-10 sm:text-sm", 
+                    "h-9 w-full justify-start text-left text-xs font-normal sm:h-10 sm:text-sm",
                     !endDate && "text-muted-foreground"
                   )}
                 >
@@ -91,15 +124,20 @@ export function TripFilters({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={endDate} onSelect={onEndDateChange} initialFocus />
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={onEndDateChange}
+                  initialFocus
+                />
               </PopoverContent>
             </Popover>
           </div>
 
           {/* Apply Button */}
           <div className="flex items-end">
-            <Button 
-              className="h-9 w-full gap-1 text-xs sm:h-10 sm:text-sm" 
+            <Button
+              className="h-9 w-full gap-1 text-xs sm:h-10 sm:text-sm"
               onClick={onApplyFilters}
             >
               <Filter className="h-3 w-3 sm:h-4 sm:w-4" />

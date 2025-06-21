@@ -19,7 +19,8 @@ export function TripSummary({ totalDistance, totalTrips, drivingTime, averageSpe
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-1">
           <div className="space-y-1">
             <div className="text-xs text-muted-foreground sm:text-sm">Total Distance</div>
-            <div className="text-lg font-bold sm:text-xl md:text-2xl">{totalDistance} km</div>
+           <div className="text-lg font-bold sm:text-xl md:text-2xl">{totalDistance.toFixed(2)} km</div>
+
           </div>
 
           <div className="space-y-1">

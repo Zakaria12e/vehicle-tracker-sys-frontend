@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
 import { TripFilters } from "./components/trip-filters"
@@ -6,33 +6,100 @@ import { TripSummary } from "./components/trip-summary"
 import { TripMap } from "./components/trip-map"
 import { TripList } from "./components/trip-list"
 
-const mockTrips = [
-  {
-    id: "1",
-    vehicle: "Toyota Corolla",
-    date: "Apr 30, 2023",
-    startTime: "08:15 AM",
-    endTime: "09:42 AM",
-    duration: "1h 27m",
-    distance: "32 km",
-    avgSpeed: "37 km/h"
-  },
-  // ...add more mock trips as needed
-]
+type Vehicle = {
+  _id: string
+  name: string
+  licensePlate: string
+  model?: string
+}
+
+type Trip = {
+  _id: string
+  vehicle: Vehicle | string
+  startTime: string
+  endTime?: string
+  summary: {
+    distance: number
+    duration: number
+    averageSpeed: number
+    maxSpeed: number
+  }
+  startLocation: {
+    coordinates: [number, number]
+    timestamp: string
+  }
+  endLocation?: {
+    coordinates: [number, number]
+    timestamp: string
+  }
+}
 
 export default function HistoryPage() {
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [selectedVehicle, setSelectedVehicle] = useState("all")
+  const [trips, setTrips] = useState<Trip[]>([])
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const API_URL = import.meta.env.VITE_API_URL
 
-  const handleApplyFilters = () => {
-    console.log("Applying filters:", { startDate, endDate, selectedVehicle })
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      try {
+        const res = await fetch(`${API_URL}/vehicles`, { credentials: "include" })
+        const json = await res.json()
+        setVehicles(json.data?.vehicles || [])
+      } catch (err) {
+        console.error("Failed to load vehicles:", err)
+      }
+    }
+    fetchVehicles()
+  }, [API_URL])
+
+  const handleApplyFilters = async () => {
+    if (!startDate || !endDate) return
+    setLoading(true)
+
+    try {
+      const params = new URLSearchParams({
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+      })
+
+      if (selectedVehicle !== "all") {
+        params.append("vehicleId", selectedVehicle)
+      }
+
+      const res = await fetch(`${API_URL}/trips/filter?${params.toString()}`, {
+        credentials: "include"
+      })
+      const data = await res.json()
+      setTrips(data)
+    } catch (err) {
+      console.error("Failed to fetch trips:", err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleViewTrip = (tripId: string) => {
     setSelectedTripId(tripId)
   }
+
+  // 🔢 Compute summary
+  const totalDistance = trips.reduce((acc, t) => acc + (t.summary?.distance || 0), 0)
+  const totalDurationMin = trips.reduce((acc, t) => acc + (t.summary?.duration || 0), 0)
+  const hours = Math.floor(totalDurationMin / 60)
+  const minutes = totalDurationMin % 60
+  const drivingTime = `${hours > 0 ? `${hours}h ` : ""}${minutes}min`
+  const averageSpeed =
+    trips.length > 0
+      ? Math.round(
+          trips.reduce((acc, t) => acc + (t.summary?.averageSpeed || 0), 0) / trips.length
+        )
+      : 0
+  const maxSpeed = Math.max(...trips.map(t => t.summary?.maxSpeed || 0))
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
@@ -48,6 +115,7 @@ export default function HistoryPage() {
       </div>
 
       <TripFilters
+        vehicles={vehicles}
         startDate={startDate}
         endDate={endDate}
         selectedVehicle={selectedVehicle}
@@ -58,17 +126,17 @@ export default function HistoryPage() {
       />
 
       <div className="grid gap-6 md:grid-cols-3">
-        <TripMap />
+        <TripMap selectedTripId={selectedTripId} allTrips={trips} />
         <TripSummary
-          totalDistance={1248}
-          totalTrips={42}
-          drivingTime="32h 15m"
-          averageSpeed={38}
-          maxSpeed={112}
+          totalDistance={totalDistance}
+          totalTrips={trips.length}
+          drivingTime={drivingTime}
+          averageSpeed={averageSpeed}
+          maxSpeed={maxSpeed}
         />
       </div>
 
-      <TripList trips={mockTrips} onViewTrip={handleViewTrip} />
+      <TripList trips={trips} onViewTrip={handleViewTrip} />
     </div>
   )
 }
