@@ -53,10 +53,10 @@ const getAlertConfig = (type: string) => {
     case 'GEOFENCE_ENTRY':
       return {
         icon: LogIn,
-        bgColor: 'bg-blue-50 dark:bg-blue-950/30',
-        borderColor: 'border-blue-200 dark:border-blue-800/50',
-        iconBg: 'bg-blue-100 dark:bg-blue-900/50',
-        iconColor: 'text-blue-600 dark:text-blue-400',
+        bgColor: 'bg-green-50 dark:bg-green-950/30',
+        borderColor: 'border-green-200 dark:border-green-800/50',
+        iconBg: 'bg-green-100 dark:bg-green-900/50',
+        iconColor: 'text-green-600 dark:text-green-400',
         label: 'Geofence Entry'
       }
     default:

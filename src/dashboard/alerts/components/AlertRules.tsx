@@ -11,6 +11,7 @@ import {
   AlertCircle,
   Battery,
   MapPin,
+  Gauge,
   Target,
   Bell,
   Mail,
@@ -54,24 +55,24 @@ const API_URL = import.meta.env.VITE_API_URL
 // Map alert types to icons and colors
 const ALERT_TYPE_CONFIG: Record<string, { icon: React.ReactNode; label: string; color: string }> = {
   SPEED_ALERT: {
-    icon: <AlertCircle className="h-4 w-4" />,
+    icon: <Gauge className="h-4 w-4" />,
     label: "Speed Alert",
-    color: "bg-orange-100 text-orange-700 border-orange-200",
+    color: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400",
   },
   BATTERY_ALERT: {
     icon: <Battery className="h-4 w-4" />,
     label: "Battery Alert",
-    color: "bg-red-100 text-red-700 border-red-200",
+    color: "bg-orange-50 dark:bg-orange-950/30 text-red-700 border-orange-200 dark:border-orange-800/50",
   },
   GEOFENCE_EXIT: {
     icon: <Target className="h-4 w-4" />,
     label: "Geofence Exit",
-    color: "bg-orange-100 text-orange-700 border-orange-200",
+    color: "bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800/50 text-purple-600 dark:text-purple-400",
   },
   GEOFENCE_ENTRY: {
     icon: <Target className="h-4 w-4" />,
     label: "Geofence Entry",
-    color: "bg-green-100 text-green-700 border-green-200",
+    color: "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800/50 text-green-600 dark:text-green-400",
   },
 }
 
