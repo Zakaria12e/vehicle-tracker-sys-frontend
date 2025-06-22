@@ -118,14 +118,7 @@ export function CurrentAlerts() {
               {alerts.length} alert{alerts.length !== 1 ? 's' : ''} requiring attention
             </CardDescription>
           </div>
-          {alerts.length > 0 && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded-full self-start sm:self-center">
-              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-              <span className="text-xs font-medium text-red-700 dark:text-red-300">
-                {alerts.length}
-              </span>
-            </div>
-          )}
+          
         </div>
       </CardHeader>
       <CardContent className="pt-0 px-3 sm:px-6">
@@ -181,9 +174,9 @@ export function CurrentAlerts() {
                         </div>
                         
                         {alert.location && (
-                          <div className="flex items-center gap-1 min-w-0">
-                            <MapPin className="h-3 w-3 flex-shrink-0" />
-                            <span className="truncate">{alert.location}</span>
+                          <div className="flex items-center gap-1 min-w-0 hidden sm:flex">
+                          <MapPin className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">{alert.location}</span>
                           </div>
                         )}
                       </div>
