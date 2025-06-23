@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Car, AlertTriangle, Clock, Battery, MapPin, ShieldAlert ,Calendar , Gauge} from "lucide-react"
+import { Car, AlertTriangle, Clock, Battery, MapPin, Target ,Calendar , Gauge} from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
 import { useEffect, useState } from "react";
 import VehicleDashboardMap from "@/components/VehicleDashboardMap";
@@ -342,8 +342,9 @@ function getIcon(type: string) {
     case 'BATTERY_ALERT':
       return <Battery className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />;
     case 'GEOFENCE_EXIT':
+      return <Target className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />;
     case 'GEOFENCE_ENTRY':
-      return <ShieldAlert className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />;
+      return <Target className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />;
     default:
       return <AlertTriangle className="h-3.5 w-3.5 text-gray-500 dark:text-gray-300" />;
   }
@@ -356,8 +357,9 @@ function getBgColor(type: string) {
     case 'BATTERY_ALERT':
       return "bg-amber-100 dark:bg-amber-900/50";
     case 'GEOFENCE_EXIT':
+      return "bg-purple-100 dark:bg-purple-900/50";
     case 'GEOFENCE_ENTRY':
-      return "bg-red-100 dark:bg-red-900/50";
+      return "bg-green-100 dark:bg-green-900/50";
     default:
       return "bg-gray-100 dark:bg-gray-800/50";
   }
