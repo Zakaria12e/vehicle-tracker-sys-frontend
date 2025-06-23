@@ -15,6 +15,8 @@ const socket = io(import.meta.env.VITE_API_BASE_URL, {
 
 interface AlertData {
   vehicleId: string;
+  vehicleName?: string;
+  vehiclePlate?: string;
   type: string;
   message: string;
   location?: string;
@@ -54,7 +56,7 @@ export default function AlertBell() {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-72 sm:w-80 p-2">
+      <PopoverContent align="end" className="w-72 sm:w-80 p-2  bg-background dark:bg-background-900">
         <p className="text-sm font-semibold mb-2">Recent Alerts</p>
         <AnimatePresence>
           {alerts.length === 0 ? (
@@ -73,10 +75,10 @@ export default function AlertBell() {
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="flex items-start justify-between gap-2 p-2 border rounded-md bg-amber-50 dark:bg-amber-900/10"
+                className="flex items-start justify-between gap-2 p-2 border rounded-md bg-background dark:bg-background-900/10"
               >
                 <div className="flex-1 text-xs">
-                  <p className="font-semibold">{alert.type.replace(/_/g, " ")}</p>
+                  <p className="font-semibold">{alert.vehicleName} - {alert.vehiclePlate}</p>
                   <p className="text-muted-foreground">{alert.message}</p>
                   <p className="text-[10px] mt-1">{new Date(alert.timestamp).toLocaleTimeString()}</p>
                   {alert.location && <p className="text-[10px]">📍 {alert.location}</p>}
