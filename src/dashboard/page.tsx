@@ -301,18 +301,18 @@ location: string;
 bg: string;
 }) {
 return (
-  <div className="flex items-start gap-3">
+  <div className="flex items-start gap-3 pb-1">
     <div className={`rounded-full p-1.5 ${bg} flex-shrink-0`}>
       {icon}
     </div>
     <div className="space-y-0.5">
-      <p className="text-xs font-medium sm:text-sm">{title}</p>
-      <p className="text-xs text-muted-foreground">{description}</p>
+
+      <p className="text-xs font-medium sm:text-sm">{description}</p>
       <p className="text-xs text-muted-foreground">
-       <Calendar className="inline-block h-3 w-3 text-purple-400 dark:text-purple-700" /> {time}
+       <Calendar className="inline-block h-3 w-3" /> {time}
       </p>
       <p className="text-xs text-muted-foreground">
-       <MapPin className="inline-block h-3 w-3 text-gray-400 dark:text-gray-700" /> {location ? ` ${location}` : 'No location data available'}
+       <MapPin className="inline-block h-3 w-3" /> {location ? ` ${location}` : 'No location data available'}
       </p>
     </div>
   </div>
