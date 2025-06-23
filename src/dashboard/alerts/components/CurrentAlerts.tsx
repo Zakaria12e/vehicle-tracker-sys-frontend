@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertTriangle, Car, MapPin, Gauge, Battery, Target, Eye, ChevronLeft, ChevronRight } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { AlertTriangle, Car, MapPin, Gauge, Battery, Target, ChevronLeft, ChevronRight } from "lucide-react"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -73,6 +74,7 @@ const getAlertConfig = (type: string) => {
 
 export function CurrentAlerts() {
   const [alerts, setAlerts] = useState<AlertData[]>([])
+  const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const alertsPerPage = 3
 
@@ -86,6 +88,8 @@ export function CurrentAlerts() {
         setAlerts(data);
       } catch (err) {
         console.error('Failed to load initial alerts', err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchInitialAlerts()
@@ -97,32 +101,45 @@ export function CurrentAlerts() {
   const currentAlerts = alerts.slice(startIndex, endIndex)
 
   const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1)
-    }
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1)
   }
 
   const goToPreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1)
-    }
+    if (currentPage > 1) setCurrentPage(currentPage - 1)
   }
 
   return (
     <Card className="w-full">
-      <CardHeader className=" px-3 sm:px-6">
+      <CardHeader className="px-3 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="min-w-0 flex-1">
             <CardTitle className="text-base sm:text-lg">Active Alerts</CardTitle>
             <CardDescription className="text-xs sm:text-sm">
-              {alerts.length} alert{alerts.length !== 1 ? 's' : ''} requiring attention
+              {loading
+                ? "Loading alerts..."
+                : `${alerts.length} alert${alerts.length !== 1 ? 's' : ''} requiring attention`}
             </CardDescription>
           </div>
-          
         </div>
       </CardHeader>
+
       <CardContent className="pt-0 px-3 sm:px-6">
-        {alerts.length === 0 ? (
+        {loading ? (
+          <div className="space-y-3">
+            {[...Array(alertsPerPage)].map((_, i) => (
+              <div key={i} className="border rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-6 w-6 rounded-full" />
+                  <div className="flex-1 space-y-1">
+                    <Skeleton className="h-4 w-2/3" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </div>
+                <Skeleton className="h-3 w-full" />
+              </div>
+            ))}
+          </div>
+        ) : alerts.length === 0 ? (
           <div className="text-center py-6">
             <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
               <Car className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 dark:text-green-400" />
@@ -134,7 +151,7 @@ export function CurrentAlerts() {
             {currentAlerts.map((alert, index) => {
               const config = getAlertConfig(alert.type)
               const IconComponent = config.icon
-              
+
               return (
                 <div
                   key={startIndex + index}
@@ -144,50 +161,48 @@ export function CurrentAlerts() {
                     <div className={`rounded-full p-1 sm:p-1.5 ${config.iconBg} flex-shrink-0`}>
                       <IconComponent className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${config.iconColor}`} />
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <h4 className="font-medium text-xs sm:text-sm leading-tight pr-1">{config.label}</h4>
                         <span className="text-xs text-muted-foreground flex-shrink-0 text-right">
-                          {new Date(alert.timestamp).toLocaleString([], { 
-                            month: 'short', 
-                            day: 'numeric', 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
+                          {new Date(alert.timestamp).toLocaleString([], {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
                           })}
                         </span>
                       </div>
-                      
+
                       <p className="text-xs text-gray-600 dark:text-gray-300 mb-2">
                         {alert.message}
                       </p>
-                      
+
                       <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-muted-foreground mb-2">
                         <div className="flex items-center gap-1 min-w-0">
                           <Car className="h-3 w-3 flex-shrink-0" />
                           <span className="truncate">
-                            {alert.vehicleName || "Unknown"} 
+                            {alert.vehicleName || "Unknown"}
                             {alert.vehicleLicensePlate && (
                               <span className="ml-1 font-mono">({alert.vehicleLicensePlate})</span>
                             )}
                           </span>
                         </div>
-                        
+
                         {alert.location && (
                           <div className="flex items-center gap-1 min-w-0 hidden sm:flex">
-                          <MapPin className="h-3 w-3 flex-shrink-0" />
-                          <span className="truncate">{alert.location}</span>
+                            <MapPin className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">{alert.location}</span>
                           </div>
                         )}
                       </div>
-                      
-                    
                     </div>
                   </div>
                 </div>
               )
             })}
-            
+
             {totalPages > 1 && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 border-t">
                 <div className="text-xs text-muted-foreground text-center sm:text-left">
