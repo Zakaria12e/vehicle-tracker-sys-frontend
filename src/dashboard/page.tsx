@@ -31,7 +31,7 @@ export default function DashboardPage() {
   
   
    const [vehicles, setVehicles] = useState<any[]>([]);
-
+   const [alertStats, setAlertStats] = useState({ activeCount: 0, typeCounts: {} });
 
 useEffect(() => {
   socket.on("vehicle_data", (data) => {
@@ -86,7 +86,28 @@ useEffect(() => {
     }
   };
 
+  const fetchAlertStats = async () => {
+    const API_URL = import.meta.env.VITE_API_URL;
+    try {
+      const res = await fetch(`${API_URL}/alerts/stats`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok && data) {
+        setAlertStats({
+          activeCount: data.activeCount || 0,
+          typeCounts: data.typeCounts || {},
+        });
+      } else {
+        console.error("Failed to fetch alert stats");
+      }
+    } catch (error) {
+      console.error("Error fetching alert stats:", error);
+    }
+  };
+
   fetchStats();
+  fetchAlertStats();
 }, []);
 
 
@@ -133,8 +154,10 @@ return (
         <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
       </CardHeader>
       <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
-        <div className="text-lg font-bold md:text-2xl">1</div>
-        <p className="text-xs text-muted-foreground">1 speed, 0 geofence</p>
+        <div className="text-lg font-bold md:text-2xl">{alertStats.activeCount}</div>
+        <p className="text-xs text-muted-foreground">
+          {Object.entries(alertStats.typeCounts).map(([type, count]) => `${count} ${normalizeAlertType(type)}`).join(", ") || 'No active alerts'}
+        </p>
       </CardContent>
     </Card>
   </motion.div>
@@ -273,4 +296,20 @@ return (
     </div>
   </div>
 );
+}
+
+// Helper to normalize alert type names
+function normalizeAlertType(type: string) {
+  switch (type) {
+    case 'SPEED_ALERT':
+      return 'Speed';
+    case 'BATTERY_ALERT':
+      return 'Battery';
+    case 'GEOFENCE_EXIT':
+      return 'Geofence Exit';
+    case 'GEOFENCE_ENTRY':
+      return 'Geofence Entry';
+    default:
+      return type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
 }
