@@ -9,6 +9,8 @@ import { useAuth } from "@/context/AuthContext"
 import FloatingNav from "@/components/FloatingNav";
 import { motion, AnimatePresence } from "framer-motion";
 import {ModeToggle} from "@/components/mode-toggle"
+import AlertBell from "@/dashboard/alerts/AlertBell"
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
@@ -107,10 +109,7 @@ const routes = [
             <span>TrackFleet</span>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary" />
-            </Button>
+           <AlertBell />
             <ModeToggle />
             <Link to="/dashboard/settings">
               <Avatar>
