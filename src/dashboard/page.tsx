@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Car, AlertTriangle, Clock, Battery, MapPin, ShieldAlert } from "lucide-react"
+import { Car, AlertTriangle, Clock, Battery, MapPin, ShieldAlert ,Calendar , Gauge} from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
 import { useEffect, useState } from "react";
 import VehicleDashboardMap from "@/components/VehicleDashboardMap";
@@ -32,6 +32,7 @@ export default function DashboardPage() {
   
    const [vehicles, setVehicles] = useState<any[]>([]);
    const [alertStats, setAlertStats] = useState({ activeCount: 0, typeCounts: {} });
+   const [recentAlerts, setRecentAlerts] = useState<any[]>([]);
 
 useEffect(() => {
   socket.on("vehicle_data", (data) => {
@@ -106,8 +107,28 @@ useEffect(() => {
     }
   };
 
+  const fetchRecentAlerts = async () => {
+    const API_URL = import.meta.env.VITE_API_URL;
+    try {
+      const res = await fetch(`${API_URL}/alerts/latest`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok && Array.isArray(data)) {
+        setRecentAlerts(data);
+      } else {
+        setRecentAlerts([]);
+        console.error("Failed to fetch recent alerts");
+      }
+    } catch (error) {
+      setRecentAlerts([]);
+      console.error("Error fetching recent alerts:", error);
+    }
+  };
+
   fetchStats();
   fetchAlertStats();
+  fetchRecentAlerts();
 }, []);
 
 
@@ -239,29 +260,22 @@ return (
             </CardDescription>
           </CardHeader>
           <CardContent className="p-3 md:p-4">
-            <div className="space-y-3">
-              <AlertItem
-                icon={<ShieldAlert className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />}
-                title="Geofence Exit Alert"
-                description="Vehicle XYZ-123 left designated zone"
-                time="Today, 10:42 AM"
-                bg="bg-red-100 dark:bg-red-900/50"
-              />
-              <AlertItem
-                icon={<AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />}
-                title="Speed Alert"
-                description="Vehicle ABC-789 exceeded speed limit (92 km/h)"
-                time="Today, 9:15 AM"
-                bg="bg-amber-100 dark:bg-amber-900/50"
-              />
-              <AlertItem
-                icon={<Battery className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />}
-                title="Low Battery"
-                description="Vehicle DEF-456 tracker battery at 15%"
-                time="Yesterday, 6:30 PM"
-                bg="bg-blue-100 dark:bg-blue-900/50"
-              />
-            </div>
+         <div className="space-y-3">
+  {recentAlerts.length > 0 ? recentAlerts.map((alert, i) => (
+    <AlertItem
+      key={i}
+      icon={getIcon(alert.type)}
+      title={normalizeAlertType(alert.type)}
+      description={`${alert.vehicleName} — ${alert.message}`}
+      time={formatTimestamp(alert.timestamp)}
+      location={alert.location}
+      bg={getBgColor(alert.type)}
+    />
+  )) : (
+    <p className="text-sm text-muted-foreground text-center">No recent alerts to display</p>
+  )}
+</div>
+
           </CardContent>
         </Card>
       </motion.div>
@@ -276,12 +290,14 @@ icon,
 title,
 description,
 time,
+location,
 bg,
 }: {
 icon: React.ReactNode;
 title: string;
 description: string;
 time: string;
+location: string;
 bg: string;
 }) {
 return (
@@ -292,7 +308,12 @@ return (
     <div className="space-y-0.5">
       <p className="text-xs font-medium sm:text-sm">{title}</p>
       <p className="text-xs text-muted-foreground">{description}</p>
-      <p className="text-xs text-muted-foreground">{time}</p>
+      <p className="text-xs text-muted-foreground">
+       <Calendar className="inline-block h-3 w-3 text-purple-400 dark:text-purple-700" /> {time}
+      </p>
+      <p className="text-xs text-muted-foreground">
+       <MapPin className="inline-block h-3 w-3 text-gray-400 dark:text-gray-700" /> {location ? ` ${location}` : 'No location data available'}
+      </p>
     </div>
   </div>
 );
@@ -312,4 +333,37 @@ function normalizeAlertType(type: string) {
     default:
       return type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   }
+}
+
+function getIcon(type: string) {
+  switch (type) {
+    case 'SPEED_ALERT':
+      return <Gauge className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />;
+    case 'BATTERY_ALERT':
+      return <Battery className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />;
+    case 'GEOFENCE_EXIT':
+    case 'GEOFENCE_ENTRY':
+      return <ShieldAlert className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />;
+    default:
+      return <AlertTriangle className="h-3.5 w-3.5 text-gray-500 dark:text-gray-300" />;
+  }
+}
+
+function getBgColor(type: string) {
+  switch (type) {
+    case 'SPEED_ALERT':
+      return "bg-red-100 dark:bg-red-900/50";
+    case 'BATTERY_ALERT':
+      return "bg-amber-100 dark:bg-amber-900/50";
+    case 'GEOFENCE_EXIT':
+    case 'GEOFENCE_ENTRY':
+      return "bg-red-100 dark:bg-red-900/50";
+    default:
+      return "bg-gray-100 dark:bg-gray-800/50";
+  }
+}
+
+function formatTimestamp(ts: string) {
+  const date = new Date(ts);
+  return date.toLocaleString();
 }
