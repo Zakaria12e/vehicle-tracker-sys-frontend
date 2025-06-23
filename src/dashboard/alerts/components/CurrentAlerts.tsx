@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertTriangle, Car, MapPin, Gauge, Battery, LogOut, LogIn, Eye, ChevronLeft, ChevronRight } from "lucide-react"
+import { AlertTriangle, Car, MapPin, Gauge, Battery, Target, Eye, ChevronLeft, ChevronRight } from "lucide-react"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -43,7 +43,7 @@ const getAlertConfig = (type: string) => {
       }
     case 'GEOFENCE_EXIT':
       return {
-        icon: LogOut,
+        icon: Target,
         bgColor: 'bg-purple-50 dark:bg-purple-950/30',
         borderColor: 'border-purple-200 dark:border-purple-800/50',
         iconBg: 'bg-purple-100 dark:bg-purple-900/50',
@@ -52,7 +52,7 @@ const getAlertConfig = (type: string) => {
       }
     case 'GEOFENCE_ENTRY':
       return {
-        icon: LogIn,
+        icon: Target,
         bgColor: 'bg-green-50 dark:bg-green-950/30',
         borderColor: 'border-green-200 dark:border-green-800/50',
         iconBg: 'bg-green-100 dark:bg-green-900/50',
