@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertTriangle, Battery, Clock, Gauge, ChevronRight } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -33,10 +34,12 @@ const getAlertConfig = (type: string) => {
 export function AlertHistory() {
   const [alerts, setAlerts] = useState<AlertData[]>([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [loading, setLoading] = useState(true)
   const alertsPerPage = 5
 
   useEffect(() => {
     const fetchHistory = async () => {
+      setLoading(true)
       try {
         const res = await fetch(`${API_URL}/alerts/history`, {
           credentials: 'include',
@@ -45,6 +48,8 @@ export function AlertHistory() {
         setAlerts(data)
       } catch (err) {
         setAlerts([])
+      } finally {
+        setLoading(false)
       }
     }
     fetchHistory()
@@ -88,7 +93,18 @@ export function AlertHistory() {
               </tr>
             </thead>
             <tbody>
-              {currentAlerts.length === 0 ? (
+              {loading ? (
+                Array.from({ length: alertsPerPage }).map((_, idx) => (
+                  <tr key={idx}>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-32" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-40" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-28" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-8 w-12" /></td>
+                  </tr>
+                ))
+              ) : currentAlerts.length === 0 ? (
                 <tr><td colSpan={6} className="text-center py-6 text-muted-foreground">No alert history found.</td></tr>
               ) : (
                 currentAlerts.map(alert => {
