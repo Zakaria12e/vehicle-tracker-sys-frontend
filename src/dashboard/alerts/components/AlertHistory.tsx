@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertTriangle, Battery, Clock, Gauge, ChevronRight } from "lucide-react"
+import { AlertTriangle, Battery, Gauge, Target, ChevronRight } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -19,13 +19,13 @@ interface AlertData {
 const getAlertConfig = (type: string) => {
   switch (type) {
     case 'SPEED_ALERT':
-      return { icon: AlertTriangle, label: 'Speed Alert', color: 'amber' }
+      return { icon: Gauge, label: 'Speed Alert', color: 'amber' }
     case 'BATTERY_ALERT':
       return { icon: Battery, label: 'Battery Alert', color: 'orange' }
     case 'GEOFENCE_EXIT':
-      return { icon: Gauge, label: 'Geofence Exit', color: 'red' }
+      return { icon: Target, label: 'Geofence Exit', color: 'red' }
     case 'GEOFENCE_ENTRY':
-      return { icon: Gauge, label: 'Geofence Entry', color: 'green' }
+      return { icon: Target, label: 'Geofence Entry', color: 'green' }
     default:
       return { icon: AlertTriangle, label: type.replace(/_/g, ' '), color: 'gray' }
   }
