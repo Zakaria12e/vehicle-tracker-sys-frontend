@@ -180,7 +180,7 @@ export function AlertHistory() {
                       <Icon className={`h-4 w-4 text-${config.color}-500`} />
                       <span className="font-medium">{config.label}</span>
                     </div>
-                    <span className="rounded-full bg-gray-100 dark:bg-gray-900/30 px-2 py-1 text-xs text-gray-800 dark:text-gray-400">Resolved</span>
+                    <span className="rounded-full bg-green-100 dark:bg-green-900/30 px-2 py-1 text-xs text-green-800 dark:text-green-400">Resolved</span>
                   </div>
                   <div className="space-y-1 text-sm">
                     <p className="text-muted-foreground">{alert.vehicleName} {alert.vehicleLicensePlate && <span className="font-mono">({alert.vehicleLicensePlate})</span>}</p>
