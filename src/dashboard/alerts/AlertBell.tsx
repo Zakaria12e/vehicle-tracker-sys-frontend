@@ -20,16 +20,19 @@ interface AlertData {
 
 export default function AlertBell() {
   const [alerts, setAlerts] = useState<AlertData[]>([]);
+  const [visibleAlerts, setVisibleAlerts] = useState<AlertData[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleAlert = (alert: AlertData) => {
+      
       setAlerts((prev) => [alert, ...prev]);
 
-      // Remove after 3 seconds
+     
+      setVisibleAlerts((prev) => [alert, ...prev]);
       setTimeout(() => {
-        setAlerts((prev) => prev.filter((a) => a !== alert));
-      }, 3000);
+        setVisibleAlerts((prev) => prev.filter((a) => a !== alert));
+      }, 4000);
     };
 
     socket.on("alert", handleAlert);
@@ -41,7 +44,10 @@ export default function AlertBell() {
   return (
     <div className="relative">
       <button
-        onClick={() => navigate("/dashboard/alerts")}
+        onClick={() => {
+          navigate("/dashboard/alerts");
+          setAlerts([]);
+        }}
         className="relative p-2 rounded-full hover:bg-muted transition"
       >
         <Bell className="h-5 w-5 text-muted-foreground" />
@@ -54,7 +60,7 @@ export default function AlertBell() {
 
       <div className="absolute top-10 right-0 w-64 z-50">
         <AnimatePresence>
-          {alerts.map((alert, i) => (
+          {visibleAlerts.map((alert, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: -10 }}
