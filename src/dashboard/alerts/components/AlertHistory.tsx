@@ -89,7 +89,6 @@ export function AlertHistory() {
                 <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Description</th>
                 <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Date & Time</th>
                 <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Status</th>
-                <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -101,7 +100,6 @@ export function AlertHistory() {
                     <td className="px-4 py-3"><Skeleton className="h-4 w-40" /></td>
                     <td className="px-4 py-3"><Skeleton className="h-4 w-28" /></td>
                     <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
-                    <td className="px-4 py-3"><Skeleton className="h-8 w-12" /></td>
                   </tr>
                 ))
               ) : currentAlerts.length === 0 ? (
@@ -123,9 +121,6 @@ export function AlertHistory() {
                       <td className="whitespace-nowrap px-4 py-3">{new Date(alert.timestamp).toLocaleString()}</td>
                       <td className="whitespace-nowrap px-4 py-3">
                         <span className="rounded-full bg-green-100 dark:bg-green-900/30 px-2 py-1 text-xs text-green-800 dark:text-green-400">Resolved</span>
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3">
-                        <Button variant="ghost" size="sm">View</Button>
                       </td>
                     </tr>
                   )
