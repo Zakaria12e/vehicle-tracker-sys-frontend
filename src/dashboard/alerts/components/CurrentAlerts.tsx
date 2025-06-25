@@ -92,7 +92,19 @@ export function CurrentAlerts() {
         setLoading(false);
       }
     };
-    fetchInitialAlerts()
+
+    const resetAlertCounter = async () => {
+    try {
+      await fetch(`${API_URL}/users/reset-alert-counter`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (err) {
+      console.error('Failed to reset alert counter:', err);
+    }
+  };
+    resetAlertCounter();
+    fetchInitialAlerts();
   }, [])
 
   const totalPages = Math.ceil(alerts.length / alertsPerPage)

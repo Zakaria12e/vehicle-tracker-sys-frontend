@@ -43,20 +43,17 @@ export default function AlertBell() {
   }, []);
   const API_URL = import.meta.env.VITE_API_URL;
   const handleClick = async () => {
-    try {
-      await axios.post(`${API_URL}/users/reset-alert-counter`, {}, { withCredentials: true });
+   
       setAlertCount(0);
       navigate("/dashboard/alerts");
-    } catch (err) {
-      console.error('Failed to reset alert counter:', err);
-    }
+
   };
 
   return (
     <div className="relative">
       <button
         onClick={handleClick}
-        className="relative p-2 rounded-full hover:bg-muted transition cursor-pointer"
+        className="relative p-2 rounded-full hover:bg-muted transition cu"
       >
         <Bell className="h-5 w-5" />
         {alertCount > 0 && (
