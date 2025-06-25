@@ -66,30 +66,37 @@ export default function LoginForm({
         <div className={cn("flex flex-col gap-6 md:flex-row", className)} {...props}>
           <Card className="w-full md:w-1/2 shadow-md border-0">
             <CardContent className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="text-center">
-                  <h1 className="text-2xl font-bold">Welcome back</h1>
+                 <div className="flex items-center justify-center gap-2">
+  <h1 className="text-2xl font-bold">Welcome Back</h1>
+  <img src="/hello.png" alt="Welcome Back" className="h-8 w-8 object-contain" />
+</div>
+
                   <p className="text-muted-foreground text-sm">
-                    Login to your account to continue
+                    Login to manage your fleet in real-time
                   </p>
                 </div>
 
                 <div className="space-y-4">
+                  {/* Email */}
                   <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">Email address</Label>
                     <div className="relative mt-1">
                       <Mail className="absolute left-3 top-2.5 text-gray-400" size={16} />
                       <Input
                         id="email"
                         type="email"
+                        placeholder="your@email.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="h-10 pl-9"
+                        className="h-10 pl-9 focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                       />
                     </div>
                   </div>
 
+                  {/* Password */}
                   <div>
                     <div className="flex items-center justify-between">
                       <Label htmlFor="password">Password</Label>
@@ -105,20 +112,17 @@ export default function LoginForm({
                       <Input
                         id="password"
                         type="password"
+                        placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="h-10 pl-9"
+                        className="h-10 pl-9 focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                       />
                     </div>
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full h-10"
-                  disabled={loading}
-                >
+                <Button type="submit" className="w-full h-10 font-semibold" disabled={loading}>
                   {loading ? (
                     <div className="flex items-center justify-center gap-2">
                       <svg
@@ -176,26 +180,26 @@ export default function LoginForm({
               <img
                 src="/car-gps-black.png"
                 alt="Fleet Light"
-                className="block dark:hidden w-48 h-48 object-contain mb-4"
+                className="block dark:hidden w-44 h-44 object-contain mb-4"
               />
 
               {/* Dark Mode Image */}
               <img
                 src="/car-gps-white.png"
                 alt="Fleet Dark"
-                className="hidden dark:block w-48 h-48 object-contain mb-4"
+                className="hidden dark:block w-44 h-44 object-contain mb-4"
               />
 
               <h3 className="text-xl font-bold">Fleet Management</h3>
               <p className="text-muted-foreground text-sm mt-2">
-                Monitor your fleet in real-time, optimize routes,
-                and improve operational efficiency.
+                Monitor your vehicles in real-time, get alerts,
+                and optimize routes.
               </p>
 
               <div className="flex gap-4 mt-6 text-muted-foreground text-sm">
                 <div className="flex items-center gap-2">
                   <Truck className="h-4 w-4" />
-                  <span>Vehicle Tracking</span>
+                  <span>Tracking</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
