@@ -327,22 +327,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                {breadcrumbItems.map((item, index) => (
-                  <React.Fragment key={item.href}>
-                    <BreadcrumbItem className="hidden md:block">
-                      {item.isLast ? (
-                        <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                      ) : (
-                        <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
-                      )}
-                    </BreadcrumbItem>
-                    {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator className="hidden md:block" />}
-                  </React.Fragment>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
+           <Breadcrumb>
+  <BreadcrumbList>
+    {breadcrumbItems.map((item, index) => (
+      <React.Fragment key={item.href}>
+        <BreadcrumbItem className="hidden md:block">
+          {item.isLast ? (
+            <BreadcrumbPage>{item.label}</BreadcrumbPage>
+          ) : (
+            <BreadcrumbLink asChild>
+              <Link to={item.href}>{item.label}</Link>
+            </BreadcrumbLink>
+          )}
+        </BreadcrumbItem>
+        {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator className="hidden md:block" />}
+      </React.Fragment>
+    ))}
+  </BreadcrumbList>
+</Breadcrumb>
+
           </div>
           <div className="ml-auto flex items-center gap-2 px-4">
             <AlertBell />
