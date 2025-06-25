@@ -7,6 +7,7 @@ type User = {
   company: string;
   photo: string;
   role: string;
+  alertCounter?: number;
 };
 
 type AuthContextType = {

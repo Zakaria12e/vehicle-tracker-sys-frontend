@@ -3,6 +3,8 @@ import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 const socket = io(import.meta.env.VITE_API_BASE_URL, {
   withCredentials: true,
@@ -19,20 +21,19 @@ interface AlertData {
 }
 
 export default function AlertBell() {
-  const [alerts, setAlerts] = useState<AlertData[]>([]);
-  const [visibleAlerts, setVisibleAlerts] = useState<AlertData[]>([]);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [alertCount, setAlertCount] = useState<number>(user?.alertCounter || 0);
+  const [visibleAlerts, setVisibleAlerts] = useState<AlertData[]>([]);
 
   useEffect(() => {
     const handleAlert = (alert: AlertData) => {
-      
-      setAlerts((prev) => [alert, ...prev]);
-
-     
+      setAlertCount((prev) => prev + 1);
       setVisibleAlerts((prev) => [alert, ...prev]);
+
       setTimeout(() => {
         setVisibleAlerts((prev) => prev.filter((a) => a !== alert));
-      }, 4000);
+      }, 6000);
     };
 
     socket.on("alert", handleAlert);
@@ -40,20 +41,27 @@ export default function AlertBell() {
       socket.off("alert", handleAlert);
     };
   }, []);
+  const API_URL = import.meta.env.VITE_API_URL;
+  const handleClick = async () => {
+    try {
+      await axios.post(`${API_URL}/users/reset-alert-counter`, {}, { withCredentials: true });
+      setAlertCount(0);
+      navigate("/dashboard/alerts");
+    } catch (err) {
+      console.error('Failed to reset alert counter:', err);
+    }
+  };
 
   return (
     <div className="relative">
       <button
-        onClick={() => {
-          navigate("/dashboard/alerts");
-          setAlerts([]);
-        }}
-        className="relative p-2 rounded-full hover:bg-muted transition"
+        onClick={handleClick}
+        className="relative p-2 rounded-full hover:bg-muted transition cursor-pointer"
       >
-        <Bell className="h-5 w-5 text-muted-foreground" />
-        {alerts.length > 0 && (
+        <Bell className="h-5 w-5" />
+        {alertCount > 0 && (
           <span className="absolute -top-1 -right-1 text-[10px] px-1.5 py-0.5 rounded-full bg-red-600 text-white font-bold">
-            {alerts.length}
+            {alertCount}
           </span>
         )}
       </button>
