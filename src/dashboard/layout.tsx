@@ -64,69 +64,70 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navigate = useNavigate()
   const { user, logout } = useAuth()
 
-  const routes = [
-    {
-      to: "/dashboard",
-      label: "Dashboard",
-      icon: Home,
-      color: "text-blue-600 dark:text-blue-400",
-    },
-    {
-      to: "/dashboard/vehicles",
-      label: "Vehicles",
-      icon: Car,
-      color: "text-orange-600 dark:text-orange-400",
-    },
-    {
-      to: "/dashboard/tracking",
-      label: "Live Tracking",
-      icon: Map,
-      color: "text-green-600 dark:text-green-400",
-    },
-    {
-      to: "/dashboard/history",
-      label: "Trip History",
-      icon: Route,
-      color: "text-purple-600 dark:text-purple-400",
-    },
-    {
-      to: "/dashboard/geofencing",
-      label: "Geofencing",
-      icon: Target,
-      color: "text-red-600 dark:text-red-400",
-    },
-    {
-      to: "/dashboard/immobilization",
-      label: "Immobilization",
-      icon: Lock,
-      color: "text-yellow-600 dark:text-yellow-400",
-    },
-    {
-      to: "/dashboard/alerts",
-      label: "Alerts",
-      icon: Bell,
-      color: "text-pink-600 dark:text-pink-400",
-    },
-    {
-      to: "/dashboard/statistics",
-      label: "Statistics",
-      icon: BarChart,
-      color: "text-cyan-600 dark:text-cyan-400",
-    },
-    {
-      to: "/dashboard/users",
-      label: "Users",
-      icon: Users,
-      color: "text-teal-600 dark:text-teal-400",
-      visible: user?.role === "admin" || user?.role === "superadmin",
-    },
-    {
-      to: "/dashboard/settings",
-      label: "Settings",
-      icon: Settings,
-      color: "text-gray-600 dark:text-gray-300",
-    },
-  ]
+const routes = [
+  {
+    to: "/dashboard",
+    label: "Dashboard",
+    icon: Home,
+    color: "text-indigo-600 dark:text-indigo-400",
+  },
+  {
+    to: "/dashboard/vehicles",
+    label: "Vehicles",
+    icon: Car,
+    color: "text-fuchsia-600 dark:text-fuchsia-400",
+  },
+  {
+    to: "/dashboard/tracking",
+    label: "Live Tracking",
+    icon: Map,
+    color: "text-lime-600 dark:text-lime-400",
+  },
+  {
+    to: "/dashboard/history",
+    label: "Trip History",
+    icon: Route,
+    color: "text-rose-600 dark:text-rose-400",
+  },
+  {
+    to: "/dashboard/geofencing",
+    label: "Geofencing",
+    icon: Target,
+    color: "text-violet-600 dark:text-violet-400",
+  },
+  {
+    to: "/dashboard/immobilization",
+    label: "Immobilization",
+    icon: Lock,
+    color: "text-amber-600 dark:text-amber-400",
+  },
+  {
+    to: "/dashboard/alerts",
+    label: "Alerts",
+    icon: Bell,
+    color: "text-red-600 dark:text-red-400",
+  },
+  {
+    to: "/dashboard/statistics",
+    label: "Statistics",
+    icon: BarChart,
+    color: "text-cyan-600 dark:text-cyan-400",
+  },
+  {
+    to: "/dashboard/users",
+    label: "Users",
+    icon: Users,
+    color: "text-emerald-600 dark:text-emerald-400",
+    visible: user?.role === "admin" || user?.role === "superadmin",
+  },
+  {
+    to: "/dashboard/settings",
+    label: "Settings",
+    icon: Settings,
+    color: "text-slate-600 dark:text-slate-300",
+  },
+];
+
 
   const handleLogout = async () => {
     await logout()
