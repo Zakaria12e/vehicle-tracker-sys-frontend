@@ -10,7 +10,8 @@ import {
   Settings,
   LogOut,
   Home,
-  Shield,
+  Route,
+  Target,
   Map,
   BarChart,
   Lock,
@@ -85,13 +86,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     {
       to: "/dashboard/history",
       label: "Trip History",
-      icon: Clock,
+      icon: Route,
       color: "text-purple-600 dark:text-purple-400",
     },
     {
       to: "/dashboard/geofencing",
       label: "Geofencing",
-      icon: Shield,
+      icon: Target,
       color: "text-red-600 dark:text-red-400",
     },
     {
