@@ -9,7 +9,6 @@ type User = {
   role: string;
   alertCounter?: number;
 };
-
 type AuthContextType = {
   user: User | null;
   setUser: (user: User | null) => void;
@@ -51,6 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Logout failed", err);
     } finally {
       setUser(null);
+      window.location.reload();
     }
   };
 
