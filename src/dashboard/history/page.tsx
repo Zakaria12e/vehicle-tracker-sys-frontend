@@ -123,7 +123,11 @@ export default function HistoryPage() {
         )
       : 0;
 
-  const maxSpeed = Math.max(...trips.map((t) => t.summary?.maxSpeed || 0));
+  const maxSpeed =
+  trips.length > 0
+    ? Math.max(...trips.map(t => t.summary?.maxSpeed || 0))
+    : 0;
+
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
