@@ -136,8 +136,8 @@ const [file, setFile] = useState<File | null>(null);
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <p className="text-sm text-muted-foreground">
             Manage your account settings and preferences
           </p>
         </div>
