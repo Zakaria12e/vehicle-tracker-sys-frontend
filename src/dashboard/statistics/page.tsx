@@ -15,6 +15,9 @@ export default function StatisticsPage() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const vehiclesPerPage = 5;
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -28,6 +31,7 @@ export default function StatisticsPage() {
         const vehicleRes = await fetch(`${API_URL}/statistics/vehicles?period=${period}`, { credentials: "include" });
         const vehicleJson = await vehicleRes.json();
         setVehicles(vehicleJson.data);
+        setCurrentPage(1); // Reset pagination when period changes
       } catch (error) {
         console.error("Error fetching statistics:", error);
       } finally {
@@ -37,6 +41,19 @@ export default function StatisticsPage() {
 
     fetchData();
   }, [period]);
+
+  const totalPages = Math.ceil(vehicles.length / vehiclesPerPage);
+  const startIndex = (currentPage - 1) * vehiclesPerPage;
+  const endIndex = startIndex + vehiclesPerPage;
+  const currentVehicles = vehicles.slice(startIndex, endIndex);
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((p) => p + 1);
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((p) => p - 1);
+  };
 
   if (loading || !overview) return <p className="p-4">Loading statistics...</p>;
 
@@ -109,7 +126,6 @@ export default function StatisticsPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          {/* More overview charts or analytics can go here */}
           <p className="text-sm text-muted-foreground">More overview charts coming soon...</p>
         </TabsContent>
 
@@ -132,7 +148,7 @@ export default function StatisticsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {vehicles.map((v, i) => (
+                    {currentVehicles.map((v, i) => (
                       <tr key={i} className="border-b">
                         <td className="whitespace-nowrap px-4 py-3 font-medium">{v.vehicleName}</td>
                         <td className="whitespace-nowrap px-4 py-3">{v.totalDistance} km</td>
@@ -144,6 +160,38 @@ export default function StatisticsPage() {
                   </tbody>
                 </table>
               </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 border-t">
+                  <div className="text-xs text-muted-foreground text-center sm:text-left">
+                    Showing {startIndex + 1}-{Math.min(endIndex, vehicles.length)} of {vehicles.length} vehicles
+                  </div>
+                  <div className="flex items-center justify-center sm:justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={goToPreviousPage}
+                      disabled={currentPage === 1}
+                      className="h-7 w-7 p-0"
+                    >
+                      ‹
+                    </Button>
+                    <span className="text-xs text-muted-foreground px-2 min-w-[60px] text-center">
+                      {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={goToNextPage}
+                      disabled={currentPage === totalPages}
+                      className="h-7 w-7 p-0"
+                    >
+                      ›
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
