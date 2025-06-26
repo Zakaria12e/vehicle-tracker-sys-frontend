@@ -58,7 +58,10 @@ export default function StatisticsPage() {
   const totalPages = Math.ceil(vehicles.length / vehiclesPerPage);
   const startIndex = (currentPage - 1) * vehiclesPerPage;
   const endIndex = startIndex + vehiclesPerPage;
-  const currentVehicles = vehicles.slice(startIndex, endIndex);
+
+  // Sort vehicles by totalDistance (biggest first)
+  const sortedVehicles = [...vehicles].sort((a, b) => b.totalDistance - a.totalDistance);
+  const currentVehicles = sortedVehicles.slice(startIndex, endIndex);
 
   const goToNextPage = () => {
     if (currentPage < totalPages) setCurrentPage((p) => p + 1);
@@ -102,9 +105,10 @@ export default function StatisticsPage() {
 
       {/* Overview Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[{ title: "Total Distance", icon: MapPin, value: overview?.totalDistance, unit: "km" },
+        {[
+          { title: "Total Distance", icon: MapPin, value: overview?.totalDistance, unit: "km" },
           { title: "Total Trips", icon: Car, value: overview?.totalTrips, unit: "trips" },
-          { title: "Driving Time", icon: Clock, value: overview?.totalDrivingTime, unit: "h" }
+          { title: "Driving Time", icon: Clock, value: overview?.totalDrivingTime, unit: "h" },
         ].map((item, index) => (
           <Card key={index}>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -112,8 +116,9 @@ export default function StatisticsPage() {
               <item.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{item.value} {item.unit}</div>
-
+              <div className="text-2xl font-bold">
+                {item.value} {item.unit}
+              </div>
               <p className="text-xs text-muted-foreground">
                 {item.title === "Total Distance" && `${overview?.daysOfOperation} active days`}
                 {item.title === "Total Trips" && `${overview?.activeVehicles} active vehicles`}
@@ -157,11 +162,21 @@ export default function StatisticsPage() {
                     {loadingVehicles
                       ? Array.from({ length: vehiclesPerPage }).map((_, i) => (
                           <tr key={i} className="border-b">
-                            <td className="px-4 py-3"><Skeleton className="h-4 w-32" /></td>
-                            <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
-                            <td className="px-4 py-3"><Skeleton className="h-4 w-12" /></td>
-                            <td className="px-4 py-3"><Skeleton className="h-4 w-20" /></td>
-                            <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
+                            <td className="px-4 py-3">
+                              <Skeleton className="h-4 w-32" />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Skeleton className="h-4 w-16" />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Skeleton className="h-4 w-12" />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Skeleton className="h-4 w-20" />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Skeleton className="h-4 w-16" />
+                            </td>
                           </tr>
                         ))
                       : currentVehicles.map((v, i) => (
