@@ -64,10 +64,18 @@ export function TripFilters({
                   disabled={loading}
                 >
                   {selectedVehicle === "all"
-                    ? "All Vehicles"
-                    : vehicles.find(v => v._id === selectedVehicle)
-                      ? `${vehicles.find(v => v._id === selectedVehicle)?.name} (${vehicles.find(v => v._id === selectedVehicle)?.licensePlate})`
-                      : "Select vehicle"}
+  ? "All Vehicles"
+  : (() => {
+      const selected = vehicles.find(v => v._id === selectedVehicle);
+      if (selected) {
+        return `${selected.name} (${selected.licensePlate})`;
+      } else if (selectedVehicle !== "" && selectedVehicle !== "all") {
+        return "Unknown Vehicle (from URL)";
+      } else {
+        return "Select vehicle";
+      }
+    })()}
+
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[300px] p-0">

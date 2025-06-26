@@ -28,7 +28,7 @@ import {
   MoreHorizontal,
   Pencil,
   MapPin,
-  Clock,
+  Route,
   Trash2,
   ArrowUpRight,
   Battery,
@@ -98,6 +98,10 @@ export function VehicleCard({
     navigate(`/track/${imei}`); // Pass the IMEI to the track page
   };
 
+  const handleHistory = () => {
+  navigate(`/dashboard/history?vehicle=${id}`);
+  };
+
   return (
     <>
       <Card>
@@ -121,8 +125,8 @@ export function VehicleCard({
                   <MapPin className="mr-2 h-4 w-4" />
                   Track
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Clock className="mr-2 h-4 w-4" />
+                <DropdownMenuItem onClick={handleHistory}>
+                  <Route className="mr-2 h-4 w-4" />
                   History
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
