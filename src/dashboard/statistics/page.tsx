@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, Car, Clock, MapPin } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
 
 type Period = "today" | "thisWeek" | "thisMonth" | "thisYear";
 
@@ -13,7 +15,8 @@ export default function StatisticsPage() {
   const [period, setPeriod] = useState<Period>("thisMonth");
   const [overview, setOverview] = useState<any>(null);
   const [vehicles, setVehicles] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingOverview, setLoadingOverview] = useState(false);
+  const [loadingVehicles, setLoadingVehicles] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const vehiclesPerPage = 5;
@@ -21,25 +24,35 @@ export default function StatisticsPage() {
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    const fetchOverview = async () => {
+      setLoadingOverview(true);
       try {
-        const overviewRes = await fetch(`${API_URL}/statistics/overview?period=${period}`, { credentials: "include" });
-        const overviewJson = await overviewRes.json();
-        setOverview(overviewJson.data);
-
-        const vehicleRes = await fetch(`${API_URL}/statistics/vehicles?period=${period}`, { credentials: "include" });
-        const vehicleJson = await vehicleRes.json();
-        setVehicles(vehicleJson.data);
-        setCurrentPage(1); // Reset pagination when period changes
+        const res = await fetch(`${API_URL}/statistics/overview?period=${period}`, { credentials: "include" });
+        const json = await res.json();
+        setOverview(json.data);
       } catch (error) {
-        console.error("Error fetching statistics:", error);
+        console.error("Error fetching overview:", error);
       } finally {
-        setLoading(false);
+        setLoadingOverview(false);
       }
     };
 
-    fetchData();
+    const fetchVehicles = async () => {
+      setLoadingVehicles(true);
+      try {
+        const res = await fetch(`${API_URL}/statistics/vehicles?period=${period}`, { credentials: "include" });
+        const json = await res.json();
+        setVehicles(json.data);
+        setCurrentPage(1);
+      } catch (error) {
+        console.error("Error fetching vehicles:", error);
+      } finally {
+        setLoadingVehicles(false);
+      }
+    };
+
+    fetchOverview();
+    fetchVehicles();
   }, [period]);
 
   const totalPages = Math.ceil(vehicles.length / vehiclesPerPage);
@@ -55,10 +68,13 @@ export default function StatisticsPage() {
     if (currentPage > 1) setCurrentPage((p) => p - 1);
   };
 
-  if (loading || !overview) return <p className="p-4">Loading statistics...</p>;
-
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-8">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="flex flex-col gap-6 p-4 md:p-8"
+    >
       {/* Header */}
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
@@ -86,36 +102,26 @@ export default function StatisticsPage() {
 
       {/* Overview Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium">Total Distance</CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{overview.totalDistance} km</div>
-            <p className="text-xs text-muted-foreground">{overview.daysOfOperation} active days</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium">Total Trips</CardTitle>
-            <Car className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{overview.totalTrips} trips</div>
-            <p className="text-xs text-muted-foreground">{overview.activeVehicles} active vehicles</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium">Driving Time</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{overview.totalDrivingTime}h</div>
-            <p className="text-xs text-muted-foreground">Utilization: {overview.utilization}%</p>
-          </CardContent>
-        </Card>
+        {[{ title: "Total Distance", icon: MapPin, value: overview?.totalDistance, unit: "km" },
+          { title: "Total Trips", icon: Car, value: overview?.totalTrips, unit: "trips" },
+          { title: "Driving Time", icon: Clock, value: overview?.totalDrivingTime, unit: "h" }
+        ].map((item, index) => (
+          <Card key={index}>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-sm font-medium">{item.title}</CardTitle>
+              <item.icon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                <div className="text-2xl font-bold">{item.value} {item.unit}</div>
+
+              <p className="text-xs text-muted-foreground">
+                {item.title === "Total Distance" && `${overview?.daysOfOperation} active days`}
+                {item.title === "Total Trips" && `${overview?.activeVehicles} active vehicles`}
+                {item.title === "Driving Time" && `Utilization: ${overview?.utilization}%`}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Tabs */}
@@ -125,11 +131,11 @@ export default function StatisticsPage() {
           <TabsTrigger value="vehicles">By Vehicle</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-4">
+        <TabsContent value="overview">
           <p className="text-sm text-muted-foreground">More overview charts coming soon...</p>
         </TabsContent>
 
-        <TabsContent value="vehicles" className="space-y-4">
+        <TabsContent value="vehicles">
           <Card>
             <CardHeader>
               <CardTitle>Vehicle Performance</CardTitle>
@@ -140,29 +146,39 @@ export default function StatisticsPage() {
                 <table className="w-full text-sm">
                   <thead className="bg-muted text-muted-foreground">
                     <tr>
-                      <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Vehicle</th>
-                      <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Distance</th>
-                      <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Trips</th>
-                      <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Driving Time</th>
-                      <th className="whitespace-nowrap px-4 py-3 text-left font-medium">Avg. Speed</th>
+                      <th className="px-4 py-3 text-left">Vehicle</th>
+                      <th className="px-4 py-3 text-left">Distance</th>
+                      <th className="px-4 py-3 text-left">Trips</th>
+                      <th className="px-4 py-3 text-left">Driving Time</th>
+                      <th className="px-4 py-3 text-left">Avg. Speed</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {currentVehicles.map((v, i) => (
-                      <tr key={i} className="border-b">
-                        <td className="whitespace-nowrap px-4 py-3 font-medium">{v.vehicleName}</td>
-                        <td className="whitespace-nowrap px-4 py-3">{v.totalDistance} km</td>
-                        <td className="whitespace-nowrap px-4 py-3">{v.totalTrips}</td>
-                        <td className="whitespace-nowrap px-4 py-3">{v.totalDrivingTime} h</td>
-                        <td className="whitespace-nowrap px-4 py-3">{v.averageSpeed} km/h</td>
-                      </tr>
-                    ))}
+                    {loadingVehicles
+                      ? Array.from({ length: vehiclesPerPage }).map((_, i) => (
+                          <tr key={i} className="border-b">
+                            <td className="px-4 py-3"><Skeleton className="h-4 w-32" /></td>
+                            <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
+                            <td className="px-4 py-3"><Skeleton className="h-4 w-12" /></td>
+                            <td className="px-4 py-3"><Skeleton className="h-4 w-20" /></td>
+                            <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
+                          </tr>
+                        ))
+                      : currentVehicles.map((v, i) => (
+                          <tr key={i} className="border-b">
+                            <td className="px-4 py-3 font-medium">{v.vehicleName}</td>
+                            <td className="px-4 py-3">{v.totalDistance} km</td>
+                            <td className="px-4 py-3">{v.totalTrips}</td>
+                            <td className="px-4 py-3">{v.totalDrivingTime} h</td>
+                            <td className="px-4 py-3">{v.averageSpeed} km/h</td>
+                          </tr>
+                        ))}
                   </tbody>
                 </table>
               </div>
 
               {/* Pagination */}
-              {totalPages > 1 && (
+              {!loadingVehicles && totalPages > 1 && (
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 border-t">
                   <div className="text-xs text-muted-foreground text-center sm:text-left">
                     Showing {startIndex + 1}-{Math.min(endIndex, vehicles.length)} of {vehicles.length} vehicles
@@ -196,6 +212,6 @@ export default function StatisticsPage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </motion.div>
   );
 }
