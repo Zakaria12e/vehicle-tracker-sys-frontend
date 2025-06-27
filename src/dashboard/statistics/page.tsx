@@ -1,75 +1,125 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Car, Clock, MapPin } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Download, Car, Clock, MapPin, TrendingUp, Activity } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { motion } from "framer-motion"
+import { Area, AreaChart, XAxis, YAxis } from "recharts"
 
-type Period = "today" | "thisWeek" | "thisMonth" | "thisYear";
+type Period = "today" | "thisWeek" | "thisMonth" | "thisYear"
+
 
 export default function StatisticsPage() {
-  const [period, setPeriod] = useState<Period>("thisMonth");
-  const [overview, setOverview] = useState<any>(null);
-  const [vehicles, setVehicles] = useState<any[]>([]);
-  const [loadingOverview, setLoadingOverview] = useState(false);
-  const [loadingVehicles, setLoadingVehicles] = useState(false);
+  const [period, setPeriod] = useState<Period>("thisMonth")
+  const [overview, setOverview] = useState<any>(null)
+  const [vehicles, setVehicles] = useState<any[]>([])
+  const [tripAnalytics, setTripAnalytics] = useState<any[]>([])
+  const [fleetStatus, setFleetStatus] = useState<any>(null)
+  const [loadingOverview, setLoadingOverview] = useState(false)
+  const [loadingVehicles, setLoadingVehicles] = useState(false)
+  const [loadingAnalytics, setLoadingAnalytics] = useState(false)
+  const [loadingFleetStatus, setLoadingFleetStatus] = useState(false)
+  const [COLORS, setCOLORS] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const vehiclesPerPage = 5
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const vehiclesPerPage = 5;
+  const API_URL = import.meta.env.VITE_API_URL
 
-  const API_URL = import.meta.env.VITE_API_URL;
+
+
+useEffect(() => {
+  const root = document.documentElement;
+  setCOLORS([
+    getComputedStyle(root).getPropertyValue("--chart-1").trim(),
+    getComputedStyle(root).getPropertyValue("--chart-2").trim(),
+    getComputedStyle(root).getPropertyValue("--chart-3").trim(),
+    getComputedStyle(root).getPropertyValue("--chart-4").trim(),
+    getComputedStyle(root).getPropertyValue("--chart-5").trim(),
+    getComputedStyle(root).getPropertyValue("--inactive").trim(),
+  ]);
+}, []);
+
 
   useEffect(() => {
     const fetchOverview = async () => {
-      setLoadingOverview(true);
+      setLoadingOverview(true)
       try {
-        const res = await fetch(`${API_URL}/statistics/overview?period=${period}`, { credentials: "include" });
-        const json = await res.json();
-        setOverview(json.data);
+        const res = await fetch(`${API_URL}/statistics/overview?period=${period}`, { credentials: "include" })
+        const json = await res.json()
+        setOverview(json.data)
       } catch (error) {
-        console.error("Error fetching overview:", error);
+        console.error("Error fetching overview:", error)
       } finally {
-        setLoadingOverview(false);
+        setLoadingOverview(false)
       }
-    };
+    }
 
     const fetchVehicles = async () => {
-      setLoadingVehicles(true);
+      setLoadingVehicles(true)
       try {
-        const res = await fetch(`${API_URL}/statistics/vehicles?period=${period}`, { credentials: "include" });
-        const json = await res.json();
-        setVehicles(json.data);
-        setCurrentPage(1);
+        const res = await fetch(`${API_URL}/statistics/vehicles?period=${period}`, { credentials: "include" })
+        const json = await res.json()
+        setVehicles(json.data)
+        setCurrentPage(1)
       } catch (error) {
-        console.error("Error fetching vehicles:", error);
+        console.error("Error fetching vehicles:", error)
       } finally {
-        setLoadingVehicles(false);
+        setLoadingVehicles(false)
       }
-    };
+    }
 
-    fetchOverview();
-    fetchVehicles();
-  }, [period]);
+    const fetchTripAnalytics = async () => {
+      setLoadingAnalytics(true)
+      try {
+        const groupBy = period === "today" ? "hour" : "day"
+        const res = await fetch(`${API_URL}/statistics/trip-analytics?period=${period}&groupBy=${groupBy}`, {
+          credentials: "include",
+        })
+        const json = await res.json()
+        setTripAnalytics(json.data)
+      } catch (error) {
+        console.error("Error fetching trip analytics:", error)
+      } finally {
+        setLoadingAnalytics(false)
+      }
+    }
 
-  const totalPages = Math.ceil(vehicles.length / vehiclesPerPage);
-  const startIndex = (currentPage - 1) * vehiclesPerPage;
-  const endIndex = startIndex + vehiclesPerPage;
+
+    fetchOverview()
+    fetchVehicles()
+    fetchTripAnalytics()
+  }, [period])
+
+  const totalPages = Math.ceil(vehicles.length / vehiclesPerPage)
+  const startIndex = (currentPage - 1) * vehiclesPerPage
+  const endIndex = startIndex + vehiclesPerPage
 
   // Sort vehicles by totalDistance (biggest first)
-  const sortedVehicles = [...vehicles].sort((a, b) => b.totalDistance - a.totalDistance);
-  const currentVehicles = sortedVehicles.slice(startIndex, endIndex);
+  const sortedVehicles = [...vehicles].sort((a, b) => b.totalDistance - a.totalDistance)
+  const currentVehicles = sortedVehicles.slice(startIndex, endIndex)
 
   const goToNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage((p) => p + 1);
-  };
+    if (currentPage < totalPages) setCurrentPage((p) => p + 1)
+  }
 
   const goToPreviousPage = () => {
-    if (currentPage > 1) setCurrentPage((p) => p - 1);
-  };
+    if (currentPage > 1) setCurrentPage((p) => p - 1)
+  }
+
+  // Prepare fleet status data for pie chart
+  const fleetStatusData = fleetStatus
+    ? [
+        { name: "Moving", value: fleetStatus.statusBreakdown.moving, color: COLORS[1] },
+        { name: "Stopped", value: fleetStatus.statusBreakdown.stopped, color: COLORS[2] },
+        { name: "Inactive", value: fleetStatus.statusBreakdown.inactive, color: COLORS[5] },
+        { name: "Immobilized", value: fleetStatus.statusBreakdown.immobilized, color: COLORS[4] },
+      ].filter((item) => item.value > 0)
+    : []
 
   return (
     <motion.div
@@ -96,7 +146,7 @@ export default function StatisticsPage() {
               <SelectItem value="thisYear">This Year</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="gap-1">
+          <Button variant="outline" className="gap-1 bg-transparent">
             <Download className="h-4 w-4" />
             Export
           </Button>
@@ -104,11 +154,12 @@ export default function StatisticsPage() {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[
           { title: "Total Distance", icon: MapPin, value: overview?.totalDistance, unit: "km" },
           { title: "Total Trips", icon: Car, value: overview?.totalTrips, unit: "trips" },
           { title: "Driving Time", icon: Clock, value: overview?.totalDrivingTime, unit: "h" },
+          { title: "Active Vehicles", icon: Activity, value: fleetStatus?.activeVehicles, unit: "vehicles" },
         ].map((item, index) => (
           <Card key={index}>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -117,12 +168,17 @@ export default function StatisticsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {item.value} {item.unit}
+                {loadingOverview || loadingFleetStatus ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  `${item.value || 0} ${item.unit}`
+                )}
               </div>
               <p className="text-xs text-muted-foreground">
-                {item.title === "Total Distance" && `${overview?.daysOfOperation} active days`}
-                {item.title === "Total Trips" && `${overview?.activeVehicles} active vehicles`}
-                {item.title === "Driving Time" && `Utilization: ${overview?.utilization}%`}
+                {item.title === "Total Distance" && `${overview?.daysOfOperation || 0} active days`}
+                {item.title === "Total Trips" && `${overview?.activeVehicles || 0} active vehicles`}
+                {item.title === "Driving Time" && `Utilization: ${overview?.utilization || 0}%`}
+                {item.title === "Active Vehicles" && `${fleetStatus?.utilization || 0}% utilization`}
               </p>
             </CardContent>
           </Card>
@@ -134,11 +190,66 @@ export default function StatisticsPage() {
         <TabsList className="mb-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="vehicles">By Vehicle</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview">
-          <p className="text-sm text-muted-foreground">More overview charts coming soon...</p>
-        </TabsContent>
+<TabsContent value="overview" className="space-y-6">
+  {/* Trip Analytics Chart */}
+  <div className="grid gap-6">
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5" />
+          Trip Analytics
+        </CardTitle>
+        <CardDescription>Distance and trips over time - {period}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {loadingAnalytics ? (
+          <div className="h-[300px] flex items-center justify-center">
+            <Skeleton className="h-full w-full" />
+          </div>
+        ) : (
+          <ChartContainer
+            config={{
+              distance: { label: "Distance (km)", color: COLORS[0] },
+              trips: { label: "Trips", color: COLORS[1] },
+            }}
+            className="h-[300px]"
+          >
+            <AreaChart data={tripAnalytics}>
+              <XAxis
+                dataKey="period"
+                tickFormatter={(value) =>
+                  period === "today" ? value.split(" ")[1] : value.split("-").slice(1).join("/")
+                }
+              />
+              <YAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Area
+                type="monotone"
+                dataKey="totalDistance"
+                stackId="1"
+                stroke={COLORS[0]}
+                fill={COLORS[0]}
+                fillOpacity={0.6}
+              />
+              <Area
+                type="monotone"
+                dataKey="tripCount"
+                stackId="2"
+                stroke={COLORS[1]}
+                fill={COLORS[1]}
+                fillOpacity={0.6}
+              />
+            </AreaChart>
+          </ChartContainer>
+        )}
+      </CardContent>
+    </Card>
+  </div>
+</TabsContent>
+
 
         <TabsContent value="vehicles">
           <Card>
@@ -226,7 +337,34 @@ export default function StatisticsPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="analytics">
+          <div className="grid gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Detailed Analytics</CardTitle>
+                <CardDescription>Comprehensive performance metrics - {period}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{overview?.averageSpeed || 0} km/h</div>
+                    <div className="text-sm text-muted-foreground">Average Speed</div>
+                  </div>
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{overview?.tripsPerDay || 0}</div>
+                    <div className="text-sm text-muted-foreground">Trips per Day</div>
+                  </div>
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{overview?.averageDistancePerDay || 0} km</div>
+                    <div className="text-sm text-muted-foreground">Distance per Day</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
       </Tabs>
     </motion.div>
-  );
+  )
 }

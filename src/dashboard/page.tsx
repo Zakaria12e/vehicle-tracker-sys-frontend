@@ -8,9 +8,10 @@ import {
 import {
   Car,
   AlertTriangle,
-  Clock,
+  Route,
   Battery,
   MapPin,
+  Activity,
   Target,
   Calendar,
   Gauge,
@@ -258,7 +259,7 @@ export default function DashboardPage() {
               <CardTitle className="text-xs font-medium md:text-sm">
                 Total Distance
               </CardTitle>
-              <Clock className="h-4 w-4 text-purple-600 dark:text-purple-500" />
+              <Route className="h-4 w-4 text-purple-600 dark:text-purple-500" />
             </CardHeader>
             <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
               <div className="text-lg font-bold md:text-2xl">
@@ -285,7 +286,7 @@ export default function DashboardPage() {
               <CardTitle className="text-xs font-medium md:text-sm">
                 Active Vehicles
               </CardTitle>
-              <MapPin className="h-4 w-4 text-green-600 dark:text-green-500" />
+              <Activity className="h-4 w-4 text-green-600 dark:text-green-500" />
             </CardHeader>
             <CardContent className="p-3 pt-0 md:p-4 md:pt-0">
               <div className="text-lg font-bold md:text-2xl">
