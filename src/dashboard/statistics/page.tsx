@@ -159,7 +159,7 @@ useEffect(() => {
           { title: "Total Distance", icon: MapPin, value: overview?.totalDistance, unit: "km" },
           { title: "Total Trips", icon: Car, value: overview?.totalTrips, unit: "trips" },
           { title: "Driving Time", icon: Clock, value: overview?.totalDrivingTime, unit: "h" },
-          { title: "Active Vehicles", icon: Activity, value: fleetStatus?.activeVehicles, unit: "vehicles" },
+          { title: "Active Vehicles", icon: Activity, value: overview?.activeVehicles, unit: "vehicles" },
         ].map((item, index) => (
           <Card key={index}>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -178,7 +178,7 @@ useEffect(() => {
                 {item.title === "Total Distance" && `${overview?.daysOfOperation || 0} active days`}
                 {item.title === "Total Trips" && `${overview?.activeVehicles || 0} active vehicles`}
                 {item.title === "Driving Time" && `Utilization: ${overview?.utilization || 0}%`}
-                {item.title === "Active Vehicles" && `${fleetStatus?.utilization || 0}% utilization`}
+                {item.title === "Active Vehicles" && `${overview?.utilization || 0}% utilization`}
               </p>
             </CardContent>
           </Card>
