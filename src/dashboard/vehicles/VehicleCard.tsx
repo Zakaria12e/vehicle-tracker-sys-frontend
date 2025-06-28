@@ -1,12 +1,7 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+"use client"
+
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,28 +9,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
   DialogDescription,
-} from "@/components/ui/dialog";
-import {
-  MoreHorizontal,
-  Pencil,
-  MapPin,
-  Route,
-  Trash2,
-  ArrowUpRight,
-  Battery,
-} from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import getRelativeTime from "@/components/relativeTime";
+} from "@/components/ui/dialog"
+import { MoreHorizontal, Pencil, MapPin, Route, Trash2, ArrowUpRight, Battery } from "lucide-react"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import getRelativeTime from "@/components/relativeTime"
 
 // Status color mapping
 const statusColor: Record<string, string> = {
@@ -43,64 +29,60 @@ const statusColor: Record<string, string> = {
   stopped: "bg-yellow-500",
   immobilized: "bg-red-500",
   inactive: "bg-gray-500",
-};
+}
 
 type VehicleCardProps = {
-  id: string;
-  imei: string;
-  name: string;
-  licensePlate: string;
-  status: "moving" | "stopped" | "immobilized" | "inactive";
-  speed: number;
-  battery: number;
-  timestamp: string;
-  onDelete?: (id: string) => void;
-};
+  id: string
+  imei: string
+  name: string
+  licensePlate: string
+  status: "moving" | "stopped" | "immobilized" | "inactive"
+  speed: number
+  battery: number
+  timestamp: string
+  onDelete?: (id: string) => void
+}
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL
 
-export function VehicleCard({
-  id,
-  imei,
-  name,
-  licensePlate,
-  status,
-  battery,
-  timestamp,
-  onDelete,
-}: VehicleCardProps) {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const navigate = useNavigate();
+export function VehicleCard({ id, imei, name, licensePlate, status, battery, timestamp, onDelete }: VehicleCardProps) {
+  const [openDialog, setOpenDialog] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const navigate = useNavigate()
 
   const handleDelete = async () => {
-    setDeleting(true);
+    setDeleting(true)
     try {
       const res = await fetch(`${API_URL}/vehicles/${id}`, {
         method: "DELETE",
         credentials: "include",
-      });
+      })
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to delete vehicle.");
+        const data = await res.json()
+        throw new Error(data.message || "Failed to delete vehicle.")
       }
-      onDelete?.(id);
-      setOpenDialog(false);
+      onDelete?.(id)
+      setOpenDialog(false)
     } catch (err) {
-      console.error(err);
-      alert("Failed to delete vehicle.");
+      console.error(err)
+      alert("Failed to delete vehicle.")
     } finally {
-      setDeleting(false);
+      setDeleting(false)
     }
-  };
+  }
 
   const handleTrack = () => {
-    navigate(`/track/${imei}`); // Pass the IMEI to the track page
-  };
+    navigate(`/track/${imei}`)
+  }
 
   const handleHistory = () => {
-  navigate(`/dashboard/history?vehicle=${id}`);
-  };
+    navigate(`/dashboard/history?vehicle=${id}`)
+  }
+
+  // Updated to navigate to vehicle details page
+  const handleViewDetails = () => {
+    navigate(`/dashboard/vehicles/${id}`)
+  }
 
   return (
     <>
@@ -130,10 +112,7 @@ export function VehicleCard({
                   History
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-red-600"
-                  onClick={() => setOpenDialog(true)}
-                >
+                <DropdownMenuItem className="text-red-600" onClick={() => setOpenDialog(true)}>
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete
                 </DropdownMenuItem>
@@ -144,15 +123,10 @@ export function VehicleCard({
             {licensePlate} • Updated {getRelativeTime(timestamp)}
           </CardDescription>
         </CardHeader>
-
         <CardContent>
           <div className="grid grid-cols-3 sm:grid-cols-1 lg:grid-cols-3 gap-4 text-sm">
             <div className="flex items-center gap-1">
-              <div
-                className={`h-2 w-2 pl-2 rounded-full ${
-                  statusColor[status] || "bg-gray-400"
-                }`}
-              />
+              <div className={`h-2 w-2 pl-2 rounded-full ${statusColor[status] || "bg-gray-400"}`} />
               <span className="capitalize">{status}</span>
             </div>
             <div className="flex items-center gap-1" />
@@ -162,16 +136,15 @@ export function VehicleCard({
             </div>
           </div>
         </CardContent>
-
         <CardFooter className="pt-0">
-          <Button variant="outline" size="sm" className="w-full gap-1">
+          <Button variant="outline" size="sm" className="w-full gap-1 bg-transparent" onClick={handleViewDetails}>
             <ArrowUpRight className="h-3 w-3" />
             View Details
           </Button>
         </CardFooter>
       </Card>
 
-      {/* DELETE DIALOG - Moved inside the return block */}
+      {/* DELETE DIALOG */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
           <DialogHeader>
@@ -184,16 +157,12 @@ export function VehicleCard({
             <Button variant="outline" onClick={() => setOpenDialog(false)}>
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleting}
-            >
+            <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
               {deleting ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }

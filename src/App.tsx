@@ -3,7 +3,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import PrivateRoute from "@/components/PrivateRoute";
-
 import DashboardLayout from "./dashboard/layout";
 import DashboardPage from "./dashboard/page";
 import VehiclesPage from "./dashboard/vehicles/page";
@@ -21,21 +20,24 @@ import ResetPassword from "./login/resetPassword";
 import AdminPage from "./dashboard/users/page";
 import UserDetailView from "./dashboard/users/UserDetailView";
 import CreateAlertRulePage from "./dashboard/alerts/CreateAlertRulePage";
-
+import { VehicleDetails } from "./dashboard/vehicles/VehicleDetails";
 import "./App.css";
-import "leaflet/dist/leaflet.css"
+import "leaflet/dist/leaflet.css";
+
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <AuthProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
-              
+
+            {/* Protected routes inside Dashboard */}
             <Route
               path="/dashboard"
               element={
@@ -46,6 +48,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/dashboard/vehicles"
               element={
@@ -56,6 +59,18 @@ function App() {
                 </PrivateRoute>
               }
             />
+
+            <Route
+              path="/dashboard/vehicles/:id"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <VehicleDetails />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+
             <Route
               path="/dashboard/tracking"
               element={
@@ -66,6 +81,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/dashboard/history"
               element={
@@ -76,6 +92,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/dashboard/geofencing"
               element={
@@ -83,9 +100,10 @@ function App() {
                   <DashboardLayout>
                     <GeofencingPage />
                   </DashboardLayout>
-                </PrivateRoute> 
+                </PrivateRoute>
               }
             />
+
             <Route
               path="/dashboard/immobilization"
               element={
@@ -96,6 +114,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/dashboard/alerts"
               element={
@@ -106,6 +125,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/dashboard/statistics"
               element={
@@ -116,6 +136,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/dashboard/users"
               element={
@@ -126,6 +147,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/dashboard/users/:id"
               element={
@@ -136,6 +158,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/dashboard/settings"
               element={
@@ -146,6 +169,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/track/:imei"
               element={
@@ -156,18 +180,21 @@ function App() {
                 </PrivateRoute>
               }
             />
-            <Route path="/alerts/create" element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <CreateAlertRulePage />
-                </DashboardLayout>
-              </PrivateRoute>
-            } />
 
+            <Route
+              path="/alerts/create"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <CreateAlertRulePage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
           </Routes>
           <Toaster />
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
