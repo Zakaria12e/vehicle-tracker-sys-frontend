@@ -10,6 +10,7 @@ import { Download, Car, Clock, MapPin, TrendingUp, Activity } from "lucide-react
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "framer-motion"
 import { Area, AreaChart, XAxis, YAxis } from "recharts"
+import VehiclePlacesHeatmap from "./components/VehiclePlacesHeatmap";
 
 type Period = "today" | "thisWeek" | "thisMonth" | "thisYear"
 
@@ -191,6 +192,7 @@ useEffect(() => {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="vehicles">By Vehicle</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
         </TabsList>
 
 <TabsContent value="overview" className="space-y-6">
@@ -364,6 +366,19 @@ useEffect(() => {
             </Card>
           </div>
         </TabsContent>
+
+        <TabsContent value="heatmap">
+  <Card>
+    <CardHeader>
+      <CardTitle>Vehicle Activity Heatmap</CardTitle>
+      <CardDescription>Most visited places during {period}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <VehiclePlacesHeatmap period={period} apiUrl={API_URL} />
+    </CardContent>
+  </Card>
+</TabsContent>
+
       </Tabs>
     </motion.div>
   )
