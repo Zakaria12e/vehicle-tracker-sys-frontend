@@ -115,14 +115,16 @@ const VehicleDashboardMap: React.FC<Props & { triggerZoom: boolean; geofences?: 
         triggerZoom={triggerZoom}
       />
 
-      {visibleDevices.map((v) => (
-        <Marker
-          key={v.imei}
-          position={[v.lat, v.lon]}
-          icon={createCustomMarker(v.currentStatus)}
-        >
-        </Marker>
-      ))}
+     {visibleDevices
+  .filter((v) => typeof v.lat === 'number' && typeof v.lon === 'number')
+  .map((v) => (
+    <Marker
+      key={v.imei}
+      position={[v.lat, v.lon]}
+      icon={createCustomMarker(v.currentStatus)}
+    />
+))}
+
 
       {geofences.map((geofence, index) => (
         <React.Fragment key={index}>
