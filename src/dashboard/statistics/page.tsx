@@ -9,7 +9,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Download, Car, Clock, MapPin, TrendingUp, Activity } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "framer-motion"
-import { Area, AreaChart, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, XAxis, YAxis , ResponsiveContainer } from "recharts"
 import VehiclePlacesHeatmap from "./components/VehiclePlacesHeatmap";
 
 type Period = "today" | "thisWeek" | "thisMonth" | "thisYear"
@@ -187,70 +187,85 @@ useEffect(() => {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="overview">
-        <TabsList className="mb-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="vehicles">By Vehicle</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
-        </TabsList>
+       <Tabs defaultValue="overview" className="w-full">
+            <div className="px-6 pt-6">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto">
+                <TabsTrigger value="overview" className="text-xs sm:text-sm py-2">
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="vehicles" className="text-xs sm:text-sm py-2">
+                  Vehicles
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="text-xs sm:text-sm py-2">
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="heatmap" className="text-xs sm:text-sm py-2">
+                  Heatmap
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-<TabsContent value="overview" className="space-y-6">
-  {/* Trip Analytics Chart */}
-  <div className="grid gap-6">
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
-          Trip Analytics
-        </CardTitle>
-        <CardDescription>Distance and trips over time - {period}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {loadingAnalytics ? (
-          <div className="h-[300px] flex items-center justify-center">
-            <Skeleton className="h-full w-full" />
-          </div>
-        ) : (
-          <ChartContainer
-            config={{
-              distance: { label: "Distance (km)", color: COLORS[0] },
-              trips: { label: "Trips", color: COLORS[1] },
-            }}
-            className="h-[300px]"
-          >
-            <AreaChart data={tripAnalytics}>
-              <XAxis
-                dataKey="period"
-                tickFormatter={(value) =>
-                  period === "today" ? value.split(" ")[1] : value.split("-").slice(1).join("/")
-                }
-              />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Area
-                type="monotone"
-                dataKey="totalDistance"
-                stackId="1"
-                stroke={COLORS[0]}
-                fill={COLORS[0]}
-                fillOpacity={0.6}
-              />
-              <Area
-                type="monotone"
-                dataKey="tripCount"
-                stackId="2"
-                stroke={COLORS[1]}
-                fill={COLORS[1]}
-                fillOpacity={0.6}
-              />
-            </AreaChart>
-          </ChartContainer>
-        )}
-      </CardContent>
-    </Card>
-  </div>
-</TabsContent>
+ <TabsContent value="overview" className="p-6 space-y-6">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5" />
+                      Trip Analytics
+                    </CardTitle>
+                    <CardDescription>Distance and trips over time - {period}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {loadingAnalytics ? (
+                      <div className="h-[300px] flex items-center justify-center">
+                        <Skeleton className="h-full w-full" />
+                      </div>
+                    ) : (
+                      <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <ChartContainer
+                            config={{
+                              distance: { label: "Distance (km)", color: COLORS[0] },
+                              trips: { label: "Trips", color: COLORS[1] },
+                            }}
+                            className="h-full w-full"
+                          >
+                            <AreaChart data={tripAnalytics}>
+                              <XAxis
+                                dataKey="period"
+                                tickFormatter={(value) =>
+                                  period === "today" ? value.split(" ")[1] : value.split("-").slice(1).join("/")
+                                }
+                                fontSize={12}
+                              />
+                              <YAxis fontSize={12} />
+                              <ChartTooltip content={<ChartTooltipContent />} />
+                              <Area
+                                type="monotone"
+                                dataKey="totalDistance"
+                                stackId="1"
+                                stroke={COLORS[0]}
+                                fill={COLORS[0]}
+                                fillOpacity={0.6}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="tripCount"
+                                stackId="2"
+                                stroke={COLORS[1]}
+                                fill={COLORS[1]}
+                                fillOpacity={0.6}
+                              />
+                            </AreaChart>
+                          </ChartContainer>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </TabsContent>
+
 
 
         <TabsContent value="vehicles">
