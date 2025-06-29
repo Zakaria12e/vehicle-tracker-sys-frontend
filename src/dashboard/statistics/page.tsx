@@ -182,82 +182,87 @@ export default function StatisticsPage() {
             Analyze your fleet performance
           </p>
         </div>
-<div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
-            <Select value={period} onValueChange={(value) => setPeriod(value as Period)}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Select period" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="thisWeek">This Week</SelectItem>
-                <SelectItem value="thisMonth">This Month</SelectItem>
-                <SelectItem value="thisYear">This Year</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" className="gap-2 bg-background/50 backdrop-blur-sm">
-              <Download className="h-4 w-4" />
-              <span className="">Export</span>
-            </Button>
-          </div>
+        <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
+          <Select
+            value={period}
+            onValueChange={(value) => setPeriod(value as Period)}
+          >
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Select period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="thisWeek">This Week</SelectItem>
+              <SelectItem value="thisMonth">This Month</SelectItem>
+              <SelectItem value="thisYear">This Year</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            className="gap-2 bg-background/50 backdrop-blur-sm"
+          >
+            <Download className="h-4 w-4" />
+            <span className="">Export</span>
+          </Button>
+        </div>
       </div>
 
-<div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-4">
-  {[
-    {
-      title: "Total Distance",
-      icon: MapPin,
-      value: overview?.totalDistance,
-      unit: "km",
-    },
-    {
-      title: "Total Trips",
-      icon: Car,
-      value: overview?.totalTrips,
-      unit: "trips",
-    },
-    {
-      title: "Driving Time",
-      icon: Clock,
-      value: overview?.totalDrivingTime,
-      unit: "h",
-    },
-    {
-      title: "Active Vehicles",
-      icon: Activity,
-      value: overview?.activeVehicles,
-      unit: "vehicles",
-    },
-  ].map((item, index) => (
-    <Card key={index} className="p-3">
-      <CardHeader className="flex flex-row items-center justify-between p-0 mb-2">
-        <CardTitle className="text-[13px] sm:text-sm font-medium">
-          {item.title}
-        </CardTitle>
-        <item.icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="text-xl sm:text-2xl font-bold">
-          {loadingOverview || loadingFleetStatus ? (
-            <Skeleton className="h-6 w-16" />
-          ) : (
-            `${item.value || 0} ${item.unit}`
-          )}
-        </div>
-        <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">
-          {item.title === "Total Distance" &&
-            `${overview?.daysOfOperation || 0} active days`}
-          {item.title === "Total Trips" &&
-            `${overview?.activeVehicles || 0} active vehicles`}
-          {item.title === "Driving Time" &&
-            `Utilization: ${overview?.utilization || 0}%`}
-          {item.title === "Active Vehicles" &&
-            `${overview?.utilization || 0}% utilization`}
-        </p>
-      </CardContent>
-    </Card>
-  ))}
-</div>
-
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {[
+          {
+            title: "Total Distance",
+            icon: MapPin,
+            value: overview?.totalDistance,
+            unit: "km",
+          },
+          {
+            title: "Total Trips",
+            icon: Car,
+            value: overview?.totalTrips,
+            unit: "trips",
+          },
+          {
+            title: "Driving Time",
+            icon: Clock,
+            value: overview?.totalDrivingTime,
+            unit: "h",
+          },
+          {
+            title: "Active Vehicles",
+            icon: Activity,
+            value: overview?.activeVehicles,
+            unit: "vehicles",
+          },
+        ].map((item, index) => (
+          <Card key={index} className="p-3">
+            <CardHeader className="flex flex-row items-center justify-between p-0 mb-2">
+              <CardTitle className="text-[13px] sm:text-sm font-medium">
+                {item.title}
+              </CardTitle>
+              <item.icon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="text-xl sm:text-2xl font-bold">
+                {loadingOverview || loadingFleetStatus ? (
+                  <Skeleton className="h-6 w-16" />
+                ) : (
+                  `${item.value || 0} ${item.unit}`
+                )}
+              </div>
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">
+                {item.title === "Total Distance" &&
+                  `${overview?.daysOfOperation || 0} active days`}
+                {item.title === "Total Trips" &&
+                  `${overview?.activeVehicles || 0} active vehicles`}
+                {item.title === "Driving Time" &&
+                  `Utilization: ${overview?.utilization || 0}%`}
+                {item.title === "Active Vehicles" &&
+                  `${overview?.utilization || 0}% utilization`}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="w-full">
@@ -301,51 +306,52 @@ export default function StatisticsPage() {
                   </div>
                 ) : (
                   <div className="w-full h-[300px] sm:h-[400px] overflow-x-auto sm:overflow-visible">
-  <ResponsiveContainer width="100%" height="100%">
-    <ChartContainer
-      config={{
-        distance: {
-          label: "Distance (km)",
-          color: COLORS[0],
-        },
-        trips: { label: "Trips", color: COLORS[1] },
-      }}
-    >
-      <AreaChart
-        data={tripAnalytics}
-        margin={{ top: 10, right: 20, left: -15, bottom: 30 }}
-      >
-        <XAxis
-          dataKey="period"
-          tickFormatter={(value) =>
-            period === "today" ? value.split(" ")[1] : value.split("-").slice(1).join("/")
-          }
-          fontSize={window.innerWidth < 768 ? 10 : 12}
-          interval={window.innerWidth < 768 ? 1 : 0}
-        />
-        <YAxis fontSize={12} />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <Area
-          type="monotone"
-          dataKey="totalDistance"
-          stackId="1"
-          stroke={COLORS[0]}
-          fill={COLORS[0]}
-          fillOpacity={0.6}
-        />
-        <Area
-          type="monotone"
-          dataKey="tripCount"
-          stackId="2"
-          stroke={COLORS[1]}
-          fill={COLORS[1]}
-          fillOpacity={0.6}
-        />
-      </AreaChart>
-    </ChartContainer>
-  </ResponsiveContainer>
-</div>
-
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ChartContainer
+                        config={{
+                          distance: {
+                            label: "Distance (km)",
+                            color: COLORS[0],
+                          },
+                          trips: { label: "Trips", color: COLORS[1] },
+                        }}
+                      >
+                        <AreaChart
+                          data={tripAnalytics}
+                          margin={{ top: 10, right: 20, left: -15, bottom: 30 }}
+                        >
+                          <XAxis
+                            dataKey="period"
+                            tickFormatter={(value) =>
+                              period === "today"
+                                ? value.split(" ")[1]
+                                : value.split("-").slice(1).join("/")
+                            }
+                            fontSize={window.innerWidth < 768 ? 10 : 12}
+                            interval={window.innerWidth < 768 ? 1 : 0}
+                          />
+                          <YAxis fontSize={12} />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <Area
+                            type="monotone"
+                            dataKey="totalDistance"
+                            stackId="1"
+                            stroke={COLORS[0]}
+                            fill={COLORS[0]}
+                            fillOpacity={0.6}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="tripCount"
+                            stackId="2"
+                            stroke={COLORS[1]}
+                            fill={COLORS[1]}
+                            fillOpacity={0.6}
+                          />
+                        </AreaChart>
+                      </ChartContainer>
+                    </ResponsiveContainer>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -353,6 +359,11 @@ export default function StatisticsPage() {
         </TabsContent>
 
         <TabsContent value="vehicles">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
           <Card>
             <CardHeader>
               <CardTitle>Vehicle Performance</CardTitle>
@@ -445,10 +456,16 @@ export default function StatisticsPage() {
               )}
             </CardContent>
           </Card>
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="analytics">
-          <div className="grid gap-6">
+            <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="grid gap-6"
+          >
             <Card>
               <CardHeader>
                 <CardTitle>Detailed Analytics</CardTitle>
@@ -485,10 +502,15 @@ export default function StatisticsPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="heatmap">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
           <Card>
             <CardHeader>
               <CardTitle>Vehicle Activity Heatmap</CardTitle>
@@ -500,6 +522,7 @@ export default function StatisticsPage() {
               <VehiclePlacesHeatmap period={period} apiUrl={API_URL} />
             </CardContent>
           </Card>
+          </motion.div>
         </TabsContent>
       </Tabs>
     </motion.div>
