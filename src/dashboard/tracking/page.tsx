@@ -30,6 +30,7 @@ import getRelativeTime from "@/components/relativeTime";
 import { useParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
+import { VehicleControls } from "./components/VehicleControls";
 
 // Animation variants
 const fadeIn = {
@@ -508,25 +509,7 @@ useEffect(() => {
                         className="space-y-2 pt-1"
                         variants={slideUp}
                       >
-                        <h4 className="text-sm font-medium">Vehicle Controls</h4>
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="gap-1 flex-1 h-8 text-xs sm:text-sm"
-                          >
-                            <Lock className="h-3 w-3" />
-                            Immobilize
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="gap-1 flex-1 h-8 text-xs sm:text-sm"
-                          >
-                            <AlertTriangle className="h-3 w-3" />
-                            Alert Driver
-                          </Button>
-                        </div>
+                        <VehicleControls vehicleId={selected._id}/>
                       </motion.div>
                     </motion.div>
                   ) : (

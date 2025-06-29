@@ -8,6 +8,7 @@ import { ActiveImmobilizations } from "./components/ActiveImmobilizations"
 import { ImmobilizationHistory } from "./components/ImmobilizationHistory"
 import { ImmobilizationGuide } from "./components/ImmobilizationGuide"
 import { toast } from "sonner"
+import { useSearchParams } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -15,9 +16,17 @@ export default function ImmobilizationPage() {
   const [selectedVehicle, setSelectedVehicle] = useState("")
   const [vehicles, setVehicles] = useState<any[]>([])
   const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [searchParams] = useSearchParams();
+  const vehicleFromUrl = searchParams.get("vehicle");
 
   const triggerRefresh = () => setRefreshTrigger(prev => prev + 1)
 
+   useEffect(() => {
+    if (vehicleFromUrl) {
+      setSelectedVehicle(vehicleFromUrl);
+    }
+  }, [vehicleFromUrl]);
+  
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
