@@ -112,22 +112,27 @@ export default function HistoryPage() {
     return `${minutes}min`;
   }
 
-  // ✅ Calculate summary
-  const totalDistance = trips.reduce((acc, t) => acc + (t.summary?.distance || 0), 0);
-  const totalDurationMin = trips.reduce((acc, t) => acc + (t.summary?.duration || 0), 0);
-  const drivingTime = formatDrivingTime(totalDurationMin);
+// Calculate summary
+const totalDistance = trips.reduce(
+  (acc, t) => acc + (t.summary.distanceFromOdometer > 0 ? t.summary.distanceFromOdometer : t.summary.distance),
+  0
+);
 
-  const averageSpeed =
-    trips.length > 0
-      ? Math.round(
-          trips.reduce((acc, t) => acc + (t.summary?.averageSpeed || 0), 0) / trips.length
-        )
-      : 0;
+const totalDurationMin = trips.reduce((acc, t) => acc + (t.summary?.duration || 0), 0);
+const drivingTime = formatDrivingTime(totalDurationMin);
 
-  const maxSpeed =
+const averageSpeed =
   trips.length > 0
-    ? Math.max(...trips.map(t => t.summary?.maxSpeed || 0))
+    ? Math.round(
+        trips.reduce((acc, t) => acc + (t.summary?.averageSpeed || 0), 0) / trips.length
+      )
     : 0;
+
+const maxSpeed =
+  trips.length > 0
+    ? Math.max(...trips.map((t) => t.summary?.maxSpeed || 0))
+    : 0;
+
 
 
   return (
