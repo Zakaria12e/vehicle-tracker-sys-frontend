@@ -32,8 +32,19 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
-import { Area, AreaChart, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import {
+  Area,
+  AreaChart,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Tooltip,
+  Legend,
+} from "recharts";
 import VehiclePlacesHeatmap from "./components/VehiclePlacesHeatmap";
+import { VehiclePerformanceBarChart } from "./components/VehiclePerformanceBarChart";
 
 type Period = "today" | "thisWeek" | "thisMonth" | "thisYear";
 
@@ -49,7 +60,7 @@ export default function StatisticsPage() {
   const [loadingFleetStatus, setLoadingFleetStatus] = useState(false);
   const [COLORS, setCOLORS] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const vehiclesPerPage = 5;
+  const vehiclesPerPage = 20;
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -358,135 +369,23 @@ export default function StatisticsPage() {
           </motion.div>
         </TabsContent>
 
-<TabsContent value="vehicles">
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
-  >
-    <Card>
-      <CardHeader>
-        <CardTitle>Vehicle Performance</CardTitle>
-        <CardDescription>
-          Comparative analysis of all vehicles - {period}
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent>
-
-
-        {/* ✅ Mobile View - Card Grid (2 data per line) */}
-        <div className="block sm:hidden space-y-3">
-          {loadingVehicles
-            ? Array.from({ length: vehiclesPerPage }).map((_, i) => (
-                <Card key={i} className="p-3 space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-20" />
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-3 w-20" />
-                </Card>
-              ))
-            : currentVehicles.map((v, i) => (
-                <Card key={i} className="p-3 space-y-2">
-                  <div className="text-xl text-center font-semibold">{v.vehicleName}</div>
-                  <div className="grid grid-cols-2 text-xs text-muted-foreground gap-y-1">
-                    <div>Distance: {v.totalDistance} km</div>
-                    <div>Trips: {v.totalTrips}</div>
-                    <div>Driving: {v.totalDrivingTime} h</div>
-                    <div>Avg Speed: {v.averageSpeed} km/h</div>
-                  </div>
-                </Card>
-              ))}
-        </div>
-
-        {/* ✅ Desktop View - Table */}
-        <div className="hidden sm:block">
-          <div className="relative overflow-x-auto rounded-md border">
-            <table className="w-full text-sm">
-              <thead className="bg-muted text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-3 text-left">Vehicle</th>
-                  <th className="px-4 py-3 text-left">Distance</th>
-                  <th className="px-4 py-3 text-left">Trips</th>
-                  <th className="px-4 py-3 text-left">Driving Time</th>
-                  <th className="px-4 py-3 text-left">Avg. Speed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loadingVehicles
-                  ? Array.from({ length: vehiclesPerPage }).map((_, i) => (
-                      <tr key={i} className="border-b">
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-32" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-16" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-12" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-20" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-16" />
-                        </td>
-                      </tr>
-                    ))
-                  : currentVehicles.map((v, i) => (
-                      <tr key={i} className="border-b">
-                        <td className="px-4 py-3 font-medium">{v.vehicleName}</td>
-                        <td className="px-4 py-3">{v.totalDistance} km</td>
-                        <td className="px-4 py-3">{v.totalTrips}</td>
-                        <td className="px-4 py-3">{v.totalDrivingTime} h</td>
-                        <td className="px-4 py-3">{v.averageSpeed} km/h</td>
-                      </tr>
-                    ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* ✅ Pagination */}
-        {!loadingVehicles && totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 border-t mt-3">
-            <div className="text-xs text-muted-foreground text-center sm:text-left">
-              Showing {startIndex + 1} - {Math.min(endIndex, vehicles.length)} of {vehicles.length} vehicles
-            </div>
-            <div className="flex items-center justify-center sm:justify-end gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={goToPreviousPage}
-                disabled={currentPage === 1}
-                className="h-7 w-7 p-0"
-              >
-                ‹
-              </Button>
-              <span className="text-xs text-muted-foreground px-2 min-w-[60px] text-center">
-                {currentPage} of {totalPages}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-                className="h-7 w-7 p-0"
-              >
-                ›
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  </motion.div>
-</TabsContent>
-
-
+        <TabsContent value="vehicles">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <VehiclePerformanceBarChart
+              vehicles={vehicles}
+              COLORS={COLORS}
+              loading={loadingVehicles}
+              period={period}
+            />
+          </motion.div>
+        </TabsContent>
 
         <TabsContent value="analytics">
-            <motion.div
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -537,17 +436,17 @@ export default function StatisticsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-          <Card>
-            <CardHeader>
-              <CardTitle>Vehicle Activity Heatmap</CardTitle>
-              <CardDescription>
-                Most visited places during {period}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <VehiclePlacesHeatmap period={period} apiUrl={API_URL} />
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Vehicle Activity Heatmap</CardTitle>
+                <CardDescription>
+                  Most visited places during {period}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <VehiclePlacesHeatmap period={period} apiUrl={API_URL} />
+              </CardContent>
+            </Card>
           </motion.div>
         </TabsContent>
       </Tabs>
