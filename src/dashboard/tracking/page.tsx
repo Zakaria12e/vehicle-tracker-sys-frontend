@@ -1,12 +1,5 @@
 import { useState, useEffect, Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
@@ -23,7 +16,7 @@ import {
 } from "@/components/ui/command"
 
 import { io } from 'socket.io-client';
-import { Locate, Lock, Battery, AlertTriangle, Car } from "lucide-react";
+import { Locate, Battery, Car } from "lucide-react";
 import { toast } from "sonner";
 import VehicleMap from "@/components/VehicleMap";
 import getRelativeTime from "@/components/relativeTime";
@@ -105,8 +98,6 @@ export default function TrackingPage() {
   const { imei } = useParams();
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState(imei || "all");
-  const [refreshInterval, setRefreshInterval] = useState(5);
-  const [showTraffic, setShowTraffic] = useState(false);
   const [showGeofences, setShowGeofences] = useState(true);
   const [triggerZoom, setTriggerZoom] = useState(false);
   const [activeTab, setActiveTab] = useState<'map' | 'details'>('map');
