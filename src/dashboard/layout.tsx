@@ -356,7 +356,7 @@ const routes = [
           </div>
         </motion.header>
 
-        <main className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <main className="flex flex-1 flex-col p-0 pt-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
