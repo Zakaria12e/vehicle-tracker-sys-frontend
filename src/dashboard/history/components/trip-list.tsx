@@ -1,73 +1,95 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Eye, ChevronLeft, ChevronRight, Car, Clock, Route, Gauge } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+  Car,
+  Clock,
+  Route,
+  Gauge,
+} from "lucide-react";
 
-const ITEMS_PER_PAGE = 5
+const ITEMS_PER_PAGE = 5;
 
 interface Vehicle {
-  _id: string
-  name: string
-  licensePlate: string
-  model?: string
+  _id: string;
+  name: string;
+  licensePlate: string;
+  model?: string;
 }
 
 interface Trip {
-  _id: string
-  vehicle: Vehicle | string
-  startTime: string
-  endTime?: string
+  _id: string;
+  vehicle: Vehicle | string;
+  startTime: string;
+  endTime?: string;
   summary: {
-    distance: number
-    duration: number
-    averageSpeed: number
-    maxSpeed: number
-  }
+    distance: number;
+    distanceFromOdometer: number;
+    duration: number;
+    averageSpeed: number;
+    maxSpeed: number;
+  };
   startLocation: {
-    coordinates: [number, number]
-    timestamp: string
-  }
+    coordinates: [number, number];
+    timestamp: string;
+  };
   endLocation?: {
-    coordinates: [number, number]
-    timestamp: string
-  }
+    coordinates: [number, number];
+    timestamp: string;
+  };
 }
 
 interface TripListProps {
-  trips: Trip[]
-  onViewTrip: (tripId: string) => void
-  loading?: boolean
+  trips: Trip[];
+  onViewTrip: (tripId: string) => void;
+  loading?: boolean;
 }
 
 // Utilities
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString()
+  return new Date(dateStr).toLocaleDateString();
 }
 
 function formatTime(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  return new Date(dateStr).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function formatDuration(mins: number) {
-  const h = Math.floor(mins / 60)
-  const m = Math.round(mins % 60)
-  return `${h}h ${m}m`
+  const h = Math.floor(mins / 60);
+  const m = Math.round(mins % 60);
+  return `${h}h ${m}m`;
 }
 
-export function TripList({ trips, onViewTrip, loading = false }: TripListProps) {
-  const [currentPage, setCurrentPage] = useState(1)
+export function TripList({
+  trips,
+  onViewTrip,
+  loading = false,
+}: TripListProps) {
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(trips.length / ITEMS_PER_PAGE)
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const currentTrips = trips.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(trips.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentTrips = trips.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const goToPage = (page: number) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)))
-  }
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
 
   if (loading) {
     return (
@@ -91,14 +113,16 @@ export function TripList({ trips, onViewTrip, loading = false }: TripListProps) 
           ))}
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
     <Card>
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-semibold">Trip List</CardTitle>
-        <CardDescription>Detailed list of all trips in the selected period</CardDescription>
+        <CardDescription>
+          Detailed list of all trips in the selected period
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -106,25 +130,32 @@ export function TripList({ trips, onViewTrip, loading = false }: TripListProps) 
           <div className="text-center py-12">
             <Car className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-4 text-lg font-semibold">No trips found</h3>
-            <p className="text-muted-foreground">Try adjusting your filters to see trip data.</p>
+            <p className="text-muted-foreground">
+              Try adjusting your filters to see trip data.
+            </p>
           </div>
         ) : (
           <>
             {/* Mobile View */}
             <div className="space-y-4 sm:hidden">
               {currentTrips.map((trip) => {
-                const startDate = formatDate(trip.startTime)
-                const startTime = formatTime(trip.startTime)
-                const endTime = trip.endTime ? formatTime(trip.endTime) : "--"
-                const duration = formatDuration(trip.summary.duration)
-                const vehicleName = typeof trip.vehicle === "string" ? trip.vehicle : trip.vehicle?.name
+                const startDate = formatDate(trip.startTime);
+                const startTime = formatTime(trip.startTime);
+                const endTime = trip.endTime ? formatTime(trip.endTime) : "--";
+                const duration = formatDuration(trip.summary.duration);
+                const vehicleName =
+                  typeof trip.vehicle === "string"
+                    ? trip.vehicle
+                    : trip.vehicle?.name;
 
                 return (
                   <Card key={trip._id} className="p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h4 className="font-semibold">{vehicleName}</h4>
-                        <p className="text-sm text-muted-foreground">{startDate}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {startDate}
+                        </p>
                       </div>
                       <Badge variant="secondary">{duration}</Badge>
                     </div>
@@ -138,7 +169,13 @@ export function TripList({ trips, onViewTrip, loading = false }: TripListProps) 
                       </div>
                       <div className="flex items-center gap-2">
                         <Route className="h-4 w-4 text-muted-foreground" />
-                        <span>{trip.summary.distance.toFixed(1)} km</span>
+                        <div>
+                          {(trip.summary.distance > 0
+                            ? trip.summary.distance
+                            : trip.summary.distanceFromOdometer
+                          ).toFixed(2)}{" "}
+                          km
+                        </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <Gauge className="h-4 w-4 text-muted-foreground" />
@@ -146,12 +183,17 @@ export function TripList({ trips, onViewTrip, loading = false }: TripListProps) 
                       </div>
                     </div>
 
-                    <Button variant="outline" size="sm" className="w-full" onClick={() => onViewTrip(trip._id)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => onViewTrip(trip._id)}
+                    >
                       <Eye className="mr-2 h-4 w-4" />
                       View Details
                     </Button>
                   </Card>
-                )
+                );
               })}
             </div>
 
@@ -170,11 +212,16 @@ export function TripList({ trips, onViewTrip, loading = false }: TripListProps) 
                 </div>
                 <div className="divide-y">
                   {currentTrips.map((trip) => {
-                    const startDate = formatDate(trip.startTime)
-                    const startTime = formatTime(trip.startTime)
-                    const endTime = trip.endTime ? formatTime(trip.endTime) : "--"
-                    const duration = formatDuration(trip.summary.duration)
-                    const vehicleName = typeof trip.vehicle === "string" ? trip.vehicle : trip.vehicle?.name
+                    const startDate = formatDate(trip.startTime);
+                    const startTime = formatTime(trip.startTime);
+                    const endTime = trip.endTime
+                      ? formatTime(trip.endTime)
+                      : "--";
+                    const duration = formatDuration(trip.summary.duration);
+                    const vehicleName =
+                      typeof trip.vehicle === "string"
+                        ? trip.vehicle
+                        : trip.vehicle?.name;
 
                     return (
                       <div
@@ -190,16 +237,28 @@ export function TripList({ trips, onViewTrip, loading = false }: TripListProps) 
                             {duration}
                           </Badge>
                         </div>
-                        <div>{trip.summary.distance.toFixed(1)} km</div>
+                        <div>
+                          {(trip.summary.distance > 0
+                            ? trip.summary.distance
+                            : trip.summary.distanceFromOdometer
+                          ).toFixed(1)}{" "}
+                          km
+                        </div>
+
                         <div>{trip.summary.averageSpeed.toFixed(1)} km/h</div>
                         <div>
-                          <Button variant="ghost" size="sm" className="h-8" onClick={() => onViewTrip(trip._id)}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8"
+                            onClick={() => onViewTrip(trip._id)}
+                          >
                             <Eye className="mr-1 h-3 w-3" />
                             View
                           </Button>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -211,8 +270,9 @@ export function TripList({ trips, onViewTrip, loading = false }: TripListProps) 
                 <Separator />
                 <div className="flex justify-between items-center">
                   <div className="text-sm text-muted-foreground">
-                    Showing {startIndex + 1} to {Math.min(startIndex + ITEMS_PER_PAGE, trips.length)} of {trips.length}{" "}
-                    trips
+                    Showing {startIndex + 1} to{" "}
+                    {Math.min(startIndex + ITEMS_PER_PAGE, trips.length)} of{" "}
+                    {trips.length} trips
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button
@@ -226,29 +286,34 @@ export function TripList({ trips, onViewTrip, loading = false }: TripListProps) 
                     </Button>
 
                     <div className="flex items-center space-x-1">
-                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                        let page = i + 1
-                        if (totalPages > 5) {
-                          if (currentPage > 3) {
-                            page = currentPage - 2 + i
+                      {Array.from(
+                        { length: Math.min(totalPages, 5) },
+                        (_, i) => {
+                          let page = i + 1;
+                          if (totalPages > 5) {
+                            if (currentPage > 3) {
+                              page = currentPage - 2 + i;
+                            }
+                            if (currentPage > totalPages - 2) {
+                              page = totalPages - 4 + i;
+                            }
                           }
-                          if (currentPage > totalPages - 2) {
-                            page = totalPages - 4 + i
-                          }
-                        }
 
-                        return (
-                          <Button
-                            key={page}
-                            variant={page === currentPage ? "default" : "outline"}
-                            size="sm"
-                            className="w-8 h-8 p-0"
-                            onClick={() => goToPage(page)}
-                          >
-                            {page}
-                          </Button>
-                        )
-                      })}
+                          return (
+                            <Button
+                              key={page}
+                              variant={
+                                page === currentPage ? "default" : "outline"
+                              }
+                              size="sm"
+                              className="w-8 h-8 p-0"
+                              onClick={() => goToPage(page)}
+                            >
+                              {page}
+                            </Button>
+                          );
+                        }
+                      )}
                     </div>
 
                     <Button
@@ -268,5 +333,5 @@ export function TripList({ trips, onViewTrip, loading = false }: TripListProps) 
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
