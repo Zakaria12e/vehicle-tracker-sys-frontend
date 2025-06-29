@@ -3,25 +3,22 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  Popup,
   useMap,
   Circle,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
-import "leaflet-fullscreen"; // Important : active le contrôle Fullscreen
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Car, Battery, Gauge, Power, MapPin } from "lucide-react";
+import "leaflet-fullscreen";
+import { MapPin } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { motion } from "framer-motion";
 
 type Props = {
   devices: any[];
   selectedVehicle: string;
   triggerZoom: boolean;
   geofences?: any[];
+  onSelectVehicle?: (imei: string) => void;
 };
 
 const defaultCenter: [number, number] = [31.7917, -7.0926];
@@ -86,20 +83,8 @@ const createCustomMarker = (status: string) => {
   });
 };
 
-const getStatusBadge = (status: string) => {
-  switch (status) {
-    case "moving":
-      return <Badge className="bg-green-100 text-green-700 border-green-200">{status}</Badge>;
-    case "stopped":
-      return <Badge className="bg-amber-100 text-amber-700 border-amber-200">{status}</Badge>;
-    case "inactive":
-      return <Badge className="bg-gray-100 text-gray-700 border-gray-200">{status}</Badge>;
-    default:
-      return <Badge className="bg-red-100 text-red-700 border-red-200">{status}</Badge>;
-  }
-};
 
-const VehicleMap: React.FC<Props> = ({ devices, selectedVehicle, triggerZoom, geofences = [] }) => {
+const VehicleMap: React.FC<Props> = ({ devices, selectedVehicle, triggerZoom, geofences = [] , onSelectVehicle}) => {
   const visibleDevices = devices.filter(
     (v) => selectedVehicle === "all" || v.imei === selectedVehicle
   );
@@ -132,39 +117,13 @@ const VehicleMap: React.FC<Props> = ({ devices, selectedVehicle, triggerZoom, ge
 
         {/* Markers */}
         {visibleDevices.map((v) => (
-          <Marker key={v.imei} position={[v.lat, v.lon]} icon={createCustomMarker(v.currentStatus)}>
-            <Popup>
-              <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                <Card className="border-0 shadow-none w-[250px] dark:bg-black">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="font-semibold text-base flex items-center gap-1.5">
-                        <Car className="h-4 w-4" /> {v.name}
-                      </div>
-                      {getStatusBadge(v.currentStatus)}
-                    </div>
-                    <div className="space-y-2 text-sm text-muted-foreground">
-                      <div className="flex justify-between">
-                        <span className="text-xs font-medium">IMEI</span>
-                        <span className="font-mono text-xs">{v.imei}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="flex items-center gap-1.5"><Gauge className="h-3.5 w-3.5" />Speed</span>
-                        <span>{v.speed ?? "--"} km/h</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="flex items-center gap-1.5"><Battery className="h-3.5 w-3.5" />Battery</span>
-                        <span>{v.extendedData?.vehicleBattery ?? "--"}%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="flex items-center gap-1.5"><Power className="h-3.5 w-3.5" />Ignition</span>
-                        <span>{v.ignition ? "On" : "Off"}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Popup>
+           <Marker key={v.imei} position={[v.lat, v.lon]} icon={createCustomMarker(v.currentStatus)}
+             eventHandlers={{
+                 click: () => {
+                   if (onSelectVehicle) onSelectVehicle(v.imei);
+                 },
+             }}
+           >
           </Marker>
         ))}
 

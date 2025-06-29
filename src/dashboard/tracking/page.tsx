@@ -387,6 +387,7 @@ useEffect(() => {
   selectedVehicle={selectedVehicle}
   triggerZoom={triggerZoom}
   geofences={showGeofences ? geofences : []}
+  onSelectVehicle={(imei) => setSelectedVehicle(imei)}
 />
 
               </Suspense>
