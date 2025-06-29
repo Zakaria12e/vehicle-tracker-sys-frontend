@@ -31,13 +31,14 @@ import {
 
 const statusColors: Record<
   string,
-  { variant: "default" | "secondary" | "destructive" | "outline"; icon: any; color: string }
+  { color: string; bg: string; border: string; icon: any }
 > = {
-  moving: { variant: "default", icon: TrendingUp, color: "text-green-600" },
-  stopped: { variant: "secondary", icon: Minus, color: "text-yellow-600" },
-  immobilized: { variant: "destructive", icon: XCircle, color: "text-red-600" },
-  inactive: { variant: "outline", icon: AlertTriangle, color: "text-gray-500" },
+  moving: { color: "text-green-400", border: "border-green-500/20",  bg: "bg-green-500/10", icon: TrendingUp },
+  stopped: { color: "text-yellow-400", border: "border-yellow-500/20", bg: "bg-yellow-500/10", icon: Minus },
+  immobilized: { color: "text-red-400", border: "border-red-500/20", bg: "bg-red-500/10", icon: XCircle },
+  inactive: { color: "text-gray-400", border: "border-gray-500/20", bg: "bg-gray-500/10", icon: AlertTriangle },
 }
+
 
 type VehicleDetails = {
   id: string
@@ -178,10 +179,14 @@ export function VehicleDetails() {
             </p>
           </div>
         </div>
-        <Badge variant={statusConfig.variant} className="text-sm px-3 py-1">
-          <StatusIcon className="h-4 w-4 mr-1" />
-          {vehicle.currentStatus}
-        </Badge>
+       <Badge
+  variant="outline"
+  className={`text-sm px-3 py-1 ${statusConfig.color} ${statusConfig.bg} ${statusConfig.border} flex items-center`}
+>
+  <StatusIcon className={`h-4 w-4 mr-1 ${statusConfig.color}`} />
+  {vehicle.currentStatus.charAt(0).toUpperCase() + vehicle.currentStatus.slice(1)}
+</Badge>
+
       </div>
 
       {/* Status Overview - Hero Section */}
