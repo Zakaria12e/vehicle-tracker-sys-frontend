@@ -104,6 +104,28 @@ export default function DashboardPage() {
         console.error("Error fetching vehicle stats:", error);
       }
     };
+const fetchVehicles = async () => {
+  try {
+    const res = await fetch(`${API_URL}/vehicles`, { credentials: "include" });
+    const data = await res.json();
+    if (res.ok && data?.data?.vehicles) {
+      const preparedVehicles = data.data.vehicles.map((v: any) => ({
+        ...v,
+        lat: v.lastPosition?.lat ?? null,
+        lon: v.lastPosition?.lon ?? null,
+        currentStatus: v.currentStatus ?? "inactive",
+      }));
+      setVehicles(preparedVehicles);
+
+      // Rejoindre les rooms socket
+      const imeis = preparedVehicles.map((v:any) => v.imei);
+      socket.emit("join_rooms", imeis);
+    }
+  } catch (error) {
+    console.error("Error fetching vehicles:", error);
+  }
+};
+
 
     const fetchAlertStats = async () => {
       try {
@@ -162,6 +184,7 @@ export default function DashboardPage() {
     };
 
     fetchStats();
+    fetchVehicles();
     fetchAlertStats();
     fetchRecentAlerts();
     fetchTotalDistanceThisMonth();
