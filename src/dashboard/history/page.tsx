@@ -23,6 +23,7 @@ type Trip = {
   endTime?: string;
   summary: {
     distance: number;
+    distanceFromOdometer: number;
     duration: number;
     averageSpeed: number;
     maxSpeed: number;

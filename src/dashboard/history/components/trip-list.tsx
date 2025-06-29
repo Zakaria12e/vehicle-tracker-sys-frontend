@@ -170,9 +170,9 @@ export function TripList({
                       <div className="flex items-center gap-2">
                         <Route className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          {(trip.summary.distance > 0
-                            ? trip.summary.distance
-                            : trip.summary.distanceFromOdometer
+                          {(trip.summary.distanceFromOdometer > 0
+                            ? trip.summary.distanceFromOdometer
+                            : trip.summary.distance
                           ).toFixed(2)}{" "}
                           km
                         </div>
@@ -238,9 +238,9 @@ export function TripList({
                           </Badge>
                         </div>
                         <div>
-                          {(trip.summary.distance > 0
-                            ? trip.summary.distance
-                            : trip.summary.distanceFromOdometer
+                          {(trip.summary.distanceFromOdometer > 0
+                            ? trip.summary.distanceFromOdometer
+                            : trip.summary.distance
                           ).toFixed(1)}{" "}
                           km
                         </div>
