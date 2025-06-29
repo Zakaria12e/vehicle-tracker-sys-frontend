@@ -91,8 +91,13 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteUser = (userId: string) => {
+  const  handleDeleteUser = async(userId: string) => {
+     try {
+    await axios.delete(`${API_URL}/users/delete-user/${userId}`, { withCredentials: true });
     setUsers(users.filter((user) => user._id !== userId));
+  } catch (error) {
+    console.error('Failed to delete user:', error);
+  }
   };
 
   const canModify = () => {
