@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation , useNavigate  } from "react-router-dom";
 import { socket } from "@/lib/socket";
 
 type User = {
@@ -72,23 +72,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     fetchUser();
   }, [location.pathname, API_URL]);
 
-  const logout = async () => {
-    try {
-      await fetch(`${API_URL}/auth/logout`, {
-        method: "GET",
-        credentials: "include",
-      });
+const navigate = useNavigate();
 
-      if (socket.connected) {
-        socket.disconnect();
-      }
-    } catch (err) {
-      console.error("Logout failed", err);
-    } finally {
-      setUser(null);
-      window.location.href = "/login"; 
+const logout = async () => {
+  try {
+    await fetch(`${API_URL}/auth/logout`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (socket.connected) {
+      socket.disconnect();
     }
-  };
+    setUser(null);
+    navigate("/login");
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 1);
+  } catch (err) {
+    console.error("Logout failed", err);
+  }
+};
+
 
   return (
     <AuthContext.Provider value={{ user, setUser, logout, loading }}>

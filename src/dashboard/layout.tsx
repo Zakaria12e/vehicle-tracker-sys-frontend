@@ -1,11 +1,9 @@
 "use client"
 
 import React from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import {
-  MapPin,
   Car,
-  Clock,
   Bell,
   Settings,
   LogOut,
@@ -61,7 +59,6 @@ import { cn } from "@/lib/utils"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
-  const navigate = useNavigate()
   const { user, logout } = useAuth()
 
 const routes = [
@@ -131,7 +128,6 @@ const routes = [
 
   const handleLogout = async () => {
     await logout()
-    navigate("/login")
   }
 
   // Generate breadcrumb from current path
