@@ -18,6 +18,8 @@ interface AlertData {
   message: string;
   location?: string;
   timestamp: string;
+  excludeUserId?: string;
+  userId?: string;
 }
 
 export default function AlertBell() {
@@ -28,6 +30,9 @@ export default function AlertBell() {
 
   useEffect(() => {
     const handleAlert = (alert: AlertData) => {
+      // Ignore backend broadcast for admins if this user is the excluded one
+      if (alert.excludeUserId && alert.excludeUserId === user?.id) return;
+
       setAlertCount((prev) => prev + 1);
       setVisibleAlerts((prev) => [alert, ...prev]);
 
@@ -40,20 +45,18 @@ export default function AlertBell() {
     return () => {
       socket.off("alert", handleAlert);
     };
-  }, []);
-  const API_URL = import.meta.env.VITE_API_URL;
-  const handleClick = async () => {
-   
-      setAlertCount(0);
-      navigate("/dashboard/alerts");
+  }, [user]);
 
+  const handleClick = async () => {
+    setAlertCount(0);
+    navigate("/dashboard/alerts");
   };
 
   return (
     <div className="relative">
       <button
         onClick={handleClick}
-        className="relative p-2 rounded-full hover:bg-muted transition cu"
+        className="relative p-2 rounded-full hover:bg-muted transition"
       >
         <Bell className="h-5 w-5" />
         {alertCount > 0 && (
@@ -73,12 +76,16 @@ export default function AlertBell() {
               exit={{ opacity: 0, y: -10 }}
               className="mb-2 p-3 rounded-md shadow-lg bg-background dark:bg-background-900 border border-border text-sm"
             >
-              <p className="font-semibold">{alert.vehicleName} - {alert.vehiclePlate}</p>
+              <p className="font-semibold">
+                {alert.vehicleName} - {alert.vehiclePlate}
+              </p>
               <p className="text-muted-foreground">{alert.message}</p>
               {alert.location && (
                 <p className="text-xs text-muted-foreground mt-1">📍 {alert.location}</p>
               )}
-              <p className="text-[10px] mt-1">{new Date(alert.timestamp).toLocaleTimeString()}</p>
+              <p className="text-[10px] mt-1">
+                {new Date(alert.timestamp).toLocaleTimeString()}
+              </p>
             </motion.div>
           ))}
         </AnimatePresence>
