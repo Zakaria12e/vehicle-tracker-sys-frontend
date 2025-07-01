@@ -3,6 +3,7 @@ import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 
 const socket = io(import.meta.env.VITE_API_BASE_URL, {
@@ -17,6 +18,8 @@ interface AlertData {
   message: string;
   location?: string;
   timestamp: string;
+  excludeUserId?: string;
+  userId?: string;
 }
 
 export default function AlertBell() {
@@ -26,13 +29,10 @@ export default function AlertBell() {
   const [visibleAlerts, setVisibleAlerts] = useState<AlertData[]>([]);
 
   useEffect(() => {
-    const handleAlert = (alert: AlertData & { userId?: string }) => {
-      if (!user || !user.id) return;
+    const handleAlert = (alert: AlertData) => {
+      // Ignore backend broadcast for admins if this user is the excluded one
+      if (alert.excludeUserId && alert.excludeUserId === user?.id) return;
 
-      // Ignore if the backend alert wasn't for this user
-      if (alert.userId && alert.userId !== user.id) return;
-
-      // Update local state for count and display
       setAlertCount((prev) => prev + 1);
       setVisibleAlerts((prev) => [alert, ...prev]);
 
@@ -47,7 +47,7 @@ export default function AlertBell() {
     };
   }, [user]);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     setAlertCount(0);
     navigate("/dashboard/alerts");
   };
@@ -66,7 +66,6 @@ export default function AlertBell() {
         )}
       </button>
 
-      {/* Floating incoming alert notifications */}
       <div className="absolute top-10 right-0 w-64 z-50">
         <AnimatePresence>
           {visibleAlerts.map((alert, i) => (
@@ -82,9 +81,7 @@ export default function AlertBell() {
               </p>
               <p className="text-muted-foreground">{alert.message}</p>
               {alert.location && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  📍 {alert.location}
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">📍 {alert.location}</p>
               )}
               <p className="text-[10px] mt-1">
                 {new Date(alert.timestamp).toLocaleTimeString()}
