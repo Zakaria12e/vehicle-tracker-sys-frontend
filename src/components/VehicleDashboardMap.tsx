@@ -45,37 +45,31 @@ const MapAutoZoom = ({ vehicle, isAllSelected, triggerZoom }: { vehicle: any; is
   
 
 const createCustomMarker = (status: string) => {
-  const getColor = () => {
-    switch (status) {
-      case "moving":
-        return "#10b981";
-      case "stopped":
-        return "#f59e0b";
-      case "inactive":
-        return "#6b7280";
-      default:
-        return "#ef4444";
-    }
-  };
+  let imageUrl = "/icons/vehicles/default.png";
 
-  const iconMarkup = renderToStaticMarkup(
-    <div className="relative">
-      <MapPin
-        size={36}
-        color={getColor()}
-        fill={getColor()}
-        fillOpacity={0.4}
-        strokeWidth={2}
-      />
-    </div>
-  );
+  switch (status) {
+    case "moving":
+      imageUrl = "/icons/vehicles/motorcycle-green.png";
+      break;
+    case "stopped":
+      imageUrl = "/icons/vehicles/motorcycle-orange.png";
+      break;
+    case "inactive":
+      imageUrl = "/icons/vehicles/motorcycle-gray.png";
+      break;
+    default:
+      imageUrl = "/icons/vehicles/motorcycle-red.png";
+  }
 
   return L.divIcon({
-    html: iconMarkup,
-    className: "custom-vehicle-marker",
+    html: `<img src="${imageUrl}" style="
+        width: 36px; 
+        height: 36px; 
+        transition: transform 0.3s ease;" 
+      />`,
+    className: "custom-vehicle-icon",
     iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -36],
+    iconAnchor: [18, 18],
   });
 };
 
