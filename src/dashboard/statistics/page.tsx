@@ -49,7 +49,7 @@ import { VehiclePerformanceBarChart } from "./components/VehiclePerformanceBarCh
 type Period = "today" | "thisWeek" | "thisMonth" | "thisYear";
 
 export default function StatisticsPage() {
-  const [period, setPeriod] = useState<Period>("thisMonth");
+  const [period, setPeriod] = useState<Period>("today");
   const [overview, setOverview] = useState<any>(null);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [tripAnalytics, setTripAnalytics] = useState<any[]>([]);
