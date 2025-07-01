@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Car, UserCheck, Trash2, Circle } from "lucide-react"
+import { ArrowLeft, Car, UserCheck, Trash2, Circle , ArrowRight , Search} from "lucide-react"
 
 interface Vehicle {
   _id: string
@@ -52,6 +52,29 @@ export default function UserDetailView() {
   const [reassignDialogOpen, setReassignDialogOpen] = useState(false)
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("");
+
+
+const [currentPage, setCurrentPage] = useState(1)
+const vehiclesPerPage = 5;
+
+const filteredVehicles = vehicles.filter((v) =>
+  v.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+const totalPages = Math.ceil(filteredVehicles.length / vehiclesPerPage);
+const startIndex = (currentPage - 1) * vehiclesPerPage;
+const endIndex = startIndex + vehiclesPerPage;
+const currentVehicles = filteredVehicles.slice(startIndex, endIndex);
+
+
+const goToNextPage = () => {
+  if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+};
+
+const goToPreviousPage = () => {
+  if (currentPage > 1) setCurrentPage(currentPage - 1);
+};
 
   useEffect(() => {
     const fetchUserDetail = async () => {
@@ -233,12 +256,27 @@ export default function UserDetailView() {
 
         {/* Vehicles */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Car className="h-5 w-5" />
-              Assigned Vehicles
-            </CardTitle>
-          </CardHeader>
+<CardHeader className="flex items-center justify-between gap-4">
+  {/* Left side : Title */}
+  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+    <Car className="h-5 w-5" />
+    Assigned Vehicles
+  </CardTitle>
+
+  {/* Right side : Search Bar */}
+  <div className="relative w-40 sm:w-60">
+    <span className="absolute inset-y-0 left-2 flex items-center text-muted-foreground">
+      <Search className="h-4 w-4" />
+    </span>
+    <input
+      type="text"
+      placeholder="Search by name..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="w-full pl-8 pr-2 py-1.5 text-sm border rounded focus:outline-none focus:ring focus:border-blue-300 bg-background"
+    />
+  </div>
+</CardHeader>
           <CardContent>
             {vehicles.length === 0 ? (
               <div className="text-center py-12">
@@ -258,7 +296,7 @@ export default function UserDetailView() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {vehicles.map((vehicle) => (
+                  {currentVehicles.map((vehicle) => (
                     <TableRow key={vehicle._id}>
                       <TableCell className="font-medium">{vehicle.name}</TableCell>
                       <TableCell>
@@ -380,6 +418,37 @@ export default function UserDetailView() {
                 </TableBody>
               </Table>
             )}
+            {totalPages > 1 && (
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 border-t mt-4">
+    <div className="text-xs text-muted-foreground text-center sm:text-left">
+      Showing {startIndex + 1}-{Math.min(endIndex, vehicles.length)} of {vehicles.length} vehicles
+    </div>
+    <div className="flex items-center justify-center sm:justify-end gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={goToPreviousPage}
+        disabled={currentPage === 1}
+        className="h-7 w-7 p-0"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+      </Button>
+      <span className="text-xs text-muted-foreground px-2 min-w-[60px] text-center">
+        {currentPage} of {totalPages}
+      </span>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={goToNextPage}
+        disabled={currentPage === totalPages}
+        className="h-7 w-7 p-0"
+      >
+        <ArrowRight className="h-3.5 w-3.5" />
+      </Button>
+    </div>
+  </div>
+)}
+
           </CardContent>
         </Card>
       </div>
