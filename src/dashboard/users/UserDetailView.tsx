@@ -1,290 +1,388 @@
-import { useEffect, useState } from "react";
-import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { useParams } from "react-router-dom";
-import axios from "axios";
+"use client"
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import axios from "axios"
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
-  User,
-  CreditCard,
-  Car,
-  CheckCircle,
-  AlertTriangle,
-  Calendar,
-  Clock,
-  Crown,
-} from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { ArrowLeft, Car, UserCheck, Trash2, Circle } from "lucide-react"
+
+interface Vehicle {
+  _id: string
+  name: string
+  licensePlate: string
+  imei: string
+  currentStatus?: string
+}
 
 export default function UserDetailView() {
-  const { id: userId } = useParams();
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [vehicleStats, setVehicleStats] = useState<{ totalVehicles: number, movingVehicles: number } | null>(null);
+  const { id: userId } = useParams()
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [vehicleStats, setVehicleStats] = useState<{ totalVehicles: number; movingVehicles: number } | null>(null)
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
+  const [users, setUsers] = useState<any[]>([])
+  const [selectedUser, setSelectedUser] = useState<string>("")
+  const [reassignDialogOpen, setReassignDialogOpen] = useState(false)
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null)
+  const [actionLoading, setActionLoading] = useState(false)
 
   useEffect(() => {
     const fetchUserDetail = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
           withCredentials: true,
-        });
-        setUser((res.data as any).data);
+        })
+        setUser((res.data as any).data)
       } catch (error) {
-        console.error("Failed to fetch user", error);
+        console.error("Failed to fetch user", error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    const fetchStats = async () => {
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}/stats`, {
-        withCredentials: true,
-      });
-      setVehicleStats((res.data as { data: { totalVehicles: number, movingVehicles: number } }).data);
-    } catch (err) {
-      console.error("Failed to fetch vehicle stats", err);
     }
-  };
 
-  if (userId) {
-    fetchUserDetail();
-    fetchStats();
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}/stats`, {
+          withCredentials: true,
+        })
+        setVehicleStats((res.data as { data: { totalVehicles: number; movingVehicles: number } }).data)
+      } catch (err) {
+        console.error("Failed to fetch vehicle stats", err)
+      }
+    }
+
+    const fetchVehicles = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}/vehicles`, {
+          withCredentials: true,
+        })
+        setVehicles((res.data as any).data)
+      } catch (err) {
+        console.error("Failed to fetch vehicles", err)
+      }
+    }
+
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/non-superadmins`, {
+          withCredentials: true,
+        })
+        setUsers((res.data as any).data)
+      } catch (err) {
+        console.error("Failed to fetch users", err)
+      }
+    }
+
+    if (userId) {
+      fetchUserDetail()
+      fetchStats()
+      fetchVehicles()
+      fetchUsers()
+    }
+  }, [userId])
+
+  const handleReassignVehicle = async () => {
+    if (!selectedVehicle || !selectedUser) return
+
+    setActionLoading(true)
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/vehicles/${selectedVehicle._id}/reassign`,
+        { newUserId: selectedUser },
+        { withCredentials: true },
+      )
+
+      setVehicles((prev) => prev.filter((v) => v._id !== selectedVehicle._id))
+      setReassignDialogOpen(false)
+      setSelectedVehicle(null)
+      setSelectedUser("")
+
+      if (vehicleStats) {
+        setVehicleStats({
+          ...vehicleStats,
+          totalVehicles: vehicleStats.totalVehicles - 1,
+        })
+      }
+    } catch (error) {
+      console.error("Failed to reassign vehicle", error)
+    } finally {
+      setActionLoading(false)
+    }
   }
-  }, [userId]);
+
+  const handleDeleteVehicle = async (vehicle: Vehicle) => {
+    setActionLoading(true)
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/users/${userId}/vehicles/${vehicle._id}`, {
+        withCredentials: true,
+      })
+
+      setVehicles((prev) => prev.filter((v) => v._id !== vehicle._id))
+
+      if (vehicleStats) {
+        setVehicleStats({
+          ...vehicleStats,
+          totalVehicles: vehicleStats.totalVehicles - 1,
+        })
+      }
+    } catch (error) {
+      console.error("Failed to delete vehicle", error)
+    } finally {
+      setActionLoading(false)
+    }
+  }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-black-500 dark:border-white-500 border-t-transparent"></div>
-          <p className=" font-medium">Loading user details...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground"></div>
       </div>
-    );
+    )
   }
 
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case "superadmin":
-        return <Crown className="h-4 w-4 text-purple-600 dark:text-purple-400" />;
-      case "admin":
-        return <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />;
-      default:
-        return <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
-    }
-  };
-
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case "superadmin":
-        return "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800";
-      case "admin":
-        return "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800";
-      default:
-        return "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800";
-    }
-  };
-
   return (
-    <div className="min-h-screen">
-      <div className="max-w-4xl mx-auto p-3 sm:p-4">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto p-8">
         {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl">
-            <div className="relative">
-              <Avatar className="h-14 w-14 sm:h-18 sm:w-18 border">
-                <AvatarImage
-                  src={`http://localhost:5000${user?.photo}`}
-                  alt={user?.name || "User"}
-                  crossOrigin="anonymous"
-                  className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl object-cover"
-                />
-                <AvatarFallback className="text-lg font-bold capitalize">
-                  {user?.name?.[0] ?? "?"}
-                </AvatarFallback>
+        <div className="flex items-center gap-4 mb-8">
+          <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">User Details</h1>
+            <p className="text-muted-foreground">Manage user profile and assigned vehicles</p>
+          </div>
+        </div>
+
+        {/* User Profile */}
+        <Card className="mb-8">
+          <CardContent className="p-8">
+            <div className="flex items-start gap-6">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={`http://localhost:5000${user?.photo}`} alt={user?.name} crossOrigin="anonymous" />
+                <AvatarFallback className="text-lg font-medium">{user?.name?.[0]}</AvatarFallback>
               </Avatar>
-                <div className={`absolute -bottom-0 -right-0 w-4 h-4 sm:w-5 sm:h-5 rounded-full border-3 border-white dark:border-slate-800 shadow-lg flex items-center justify-center ${
-                  user.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'
-                }`}>
-                  <span
-                  className={`
-                    absolute inset-0 rounded-full
-                    ${user.status === 'active' ? 'bg-emerald-400/40' : 'bg-red-400/40'}
-                    animate-ping
-                  `}
-                  />
-                  
-                </div>
-            </div>
-
-            <div className="flex-1 text-center sm:text-left">
-              <div className="flex items-center justify-center sm:justify-start gap-2">
-                <h1 className="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
-                  {user.name}
-                  <Badge className={`capitalize flex items-center gap-1 px-2 py-1 font-medium ${getRoleBadgeColor(user.role)}`}>
-                    {getRoleIcon(user.role)}
-                    {user.role}
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h2 className="text-xl font-semibold">{user?.name}</h2>
+                  <Badge variant="outline" className="capitalize">
+                    {user?.role}
                   </Badge>
-                </h1>
-              </div>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mb-2">{user.email}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Modern Statistics Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-          {/* Total Cars Card */}
-          <Card className="relative overflow-hidden border-1 shadow-sm ">
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs sm:text-sm font-medium uppercase tracking-wide mb-1">Total Cars</p>
-                  <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{vehicleStats?.totalVehicles || 0}</p>
-                  <p className="text-muted-foreground text-xs sm:text-sm mt-1">All registered vehicles</p>
-                </div>
-                <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/20 backdrop-blur-sm rounded-xl">
-                  <Car className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-300" />
-                </div>
-              </div>
-              <div className="absolute -top-4 -right-4 w-16 h-16 sm:w-24 sm:h-24 bg-blue-300/10 dark:bg-blue-900/10 rounded-full"></div>
-              <div className="absolute -bottom-6 -left-6 w-24 h-24 sm:w-32 sm:h-32 bg-blue-300/5 dark:bg-blue-900/5 rounded-full"></div>
-            </CardContent>
-          </Card>
-
-          {/* Active Cars Card */}
-          <Card className="relative overflow-hidden border-1 shadow-sm">
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs sm:text-sm font-medium uppercase tracking-wide mb-1">Active Cars</p>
-                  <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{vehicleStats?.movingVehicles || 0}</p>
-                  <p className="text-muted-foreground text-xs sm:text-sm mt-1">Currently operational</p>
-                </div>
-                <div className="p-2 sm:p-3 bg-emerald-100 dark:bg-emerald-900/20 backdrop-blur-sm rounded-xl">
-                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600 dark:text-emerald-300" />
-                </div>
-              </div>
-              <div className="absolute -top-4 -right-4 w-16 h-16 sm:w-24 sm:h-24 bg-emerald-300/10 dark:bg-emerald-900/10 rounded-full"></div>
-              <div className="absolute -bottom-6 -left-6 w-24 h-24 sm:w-32 sm:h-32 bg-emerald-300/5 dark:bg-emerald-900/5 rounded-full"></div>
-            </CardContent>
-          </Card>
-
-          {/* Total Alerts Card */}
-          <Card className="relative overflow-hidden border-1 shadow-sm">
-            <CardContent className="p-3 sm:p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs sm:text-sm font-medium uppercase tracking-wide mb-1">Total Alerts</p>
-                  <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{user.totalAlerts || 0}</p>
-                  <p className="text-muted-foreground text-xs sm:text-sm mt-1">System notifications</p>
-                </div>
-                <div className="p-2 sm:p-3 bg-amber-100 dark:bg-amber-900/20 backdrop-blur-sm rounded-xl">
-                  <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600 dark:text-amber-300" />
-                </div>
-              </div>
-              <div className="absolute -top-4 -right-4 w-16 h-16 sm:w-24 sm:h-24 bg-amber-300/10 dark:bg-amber-900/10 rounded-full"></div>
-              <div className="absolute -bottom-6 -left-6 w-24 h-24 sm:w-32 sm:h-32 bg-amber-300/5 dark:bg-amber-900/5 rounded-full"></div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
-          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
-            {/* Account Overview */}
-            <Card className="border-1 shadow-md">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2 text-slate-900 dark:text-white">
-                  <User className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
-                  Account Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg">
-                    <div className="p-2 sm:p-2.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Member Since</p>
-                      <p className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white">
-                        {new Date(user.createdAt).toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg">
-                    <div className="p-2 sm:p-2.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-                      <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <div>
-                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Last Active</p>
-                      <p className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white">
-                        {formatDistanceToNow(new Date(user.lastActive), { addSuffix: true })}
-                      </p>
-                    </div>
+                  <div className="flex items-center gap-1">
+                    <Circle
+                      className={`h-2 w-2 fill-current ${
+                        user?.status === "active" ? "text-green-500" : "text-red-500"
+                      }`}
+                    />
+                    <span className="text-sm text-muted-foreground capitalize">{user?.status}</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Billing Information */}
-          <div className="space-y-3 sm:space-y-4">
-            <Card className="border-1 shadow-md">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
-                  <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
-                  Current Plan
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4">
-                <div className="text-center border-1 p-3 sm:p-4 bg-black text-white rounded-xl relative overflow-hidden">
-                  <div className="relative z-10">
-                    <h3 className="font-bold text-base sm:text-lg mb-1">Premium</h3>
-                    <p className="text-xl sm:text-2xl font-bold mb-1">
-                      $29.99
-                      <span className="text-sm sm:text-base font-normal">/month</span>
+                <p className="text-muted-foreground mb-4">{user?.email}</p>
+                <div className="grid grid-cols-3 gap-8">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Vehicles</p>
+                    <p className="text-2xl font-semibold">{vehicleStats?.totalVehicles || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Active Vehicles</p>
+                    <p className="text-2xl font-semibold">{vehicleStats?.movingVehicles || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Member Since</p>
+                    <p className="text-sm font-medium">
+                      {new Date(user?.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
                     </p>
-                    <p className="text-xs sm:text-sm">Full access to all features</p>
                   </div>
-                  <div className="absolute -top-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 bg-white/10 rounded-full"></div>
-                  <div className="absolute -bottom-4 -left-4 w-12 h-12 sm:w-16 sm:h-16 bg-white/5 rounded-full"></div>
                 </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="flex items-center justify-between p-2 sm:p-2.5 rounded-lg">
-                    <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Next Billing</span>
-                    <span className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white">July 4, 2025</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2 sm:p-2.5 rounded-lg">
-                    <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Payment Method</span>
-                    <span className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white">•••• 1234</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2 sm:p-2.5 rounded-lg">
-                    <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Billing Status</span>
-                    <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800">
-                      Active
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        {/* Vehicles */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Car className="h-5 w-5" />
+              Assigned Vehicles
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {vehicles.length === 0 ? (
+              <div className="text-center py-12">
+                <Car className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">No vehicles assigned</h3>
+                <p className="text-muted-foreground">This user has no vehicles assigned yet.</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Vehicle Name</TableHead>
+                    <TableHead>License Plate</TableHead>
+                    <TableHead>IMEI</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {vehicles.map((vehicle) => (
+                    <TableRow key={vehicle._id}>
+                      <TableCell className="font-medium">{vehicle.name}</TableCell>
+                      <TableCell>
+                        <code className="bg-muted px-2 py-1 rounded text-sm">{vehicle.licensePlate}</code>
+                      </TableCell>
+                      <TableCell className="font-mono text-sm text-muted-foreground">{vehicle.imei}</TableCell>
+                    <TableCell>
+  <div className="flex items-center gap-2">
+    <Circle
+      className={`h-2 w-2 fill-current ${
+        vehicle.currentStatus === "moving"
+          ? "text-green-500"
+          : vehicle.currentStatus === "stopped"
+          ? "text-yellow-500"
+          : vehicle.currentStatus === "immobilized"
+          ? "text-red-500"
+          : vehicle.currentStatus === "inactive"
+          ? "text-gray-400"
+          : "text-slate-400"
+      }`}
+    />
+    <span className="text-sm capitalize">{vehicle.currentStatus || "unknown"}</span>
+  </div>
+</TableCell>
+
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Dialog
+                            open={reassignDialogOpen && selectedVehicle?._id === vehicle._id}
+                            onOpenChange={(open) => {
+                              setReassignDialogOpen(open)
+                              if (open) setSelectedVehicle(vehicle)
+                              else {
+                                setSelectedVehicle(null)
+                                setSelectedUser("")
+                              }
+                            }}
+                          >
+                            <DialogTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <UserCheck className="h-4 w-4 mr-1" />
+                                Reassign
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Reassign Vehicle</DialogTitle>
+                                <DialogDescription>Select a user to reassign "{vehicle.name}" to.</DialogDescription>
+                              </DialogHeader>
+                              <div className="py-4">
+                                <Label htmlFor="user-select" className="text-sm font-medium">
+                                  Select User
+                                </Label>
+                                <Select value={selectedUser} onValueChange={setSelectedUser}>
+                                  <SelectTrigger className="mt-2">
+                                    <SelectValue placeholder="Choose a user..." />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {users
+                                      .filter((u) => u._id !== userId)
+                                      .map((user) => (
+                                        <SelectItem key={user._id} value={user._id}>
+                                          <div className="flex items-center gap-2">
+                                            <span>{user.name}</span>
+                                            <Badge variant="secondary" className="text-xs">
+                                              {user.role}
+                                            </Badge>
+                                          </div>
+                                        </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <DialogFooter>
+                                <Button
+                                  variant="outline"
+                                  onClick={() => setReassignDialogOpen(false)}
+                                  disabled={actionLoading}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button onClick={handleReassignVehicle} disabled={!selectedUser || actionLoading}>
+                                  {actionLoading ? "Reassigning..." : "Reassign"}
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Remove
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remove Vehicle</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to remove "{vehicle.name}" from this user? This action cannot be
+                                  undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteVehicle(vehicle)}
+                                  disabled={actionLoading}
+                                >
+                                  {actionLoading ? "Removing..." : "Remove"}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
-  );
+  )
 }
