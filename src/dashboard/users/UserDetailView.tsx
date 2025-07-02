@@ -10,15 +10,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -29,9 +20,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
 import { ArrowLeft, Car, UserCheck, Trash2, Circle , ArrowRight , Search} from "lucide-react"
+import { toast } from "sonner"
+
 
 interface Vehicle {
   _id: string
@@ -53,6 +44,7 @@ export default function UserDetailView() {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("");
+  const [showReassignModal, setShowReassignModal] = useState(false);
 
 
 const [currentPage, setCurrentPage] = useState(1)
@@ -154,8 +146,11 @@ const goToPreviousPage = () => {
           totalVehicles: vehicleStats.totalVehicles - 1,
         })
       }
+      toast.success("Vehicle reassigned successfully!");
+
     } catch (error) {
       console.error("Failed to reassign vehicle", error)
+      toast.error("Failed to reassign vehicle.");
     } finally {
       setActionLoading(false)
     }
@@ -324,66 +319,20 @@ const goToPreviousPage = () => {
 
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Dialog
-                            open={reassignDialogOpen && selectedVehicle?._id === vehicle._id}
-                            onOpenChange={(open) => {
-                              setReassignDialogOpen(open)
-                              if (open) setSelectedVehicle(vehicle)
-                              else {
-                                setSelectedVehicle(null)
-                                setSelectedUser("")
-                              }
-                            }}
-                          >
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <UserCheck className="h-4 w-4 mr-1" />
-                                Reassign
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Reassign Vehicle</DialogTitle>
-                                <DialogDescription>Select a user to reassign "{vehicle.name}" to.</DialogDescription>
-                              </DialogHeader>
-                              <div className="py-4">
-                                <Label htmlFor="user-select" className="text-sm font-medium">
-                                  Select User
-                                </Label>
-                                <Select value={selectedUser} onValueChange={setSelectedUser}>
-                                  <SelectTrigger className="mt-2">
-                                    <SelectValue placeholder="Choose a user..." />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {users
-                                      .filter((u) => u._id !== userId)
-                                      .map((user) => (
-                                        <SelectItem key={user._id} value={user._id}>
-                                          <div className="flex items-center gap-2">
-                                            <span>{user.name}</span>
-                                            <Badge variant="secondary" className="text-xs">
-                                              {user.role}
-                                            </Badge>
-                                          </div>
-                                        </SelectItem>
-                                      ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <DialogFooter>
-                                <Button
-                                  variant="outline"
-                                  onClick={() => setReassignDialogOpen(false)}
-                                  disabled={actionLoading}
-                                >
-                                  Cancel
-                                </Button>
-                                <Button onClick={handleReassignVehicle} disabled={!selectedUser || actionLoading}>
-                                  {actionLoading ? "Reassigning..." : "Reassign"}
-                                </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
+<Button
+  variant="outline"
+  size="sm"
+  onClick={() => {
+    setSelectedVehicle(vehicle);
+    setShowReassignModal(true);
+  }}
+>
+  <UserCheck className="h-4 w-4 mr-1" />
+  Reassign
+</Button>
+
+
+
 
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -452,6 +401,58 @@ const goToPreviousPage = () => {
           </CardContent>
         </Card>
       </div>
+
+{showReassignModal && selectedVehicle && (
+  <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+    <div className="bg-background rounded-lg shadow-lg max-w-md w-full p-6 border ">
+      <h2 className="text-lg font-semibold mb-2">Reassign Vehicle</h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        Select a user to reassign <strong>{selectedVehicle.name}</strong> to.
+      </p>
+
+      <label htmlFor="reassign-user" className="block text-sm font-medium mb-1">
+        Select User
+      </label>
+      <select
+        id="reassign-user"
+        value={selectedUser}
+        onChange={(e) => setSelectedUser(e.target.value)}
+        className="w-full border border-gray-300 dark:border-muted bg-white dark:bg-muted px-3 py-2 rounded text-sm focus:outline-none focus:ring"
+      >
+        <option value="">Choose a user...</option>
+        {users
+          .filter((u) => u._id !== userId)
+          .map((u) => (
+            <option key={u._id} value={u._id}>
+              {u.name} ({u.role})
+            </option>
+          ))}
+      </select>
+
+      <div className="flex justify-end gap-2 mt-6">
+        <button
+          onClick={() => {
+            setShowReassignModal(false);
+            setSelectedVehicle(null);
+            setSelectedUser("");
+          }}
+          className="px-4 py-2 text-sm rounded bg-muted hover:bg-gray-200 dark:hover:bg-muted-foreground"
+        >
+          Cancel
+        </button>
+        <Button
+          onClick={handleReassignVehicle}
+          disabled={!selectedUser || actionLoading}
+          className="px-4 py-2 text-sm"
+        >
+          {actionLoading ? "Reassigning..." : "Reassign"}
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   )
 }
