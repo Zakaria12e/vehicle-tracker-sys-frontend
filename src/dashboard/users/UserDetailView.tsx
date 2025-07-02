@@ -336,7 +336,7 @@ const goToPreviousPage = () => {
 
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="outline" size="sm">
+                              <Button variant="outline" size="sm" className="dark:bg-red-500/10 dark:text-red-500 dark:border-red-500/20 bg-red-500/10 text-red-400 border-red-500/20">
                                 <Trash2 className="h-4 w-4 mr-1" />
                                 Remove
                               </Button>
