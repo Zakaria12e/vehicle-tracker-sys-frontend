@@ -15,6 +15,7 @@ import {
   Lock,
   Users,
   ChevronDown,
+  HelpCircle 
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -123,6 +124,13 @@ const routes = [
     icon: Settings,
     color: "text-slate-600 dark:text-slate-300",
   },
+  {
+  to: "/dashboard/support",
+  label: "Support",
+  icon: HelpCircle,
+  color: "text-blue-600 dark:text-blue-400",
+}
+
 ];
 
 

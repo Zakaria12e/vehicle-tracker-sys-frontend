@@ -21,6 +21,7 @@ import AdminPage from "./dashboard/users/page";
 import UserDetailView from "./dashboard/users/UserDetailView";
 import CreateAlertRulePage from "./dashboard/alerts/CreateAlertRulePage";
 import { VehicleDetails } from "./dashboard/vehicles/VehicleDetails";
+import SupportPage from "./dashboard/support/SupportPage"
 import "./App.css";
 import "leaflet/dist/leaflet.css";
 
@@ -187,6 +188,16 @@ function App() {
                 <PrivateRoute>
                   <DashboardLayout>
                     <CreateAlertRulePage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard/support"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <SupportPage />
                   </DashboardLayout>
                 </PrivateRoute>
               }
