@@ -23,7 +23,7 @@ import {
 } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
-import axios from "axios"
+import { apiFetch } from "@/lib/api"
 import { Badge } from "@/components/ui/badge"
 import {
   AlertDialog,
@@ -96,8 +96,9 @@ export function AlertRules() {
   const fetchRules = async () => {
     setLoading(true)
     try {
-      const res = await axios.get(`${API_URL}/alert-rules`, { withCredentials: true })
-      setRules(res.data as AlertRule[])
+      const res = await apiFetch(`${API_URL}/alert-rules`)
+      const data = await res.json()
+      setRules(data as AlertRule[])
     } catch (err) {
       toast.error("Failed to load alert rules")
     } finally {
@@ -112,13 +113,10 @@ export function AlertRules() {
   const toggleRule = async (ruleId: string) => {
     setActionInProgress(ruleId)
     try {
-      const res = await axios.patch<{ enabled: boolean }>(
-        `${API_URL}/alert-rules/${ruleId}/toggle`,
-        {},
-        { withCredentials: true },
-      )
-      setRules((prev) => prev.map((r) => (r._id === ruleId ? { ...r, enabled: res.data.enabled } : r)))
-      toast.success(`Rule ${res.data.enabled ? "enabled" : "disabled"}`)
+      const res = await apiFetch(`${API_URL}/alert-rules/${ruleId}/toggle`, { method: "PATCH" })
+      const data = await res.json() as { enabled: boolean }
+      setRules((prev) => prev.map((r) => (r._id === ruleId ? { ...r, enabled: data.enabled } : r)))
+      toast.success(`Rule ${data.enabled ? "enabled" : "disabled"}`)
     } catch {
       toast.error("Failed to toggle rule")
     } finally {
@@ -136,7 +134,7 @@ export function AlertRules() {
 
     setActionInProgress(ruleToDelete)
     try {
-      await axios.delete(`${API_URL}/alert-rules/${ruleToDelete}`, { withCredentials: true })
+      await apiFetch(`${API_URL}/alert-rules/${ruleToDelete}`, { method: "DELETE" })
       setRules((prev) => prev.filter((r) => r._id !== ruleToDelete))
       toast.success("Rule deleted successfully")
     } catch {

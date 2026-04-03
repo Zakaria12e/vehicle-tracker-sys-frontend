@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+
+const API_URL = import.meta.env.VITE_API_URL;
+const BACKEND_URL = API_URL?.replace("/api/v1", "");
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -58,7 +61,7 @@ const [file, setFile] = useState<File | null>(null);
     if (file) form.append("photo", file);
 
     try {
-      const res = await apiFetch("http://localhost:5000/api/v1/auth/updatedetails", {
+      const res = await apiFetch(`${API_URL}/auth/updatedetails`, {
         method: "PUT",
         body: form
       });
@@ -98,7 +101,7 @@ const [file, setFile] = useState<File | null>(null);
 
     setLoading(true);
     try {
-      const res = await apiFetch("http://localhost:5000/api/v1/auth/updatepassword", {
+      const res = await apiFetch(`${API_URL}/auth/updatepassword`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentPassword, newPassword }),
@@ -158,7 +161,7 @@ const [file, setFile] = useState<File | null>(null);
               <div className="flex flex-col sm:flex-row gap-6 items-start">
                 <Avatar className="h-20 w-20 border-2">
                   <AvatarImage
-                    src={`http://localhost:5000${user?.photo}`}
+                    src={`${BACKEND_URL}${user?.photo}`}
                     alt={user?.name || "User"}
                     crossOrigin="anonymous"
                   />

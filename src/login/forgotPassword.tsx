@@ -5,8 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { apiFetch } from "@/lib/api";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -14,22 +15,26 @@ export default function ForgotPassword() {
   const [emailSent, setEmailSent] = useState(false);
   const navigate = useNavigate();
 
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
-      const res = await axios.post("http://localhost:5000/api/v1/auth/forgotpassword", {
-        email,
+      const res = await apiFetch(`${API_URL}/auth/forgotpassword`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
       });
-  
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Something went wrong");
+      }
+
       toast.success("Password reset email sent successfully 🎉");
       setEmailSent(true);
     } catch (err: any) {
-      const message =
-        err.response?.data?.error || err.message || "Something went wrong";
-      toast.error(message);
+      toast.error(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

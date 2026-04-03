@@ -3,7 +3,6 @@ import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 
 const socket = io(import.meta.env.VITE_API_BASE_URL, {

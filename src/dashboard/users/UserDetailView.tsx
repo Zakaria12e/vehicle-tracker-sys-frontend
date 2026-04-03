@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import { apiFetch } from "@/lib/api";
+
+const API_URL = import.meta.env.VITE_API_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || API_URL?.replace("/api/v1", "");
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -87,13 +90,9 @@ export default function UserDetailView() {
     const fetchUserDetail = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/users/${userId}`,
-          {
-            withCredentials: true,
-          }
-        );
-        setUser((res.data as any).data);
+        const res = await apiFetch(`${API_URL}/users/${userId}`);
+        const data = await res.json();
+        setUser(data.data);
       } catch (error) {
         console.error("Failed to fetch user", error);
       } finally {
@@ -103,19 +102,9 @@ export default function UserDetailView() {
 
     const fetchStats = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/users/${userId}/stats`,
-          {
-            withCredentials: true,
-          }
-        );
-        setVehicleStats(
-          (
-            res.data as {
-              data: { totalVehicles: number; movingVehicles: number };
-            }
-          ).data
-        );
+        const res = await apiFetch(`${API_URL}/users/${userId}/stats`);
+        const data = await res.json();
+        setVehicleStats(data.data);
       } catch (err) {
         console.error("Failed to fetch vehicle stats", err);
       }
@@ -123,13 +112,9 @@ export default function UserDetailView() {
 
     const fetchVehicles = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/users/${userId}/vehicles`,
-          {
-            withCredentials: true,
-          }
-        );
-        setVehicles((res.data as any).data);
+        const res = await apiFetch(`${API_URL}/users/${userId}/vehicles`);
+        const data = await res.json();
+        setVehicles(data.data);
       } catch (err) {
         console.error("Failed to fetch vehicles", err);
       }
@@ -137,13 +122,9 @@ export default function UserDetailView() {
 
     const fetchUsers = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/users/non-superadmins`,
-          {
-            withCredentials: true,
-          }
-        );
-        setUsers((res.data as any).data);
+        const res = await apiFetch(`${API_URL}/users/non-superadmins`);
+        const data = await res.json();
+        setUsers(data.data);
       } catch (err) {
         console.error("Failed to fetch users", err);
       }
@@ -162,13 +143,11 @@ export default function UserDetailView() {
 
     setActionLoading(true);
     try {
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/vehicles/${
-          selectedVehicle._id
-        }/reassign`,
-        { newUserId: selectedUser },
-        { withCredentials: true }
-      );
+      await apiFetch(`${API_URL}/vehicles/${selectedVehicle._id}/reassign`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newUserId: selectedUser }),
+      });
 
       setVehicles((prev) => prev.filter((v) => v._id !== selectedVehicle._id));
       setReassignDialogOpen(false);
@@ -193,14 +172,9 @@ export default function UserDetailView() {
   const handleDeleteVehicle = async (vehicle: Vehicle) => {
     setActionLoading(true);
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_API_URL}/vehicles/${userId}/vehicles/${
-          vehicle._id
-        }`,
-        {
-          withCredentials: true,
-        }
-      );
+      await apiFetch(`${API_URL}/vehicles/${userId}/vehicles/${vehicle._id}`, {
+        method: "DELETE",
+      });
 
       setVehicles((prev) => prev.filter((v) => v._id !== vehicle._id));
 
@@ -255,7 +229,7 @@ export default function UserDetailView() {
             <div className="flex items-start gap-6">
               <Avatar className="h-16 w-16">
                 <AvatarImage
-                  src={`http://localhost:5000${user?.photo}`}
+                  src={`${BACKEND_URL}${user?.photo}`}
                   alt={user?.name}
                   crossOrigin="anonymous"
                 />

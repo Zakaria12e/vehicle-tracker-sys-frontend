@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { AlertCircle, Bell, Mail, Smartphone, ArrowLeft, Loader2 } from "lucide-react"
-import axios from "axios"
+import { apiFetch } from "@/lib/api"
 import { toast } from "sonner"
 import { Car, BatteryCharging, MapPin, Target } from "lucide-react"
 
@@ -106,20 +106,18 @@ export default function CreateAlertRulePage() {
 
     setIsLoading(true)
     try {
-      await axios.post(
-        `${API_URL}/alert-rules`,
-        {
+      await apiFetch(`${API_URL}/alert-rules`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           name: form.name,
           type: form.type,
           threshold: form.type === "SPEED_ALERT" || form.type === "BATTERY_ALERT" ? Number(form.threshold) : undefined,
           appliesToAllVehicles: form.appliesToAllVehicles,
           vehicles: [],
           notifications: form.notifications,
-        },
-        {
-          withCredentials: true,
-        },
-      )
+        }),
+      })
       toast.success("Alert rule created successfully")
       navigate("/dashboard/alerts")
     } catch (error) {

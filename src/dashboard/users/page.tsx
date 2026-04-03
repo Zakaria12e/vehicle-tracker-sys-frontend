@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
+import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext"; // to get current user
 import {
   Card,
@@ -68,36 +68,34 @@ export default function AdminPage() {
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    axios
-      .get<{ data: User[] }>(`${API_URL}/users`, { withCredentials: true })
-      .then((res) => setUsers(res.data.data))
+    apiFetch(`${API_URL}/users`)
+      .then((res) => res.json())
+      .then((res) => setUsers(res.data))
       .catch(console.error);
   }, [API_URL]);
 
   const handleStatusChange = async (userId: string, newStatus: string) => {
     try {
-      const res = await axios.patch(
-        `${API_URL}/users/${userId}/status`,
-        {
-          status: newStatus,
-        },
-        { withCredentials: true }
-      );
-
-      const updatedUser = (res.data as { data: User }).data;
+      const res = await apiFetch(`${API_URL}/users/${userId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      const updatedUser = (data as { data: User }).data;
       setUsers(users.map((user) => (user._id === userId ? updatedUser : user)));
     } catch (err) {
       console.error("Error changing status", err);
     }
   };
 
-  const  handleDeleteUser = async(userId: string) => {
-     try {
-    await axios.delete(`${API_URL}/users/delete-user/${userId}`, { withCredentials: true });
-    setUsers(users.filter((user) => user._id !== userId));
-  } catch (error) {
-    console.error('Failed to delete user:', error);
-  }
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      await apiFetch(`${API_URL}/users/delete-user/${userId}`, { method: "DELETE" });
+      setUsers(users.filter((user) => user._id !== userId));
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+    }
   };
 
   const canModify = () => {
@@ -108,8 +106,8 @@ export default function AdminPage() {
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      (user.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.email || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       statusFilter === "all" || user.status === statusFilter;
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
@@ -125,16 +123,13 @@ export default function AdminPage() {
   const handleRoleChange = async (userId: string, currentRole: string) => {
     try {
       const newRole = currentRole === "user" ? "admin" : "user";
-
-      const res = await axios.patch(
-        `${API_URL}/users/${userId}/role`,
-        {
-          role: newRole,
-        },
-        { withCredentials: true }
-      );
-
-      const updatedUser = (res.data as { data: User }).data;
+      const res = await apiFetch(`${API_URL}/users/${userId}/role`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: newRole }),
+      });
+      const data = await res.json();
+      const updatedUser = (data as { data: User }).data;
       setUsers(users.map((user) => (user._id === userId ? updatedUser : user)));
     } catch (err) {
       console.error("Error updating role", err);

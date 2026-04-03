@@ -1,6 +1,8 @@
 "use client"
 
 import React from "react"
+
+const BACKEND_URL = (import.meta.env.VITE_API_URL as string)?.replace("/api/v1", "");
 import { Link, useLocation } from "react-router-dom"
 import {
   Car,
@@ -286,7 +288,7 @@ const routes = [
                   >
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src={`http://localhost:5000${user?.photo}`}
+                        src={`${BACKEND_URL}${user?.photo}`}
                         alt={user?.name}
                         crossOrigin="anonymous"
                       />
