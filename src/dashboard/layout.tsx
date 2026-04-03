@@ -189,7 +189,7 @@ const routes = [
                   <img src="/car-gps-white.png" alt="Logo Dark" className="hidden dark:block" />
                  </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">TrackFleet</span>
+                    <span className="truncate font-semibold">Trackvio</span>
                     <span className="truncate text-xs">Vehicle Tracking</span>
                   </div>
                 </Link>
