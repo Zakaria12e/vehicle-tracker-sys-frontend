@@ -28,6 +28,7 @@ import {
   XCircle,
   Minus,
 } from "lucide-react"
+import { apiFetch } from "@/lib/api"
 
 const statusColors: Record<
   string,
@@ -106,9 +107,7 @@ export function VehicleDetails() {
         setLoading(true)
         setError(null)
         const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
-        const res = await fetch(`${API_URL}/vehicles/${id}`, {
-          credentials: "include",
-        })
+        const res = await apiFetch(`${API_URL}/vehicles/${id}`)
 
         if (!res.ok) {
           throw new Error("Failed to fetch vehicle details")

@@ -8,6 +8,7 @@ import { TripSummary } from "./components/trip-summary";
 import { TripMap } from "./components/trip-map";
 import { TripList } from "./components/trip-list";
 import { useSearchParams } from "react-router-dom";
+import { apiFetch } from "@/lib/api";
 
 type Vehicle = {
   _id: string;
@@ -62,7 +63,7 @@ export default function HistoryPage() {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await fetch(`${API_URL}/vehicles`, { credentials: "include" });
+        const res = await apiFetch(`${API_URL}/vehicles`);
         const json = await res.json();
         setVehicles(json.data?.vehicles || []);
       } catch (err) {
@@ -87,9 +88,7 @@ export default function HistoryPage() {
         params.append("vehicleId", selectedVehicle);
       }
 
-      const res = await fetch(`${API_URL}/trips/filter?${params.toString()}`, {
-        credentials: "include",
-      });
+      const res = await apiFetch(`${API_URL}/trips/filter?${params.toString()}`);
       const data = await res.json();
       setTrips(data);
     } catch (err) {

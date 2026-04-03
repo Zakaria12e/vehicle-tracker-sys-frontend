@@ -40,6 +40,7 @@ import Mapgeofences from "./components/Mapgeofences";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import AssignVehiclesDialog from "./components/AssignVehiclesDialog";
+import { apiFetch } from "@/lib/api";
 
 export default function GeofencingPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -119,9 +120,7 @@ export default function GeofencingPage() {
 
   const fetchVehicles = async () => {
     try {
-      const res = await fetch(`${API_URL}/vehicles`, {
-        credentials: "include",
-      });
+      const res = await apiFetch(`${API_URL}/vehicles`);
       const data = await res.json();
 
       if (res.ok && Array.isArray(data.vehicles)) {
@@ -140,9 +139,7 @@ export default function GeofencingPage() {
 
   const fetchZones = async () => {
     try {
-      const res = await fetch(`${API_URL}/geofences`, {
-        credentials: "include",
-      });
+      const res = await apiFetch(`${API_URL}/geofences`);
       const data = await res.json();
       if (res.ok) {
         setZones(data.data);
@@ -158,9 +155,7 @@ export default function GeofencingPage() {
 
   const checkAllVehicleZones = async () => {
     try {
-      const res = await fetch(`${API_URL}/geofences/check-all`, {
-        credentials: "include",
-      });
+      const res = await apiFetch(`${API_URL}/geofences/check-all`);
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Request failed");
 
@@ -190,10 +185,9 @@ export default function GeofencingPage() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/geofences`, {
+      const res = await apiFetch(`${API_URL}/geofences`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           name,
           description,
@@ -220,9 +214,8 @@ export default function GeofencingPage() {
 
   const handleDeleteZone = async (id: string) => {
     try {
-      const res = await fetch(`${API_URL}/geofences/${id}`, {
+      const res = await apiFetch(`${API_URL}/geofences/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
       if (res.ok) {
         setZones((prev) => prev.filter((z) => z._id !== id));

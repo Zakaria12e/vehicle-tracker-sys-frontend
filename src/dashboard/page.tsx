@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import VehicleDashboardMap from "@/components/VehicleDashboardMap";
 import { motion } from "framer-motion";
 import { io } from "socket.io-client";
+import { apiFetch } from "@/lib/api";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -91,9 +92,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch(`${API_URL}/vehicles/stats`, {
-          credentials: "include",
-        });
+        const res = await apiFetch(`${API_URL}/vehicles/stats`);
         const data = await res.json();
         if (res.ok && data?.data) {
           setVehicleStats(data.data);
@@ -106,7 +105,7 @@ export default function DashboardPage() {
     };
 const fetchVehicles = async () => {
   try {
-    const res = await fetch(`${API_URL}/vehicles`, { credentials: "include" });
+    const res = await apiFetch(`${API_URL}/vehicles`);
     const data = await res.json();
     if (res.ok && data?.data?.vehicles) {
       const preparedVehicles = data.data.vehicles.map((v: any) => ({
@@ -129,9 +128,7 @@ const fetchVehicles = async () => {
 
     const fetchAlertStats = async () => {
       try {
-        const res = await fetch(`${API_URL}/alerts/stats`, {
-          credentials: "include",
-        });
+        const res = await apiFetch(`${API_URL}/alerts/stats`);
         const data = await res.json();
         if (res.ok && data) {
           setAlertStats({
@@ -148,9 +145,7 @@ const fetchVehicles = async () => {
 
     const fetchRecentAlerts = async () => {
       try {
-        const res = await fetch(`${API_URL}/alerts/latest`, {
-          credentials: "include",
-        });
+        const res = await apiFetch(`${API_URL}/alerts/latest`);
         const data = await res.json();
         if (res.ok && Array.isArray(data)) {
           setRecentAlerts(data);
@@ -166,11 +161,8 @@ const fetchVehicles = async () => {
 
     const fetchTotalDistanceThisMonth = async () => {
       try {
-        const res = await fetch(
-          `${API_URL}/statistics/total-distance-this-month`,
-          {
-            credentials: "include",
-          }
+        const res = await apiFetch(
+          `${API_URL}/statistics/total-distance-this-month`
         );
         const data = await res.json();
         if (res.ok && data?.totalDistance !== undefined) {

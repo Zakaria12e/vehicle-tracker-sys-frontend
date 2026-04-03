@@ -24,6 +24,7 @@ import { useParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
 import { VehicleControls } from "./components/VehicleControls";
+import { apiFetch } from "@/lib/api";
 
 // Animation variants
 const fadeIn = {
@@ -112,9 +113,7 @@ useEffect(() => {
   const loadInitialVehicles = async () => {
     const API_URL = import.meta.env.VITE_API_URL;
     try {
-      const res = await fetch(`${API_URL}/vehicles`, {
-        credentials: 'include',
-      });
+      const res = await apiFetch(`${API_URL}/vehicles`);
       const data = await res.json();
 
       if (res.ok) {
@@ -233,9 +232,7 @@ useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL;
 
     try {
-      const res = await fetch(`${API_URL}/geofences/vehicle/${vehicleId}`, {
-        credentials: "include",
-      });
+      const res = await apiFetch(`${API_URL}/geofences/vehicle/${vehicleId}`);
 
       const data = await res.json();
 

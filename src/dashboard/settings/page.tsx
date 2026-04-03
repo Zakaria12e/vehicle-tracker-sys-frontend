@@ -26,6 +26,7 @@ import {
   LogOut
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "@/lib/api";
 
 export default function ModernSettingsPage() {
   const { user, setUser, logout } = useAuth();
@@ -57,9 +58,8 @@ const [file, setFile] = useState<File | null>(null);
     if (file) form.append("photo", file);
 
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/updatedetails", {
+      const res = await apiFetch("http://localhost:5000/api/v1/auth/updatedetails", {
         method: "PUT",
-        credentials: "include",
         body: form
       });
 
@@ -98,10 +98,9 @@ const [file, setFile] = useState<File | null>(null);
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/updatepassword", {
+      const res = await apiFetch("http://localhost:5000/api/v1/auth/updatepassword", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ currentPassword, newPassword }),
       });
 

@@ -15,6 +15,7 @@ import { Lock, AlertTriangle, Loader2 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
+import { apiFetch } from "@/lib/api"
 
 interface ImmobilizeDialogProps {
   vehicleId: string;
@@ -35,9 +36,8 @@ export const ImmobilizeDialog = ({ vehicleId, disabled, onSuccess }: ImmobilizeD
     setIsImmobilizing(true);
 
     try {
-      const res = await fetch(`${API_URL}/immobilizations`, {
+      const res = await apiFetch(`${API_URL}/immobilizations`, {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           vehicle: vehicleId,

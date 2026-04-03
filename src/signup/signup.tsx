@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { apiFetch } from "@/lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -39,10 +40,9 @@ export default function Signup({
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
+      const response = await apiFetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(formData),
       });
 

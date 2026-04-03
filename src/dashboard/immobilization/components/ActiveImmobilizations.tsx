@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card"
 import { Unlock, ChevronLeft, ChevronRight, Car } from "lucide-react"
 import { toast } from "sonner"
+import { apiFetch } from "@/lib/api"
 
 const API_URL = import.meta.env.VITE_API_URL
 const ITEMS_PER_PAGE = 4
@@ -40,9 +41,7 @@ export const ActiveImmobilizations = ({ refreshTrigger = 0 }: Props) => {
     setIsLoading(true)
     setImmobilizations([])
     try {
-      const res = await fetch(`${API_URL}/immobilizations?status=active`, {
-        credentials: "include",
-      })
+      const res = await apiFetch(`${API_URL}/immobilizations?status=active`)
       const data = await res.json()
 
       if (res.ok && Array.isArray(data.data?.immobilizations)) {
@@ -64,9 +63,8 @@ export const ActiveImmobilizations = ({ refreshTrigger = 0 }: Props) => {
   const handleRelease = async (id: string) => {
     setLoadingId(id)
     try {
-      const res = await fetch(`${API_URL}/immobilizations/${id}/mobilize`, {
+      const res = await apiFetch(`${API_URL}/immobilizations/${id}/mobilize`, {
         method: "POST",
-        credentials: "include",
       })
       const data = await res.json()
       if (res.ok) {

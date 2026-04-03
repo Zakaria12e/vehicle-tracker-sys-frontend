@@ -22,6 +22,7 @@ import { MoreHorizontal, Pencil, MapPin, Route, Trash2, ArrowUpRight, Battery } 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import getRelativeTime from "@/components/relativeTime"
+import { apiFetch } from "@/lib/api"
 
 // Status color mapping
 const statusColor: Record<string, string> = {
@@ -53,9 +54,8 @@ export function VehicleCard({ id, imei, name, licensePlate, status, battery, tim
   const handleDelete = async () => {
     setDeleting(true)
     try {
-      const res = await fetch(`${API_URL}/vehicles/${id}`, {
+      const res = await apiFetch(`${API_URL}/vehicles/${id}`, {
         method: "DELETE",
-        credentials: "include",
       })
       if (!res.ok) {
         const data = await res.json()

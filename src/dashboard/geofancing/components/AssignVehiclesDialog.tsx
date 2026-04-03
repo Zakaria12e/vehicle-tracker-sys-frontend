@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/api";
 
 interface Vehicle {
   _id: string;
@@ -67,10 +68,9 @@ useEffect(() => {
     if (!selectedZoneId) return;
 
     try {
-      const res = await fetch(`${apiUrl}/geofences/${selectedZoneId}/vehicles`, {
+      const res = await apiFetch(`${apiUrl}/geofences/${selectedZoneId}/vehicles`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ vehicles: selectedVehicles }),
       });
 

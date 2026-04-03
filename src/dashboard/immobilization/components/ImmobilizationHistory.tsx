@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, History, ChevronLeft, ChevronRight, X } from "lucide-react"
 import { toast } from "sonner"
+import { apiFetch } from "@/lib/api"
 
 const API_URL = import.meta.env.VITE_API_URL
 const ITEMS_PER_PAGE = 4
@@ -36,9 +37,7 @@ export const ImmobilizationHistory = () => {
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch(`${API_URL}/immobilizations?status=inactive`, {
-        credentials: "include"
-      })
+      const res = await apiFetch(`${API_URL}/immobilizations?status=inactive`)
       const data = await res.json()
       if (res.ok && Array.isArray(data.data?.immobilizations)) {
         setHistory(data.data.immobilizations)

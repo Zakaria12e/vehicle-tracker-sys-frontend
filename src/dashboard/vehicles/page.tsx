@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { VehicleCard } from "./VehicleCard"
 import { motion, AnimatePresence } from "framer-motion"
+import { apiFetch } from "@/lib/api"
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface Vehicle {
@@ -83,7 +84,7 @@ export default function VehiclesPage() {
   const fetchVehicles = async () => {
     setLoadingVehicles(true)
     try {
-      const res = await fetch(`${API_URL}/vehicles`, { credentials: "include" })
+      const res = await apiFetch(`${API_URL}/vehicles`)
       const data = await res.json()
       if (res.ok) {
         const updated = data.data.vehicles.map((v: any) => {
@@ -122,10 +123,9 @@ export default function VehiclesPage() {
   const handleAddVehicle = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_URL}/vehicles`, {
+      const res = await apiFetch(`${API_URL}/vehicles`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           name: vehicleData.name,
           model: vehicleData.model,

@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Truck, MapPin, Lock, Mail, ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -31,18 +32,19 @@ export default function LoginForm({
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const res = await apiFetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ email, password, rememberMe }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Login failed");
 
+      localStorage.setItem("token", data.token);
+
       const meRes = await fetch(`${API_URL}/auth/me`, {
-        credentials: "include",
+        headers: { Authorization: `Bearer ${data.token}` },
       });
 
       const meData = await meRes.json();

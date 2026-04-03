@@ -8,6 +8,7 @@ import "leaflet-fullscreen"; // Important pour activer le contrôle
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Loader2 } from "lucide-react";
+import { apiFetch } from "@/lib/api";
 
 const defaultCenter: [number, number] = [31.7917, -7.0926];
 
@@ -78,9 +79,7 @@ export function TripMap({ selectedTripId, allTrips, loading = false }: TripMapPr
 
       for (const trip of allTrips) {
         try {
-          const res = await fetch(`${API_URL}/trips/positions/byTrip/${trip._id}`, {
-            credentials: "include",
-          });
+          const res = await apiFetch(`${API_URL}/trips/positions/byTrip/${trip._id}`);
           const data: Position[] = await res.json();
 
           const coords = data

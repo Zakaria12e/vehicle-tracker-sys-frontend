@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.heat";
 import L from "leaflet";
+import { apiFetch } from "@/lib/api";
 
 interface HeatmapProps {
   period: string;
@@ -47,7 +48,7 @@ export default function VehiclePlacesHeatmap({ period, apiUrl }: HeatmapProps) {
     const fetchHeatmapData = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${apiUrl}/statistics/places-heatmap?period=${period}`, { credentials: "include" });
+        const res = await apiFetch(`${apiUrl}/statistics/places-heatmap?period=${period}`);
         const json = await res.json();
 
         const points: [number, number, number][] = json.data.map(

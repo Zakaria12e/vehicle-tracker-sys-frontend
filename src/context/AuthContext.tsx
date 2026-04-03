@@ -42,8 +42,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const fetchUser = async () => {
       try {
+        const token = localStorage.getItem("token");
         const res = await fetch(`${API_URL}/auth/me`, {
-          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
         if (res.status === 401) {
@@ -76,11 +77,13 @@ const navigate = useNavigate();
 
 const logout = async () => {
   try {
+    const token = localStorage.getItem("token");
     await fetch(`${API_URL}/auth/logout`, {
       method: "GET",
-      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
+    localStorage.removeItem("token");
     if (socket.connected) {
       socket.disconnect();
     }

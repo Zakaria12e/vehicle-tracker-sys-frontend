@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AlertTriangle, Car, MapPin, Gauge, Battery, Target, ChevronLeft, ChevronRight } from "lucide-react"
+import { apiFetch } from "@/lib/api"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -81,9 +82,7 @@ export function CurrentAlerts() {
   useEffect(() => {
     const fetchInitialAlerts = async () => {
       try {
-        const res = await fetch(`${API_URL}/alerts/active`, {
-          credentials: 'include',
-        });
+        const res = await apiFetch(`${API_URL}/alerts/active`);
         const data = await res.json();
         setAlerts(data);
       } catch (err) {
@@ -95,9 +94,8 @@ export function CurrentAlerts() {
 
     const resetAlertCounter = async () => {
     try {
-      await fetch(`${API_URL}/users/reset-alert-counter`, {
+      await apiFetch(`${API_URL}/users/reset-alert-counter`, {
         method: 'POST',
-        credentials: 'include',
       });
     } catch (err) {
       console.error('Failed to reset alert counter:', err);

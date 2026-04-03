@@ -9,6 +9,7 @@ import { ImmobilizationHistory } from "./components/ImmobilizationHistory"
 import { ImmobilizationGuide } from "./components/ImmobilizationGuide"
 import { toast } from "sonner"
 import { useSearchParams } from "react-router-dom";
+import { apiFetch } from "@/lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -30,7 +31,7 @@ export default function ImmobilizationPage() {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await fetch(`${API_URL}/vehicles`, { credentials: "include" })
+        const res = await apiFetch(`${API_URL}/vehicles`)
         const data = await res.json()
         if (res.ok) {
           setVehicles(data.data.vehicles)

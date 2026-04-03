@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertTriangle, Battery, Gauge, Target, ChevronRight } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { apiFetch } from "@/lib/api"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -41,9 +42,7 @@ export function AlertHistory() {
     const fetchHistory = async () => {
       setLoading(true)
       try {
-        const res = await fetch(`${API_URL}/alerts/history`, {
-          credentials: 'include',
-        })
+        const res = await apiFetch(`${API_URL}/alerts/history`)
         const data = await res.json()
         setAlerts(data)
       } catch (err) {

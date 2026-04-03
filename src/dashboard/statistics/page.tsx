@@ -45,6 +45,7 @@ import {
 } from "recharts";
 import VehiclePlacesHeatmap from "./components/VehiclePlacesHeatmap";
 import { VehiclePerformanceBarChart } from "./components/VehiclePerformanceBarChart";
+import { apiFetch } from "@/lib/api";
 
 type Period = "today" | "thisWeek" | "thisMonth" | "thisYear";
 
@@ -80,9 +81,8 @@ export default function StatisticsPage() {
     const fetchOverview = async () => {
       setLoadingOverview(true);
       try {
-        const res = await fetch(
-          `${API_URL}/statistics/overview?period=${period}`,
-          { credentials: "include" }
+        const res = await apiFetch(
+          `${API_URL}/statistics/overview?period=${period}`
         );
         const json = await res.json();
         setOverview(json.data);
@@ -96,9 +96,8 @@ export default function StatisticsPage() {
     const fetchVehicles = async () => {
       setLoadingVehicles(true);
       try {
-        const res = await fetch(
-          `${API_URL}/statistics/vehicles?period=${period}`,
-          { credentials: "include" }
+        const res = await apiFetch(
+          `${API_URL}/statistics/vehicles?period=${period}`
         );
         const json = await res.json();
         setVehicles(json.data);
@@ -114,11 +113,8 @@ export default function StatisticsPage() {
       setLoadingAnalytics(true);
       try {
         const groupBy = period === "today" ? "hour" : "day";
-        const res = await fetch(
-          `${API_URL}/statistics/trip-analytics?period=${period}&groupBy=${groupBy}`,
-          {
-            credentials: "include",
-          }
+        const res = await apiFetch(
+          `${API_URL}/statistics/trip-analytics?period=${period}&groupBy=${groupBy}`
         );
         const json = await res.json();
         setTripAnalytics(json.data);
