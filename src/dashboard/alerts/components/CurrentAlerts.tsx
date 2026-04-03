@@ -201,7 +201,7 @@ export function CurrentAlerts() {
                         </div>
 
                         {alert.location && (
-                          <div className="flex items-center gap-1 min-w-0 hidden sm:flex">
+                          <div className="flex items-center gap-1 min-w-0">
                             <MapPin className="h-3 w-3 flex-shrink-0" />
                             <span className="truncate">{alert.location}</span>
                           </div>
